@@ -48,31 +48,35 @@ fn split_iv_data_mac(orig: &str) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>), Box<dyn 
     let split: Vec<&str> = orig.split('/').into_iter().collect();
 
     if split.len() != 3 {
+        error!("invalid input string than expected: [hexNonce]/[hexCipherText]/[hexMac]");
         return Err(Box::new(io::Error::from(ErrorKind::Other)));
     }
 
-    let iv_res = hex::decode(split[0]);
+    match hex::decode(split[0]) {
+        Ok(iv) => {
 
-    if iv_res.is_err() {
-        return Err(Box::new(io::Error::from(ErrorKind::Other)));
+            match hex::decode(split[1]) {
+                Ok(data) => {
+
+                    match hex::decode(split[2]) {
+                        Ok(mac) => Ok((iv, data, mac)),
+                        Err(e) => {
+                            error!("hex decode error: {}", e);
+                            Err(Box::new(io::Error::from(ErrorKind::Other)))
+                        }
+                    }
+
+                }
+                Err(e) => {
+                    error!("hex decode error: {}", e);
+                    Err(Box::new(io::Error::from(ErrorKind::Other)))
+                }
+            }
+
+        }
+        Err(e) => {
+            error!("hex decode error: {}", e);
+            Err(Box::new(io::Error::from(ErrorKind::Other)))
+        }
     }
-
-    let iv = iv_res.unwrap();
-
-    let data_res = hex::decode(split[1]);
-
-    if data_res.is_err() {
-        return Err(Box::new(io::Error::from(ErrorKind::Other)));
-    }
-
-    let data = data_res.unwrap();
-
-    let mac_res = hex::decode(split[2]);
-
-    if mac_res.is_err() {
-        return Err(Box::new(io::Error::from(ErrorKind::Other)));
-    }
-    let mac = mac_res.unwrap();
-
-    Ok((iv, data, mac))
 }
