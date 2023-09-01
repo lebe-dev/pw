@@ -8,7 +8,7 @@ use crate::crypto::get_valid_key;
 
 /// Encrypt "data" using "password" as the password
 /// Output is [hexNonce]/[hexCipher]/[hexMac] (nonce and iv are the same thing)
-pub fn encrypt(data: &[u8], password: &str) -> String {
+pub fn encrypt_data_with_aes256(data: &[u8], password: &str) -> String {
     let key_size = crypto::aes::KeySize::KeySize256;
 
     let valid_key = get_valid_key(password);

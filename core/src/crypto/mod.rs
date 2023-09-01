@@ -22,8 +22,8 @@ pub fn get_valid_key(key: &str) -> Vec<u8> {
 mod tests {
     use std::str::from_utf8;
 
-    use crate::crypto::decrypt::decrypt;
-    use crate::crypto::encrypt::encrypt;
+    use crate::crypto::decrypt::decrypt_aes256_data;
+    use crate::crypto::encrypt::encrypt_data_with_aes256;
     use crate::tests::get_random_string;
 
     #[test]
@@ -40,8 +40,8 @@ mod tests {
     }
 
     fn assert_data_decrypted(input_data: &str, key: &str) {
-        let encrypted_string = encrypt(input_data.as_bytes(), key);
-        let decrypted_bytes = decrypt(encrypted_string.as_str(), key).unwrap();
+        let encrypted_string = encrypt_data_with_aes256(input_data.as_bytes(), key);
+        let decrypted_bytes = decrypt_aes256_data(encrypted_string.as_str(), key).unwrap();
         let decrypted_string = from_utf8(&decrypted_bytes).unwrap();
         assert_eq!(input_data, decrypted_string);
     }

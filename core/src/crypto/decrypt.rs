@@ -2,7 +2,6 @@ use std::error::Error;
 use std::io;
 use std::io::ErrorKind;
 use std::iter::repeat;
-use std::str::from_utf8;
 
 use crypto::aead::AeadDecryptor;
 use crypto::aes_gcm::AesGcm;
@@ -13,7 +12,7 @@ use crate::crypto::get_valid_key;
 /// `iv_data_mac` is a string that contains the `iv/nonce`, `data`, and `mac` values. All these values
 /// must be hex encoded, and separated by "/" i.e. [hex(iv)/hex(data)/hex(mac)]. This function decodes
 /// the values. key (or password) is the raw (not hex encoded) password
-pub fn decrypt(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+pub fn decrypt_aes256_data(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> {
     let (iv, data, mac) = split_iv_data_mac(iv_data_mac)?;
     let key = get_valid_key(key);
 
@@ -23,9 +22,6 @@ pub fn decrypt(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> 
 
     let mut dst: Vec<u8> = repeat(0).take(data.len()).collect();
     let result = decipher.decrypt(&data, &mut dst, &mac);
-
-    if result { println!("Successful decryption"); }
-    println!("\nDecrypted {}", from_utf8(&dst).unwrap());
 
     Ok(dst)
 }
