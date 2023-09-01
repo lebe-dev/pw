@@ -5,25 +5,40 @@ use std::iter::repeat;
 
 use crypto::aead::AeadDecryptor;
 use crypto::aes_gcm::AesGcm;
+use log::error;
 
 use crate::crypto::get_valid_key;
+use crate::error::OperationError;
 
 /// Decryption using AES-GCM 256
 /// `iv_data_mac` is a string that contains the `iv/nonce`, `data`, and `mac` values. All these values
 /// must be hex encoded, and separated by "/" i.e. [hex(iv)/hex(data)/hex(mac)]. This function decodes
 /// the values. key (or password) is the raw (not hex encoded) password
-pub fn decrypt_aes256_data(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> {
-    let (iv, data, mac) = split_iv_data_mac(iv_data_mac)?;
-    let key = get_valid_key(key);
+pub fn decrypt_aes256_data(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, OperationError> {
+    match split_iv_data_mac(iv_data_mac) {
+        Ok((iv, data, mac)) => {
+            let key = get_valid_key(key);
 
-    let key_size = crypto::aes::KeySize::KeySize256;
+            let key_size = crypto::aes::KeySize::KeySize256;
 
-    let mut decipher = AesGcm::new(key_size, &key, &iv, &[]);
+            let mut decipher = AesGcm::new(key_size, &key, &iv, &[]);
 
-    let mut dst: Vec<u8> = repeat(0).take(data.len()).collect();
-    let result = decipher.decrypt(&data, &mut dst, &mac);
+            let mut dst: Vec<u8> = repeat(0).take(data.len()).collect();
+            let result = decipher.decrypt(&data, &mut dst, &mac);
 
-    Ok(dst)
+            if result {
+                Ok(dst)
+
+            } else {
+                Err(OperationError::DecryptionError)
+            }
+        }
+
+        Err(e) => {
+            error!("decryption error: {}", e);
+            Err(OperationError::DecryptionError)
+        }
+    }
 }
 
 /// orig must be a string of the form [hexNonce]/[hexCipherText]/[hexMac]. This

@@ -24,6 +24,7 @@ mod tests {
 
     use crate::crypto::decrypt::decrypt_aes256_data;
     use crate::crypto::encrypt::encrypt_data_with_aes256;
+    use crate::error::OperationError;
     use crate::tests::get_random_string;
 
     #[test]
@@ -37,6 +38,36 @@ mod tests {
     #[test]
     fn key_length_less_than_32_must_be_supported() {
         assert_data_decrypted(&get_random_string(), "abc");
+    }
+
+    #[test]
+    fn return_decryption_error_for_invalid_encrypted_input() {
+        match decrypt_aes256_data(&get_random_string(), &get_random_string()) {
+            Ok(_) => panic!("error expected"),
+            Err(e) => {
+                match e {
+                    OperationError::DecryptionError => assert!(true),
+                    _ => panic!("OperationError::DecryptionError expected")
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn return_decryption_error_for_invalid_key() {
+        let input_data = get_random_string();
+        let key = get_random_string();
+        let encrypted_string = encrypt_data_with_aes256(input_data.as_bytes(), &key);
+
+        match decrypt_aes256_data(encrypted_string.as_str(), &get_random_string()) {
+            Ok(_) => panic!("error expected"),
+            Err(e) => {
+                match e {
+                    OperationError::DecryptionError => assert!(true),
+                    _ => panic!("OperationError::DecryptionError expected")
+                }
+            }
+        }
     }
 
     fn assert_data_decrypted(input_data: &str, key: &str) {
