@@ -24,7 +24,7 @@ pub fn encrypt_data_with_aes256(data: &[u8], password: &str) -> String {
     let hex_iv = hex::encode(iv);
     let hex_cipher = hex::encode(encrypted);
     let hex_mac = hex::encode(mac);
-    let output = format!("{}/{}/{}", hex_iv, hex_cipher, hex_mac);
+    let output = format!("{hex_iv}/{hex_cipher}/{hex_mac}");
 
     output
 }
