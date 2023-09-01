@@ -9,8 +9,8 @@ use crypto::aes_gcm::AesGcm;
 
 use crate::crypto::get_valid_key;
 
-///Decryption using AES-GCM 128
-///iv_data_mac is a string that contains the iv/nonce, data, and mac values. All these values
+/// Decryption using AES-GCM 256
+/// `iv_data_mac` is a string that contains the `iv/nonce`, `data`, and `mac` values. All these values
 /// must be hex encoded, and separated by "/" i.e. [hex(iv)/hex(data)/hex(mac)]. This function decodes
 /// the values. key (or password) is the raw (not hex encoded) password
 pub fn decrypt(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> {
