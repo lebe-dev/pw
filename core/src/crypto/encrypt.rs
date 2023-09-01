@@ -9,11 +9,9 @@ use crate::crypto::get_valid_key;
 ///encrypt "data" using "password" as the password
 /// Output is [hexNonce]/[hexCipher]/[hexMac] (nonce and iv are the same thing)
 pub fn encrypt(data: &[u8], password: &str) -> String {
-    let key_size = crypto::aes::KeySize::KeySize128;
+    let key_size = crypto::aes::KeySize::KeySize256;
 
     let valid_key = get_valid_key(password);
-
-    let full_key = String::from_utf8(valid_key.clone()).unwrap();
 
     let iv = get_iv(12);
     let mut cipher = AesGcm::new(key_size, &valid_key, &iv, &[]);

@@ -6,13 +6,13 @@ pub mod encrypt;
 pub fn get_valid_key(key: &str) -> Vec<u8> {
     let mut bytes = key.as_bytes().to_vec();
 
-    if bytes.len() < 16 {
-        for _ in 0..(16 - bytes.len()) {
+    if bytes.len() < 32 {
+        for _ in 0..(32 - bytes.len()) {
             bytes.push(0x00);
         }
 
-    } else if bytes.len() > 16 {
-        bytes = bytes[0..16].to_vec();
+    } else if bytes.len() > 32 {
+        bytes = bytes[0..32].to_vec();
     }
 
     bytes
@@ -22,26 +22,27 @@ pub fn get_valid_key(key: &str) -> Vec<u8> {
 mod tests {
     use std::str::from_utf8;
 
-    use log::info;
-
     use crate::crypto::decrypt::decrypt;
     use crate::crypto::encrypt::encrypt;
-    use crate::tests::init_logging;
+    use crate::tests::get_random_string;
 
     #[test]
-    fn test_encrypt_decrypt() {
-        init_logging();
+    fn key_greater_than_32_chars_must_be_supported() {
+        assert_data_decrypted(
+    &get_random_string(),
+        "12345678901234567890123456789012345678901234567890"
+        );
+    }
 
-        let data = "VERY IMPORTANT data HERE";
-        let password = "SuPerHardC0ReSeC";
+    #[test]
+    fn key_length_less_than_32_must_be_supported() {
+        assert_data_decrypted(&get_random_string(), "abc");
+    }
 
-        let res = encrypt(data.as_bytes(), password);
-
-        info!("encrypted: '{res}'");
-
-        let decrypted_bytes = decrypt(res.as_str(), password).unwrap();
+    fn assert_data_decrypted(input_data: &str, key: &str) {
+        let encrypted_string = encrypt(input_data.as_bytes(), key);
+        let decrypted_bytes = decrypt(encrypted_string.as_str(), key).unwrap();
         let decrypted_string = from_utf8(&decrypted_bytes).unwrap();
-
-        assert_eq!(decrypted_string, data);
+        assert_eq!(input_data, decrypted_string);
     }
 }

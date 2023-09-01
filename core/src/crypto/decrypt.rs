@@ -17,7 +17,7 @@ pub fn decrypt(iv_data_mac: &str, key: &str) -> Result<Vec<u8>, Box<dyn Error>> 
     let (iv, data, mac) = split_iv_data_mac(iv_data_mac)?;
     let key = get_valid_key(key);
 
-    let key_size = crypto::aes::KeySize::KeySize128;
+    let key_size = crypto::aes::KeySize::KeySize256;
 
     let mut decipher = AesGcm::new(key_size, &key, &iv, &[]);
 
@@ -39,7 +39,9 @@ fn split_iv_data_mac(orig: &str) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>), Box<dyn 
     if split.len() != 3 {
         return Err(Box::new(io::Error::from(ErrorKind::Other)));
     }
+
     let iv_res = hex::decode(split[0]);
+
     if iv_res.is_err() {
         return Err(Box::new(io::Error::from(ErrorKind::Other)));
     }
@@ -47,12 +49,15 @@ fn split_iv_data_mac(orig: &str) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>), Box<dyn 
     let iv = iv_res.unwrap();
 
     let data_res = hex::decode(split[1]);
+
     if data_res.is_err() {
         return Err(Box::new(io::Error::from(ErrorKind::Other)));
     }
+
     let data = data_res.unwrap();
 
     let mac_res = hex::decode(split[2]);
+
     if mac_res.is_err() {
         return Err(Box::new(io::Error::from(ErrorKind::Other)));
     }
