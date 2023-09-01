@@ -1,8 +1,8 @@
 pub mod decrypt;
 pub mod encrypt;
 
-/// Gets a valid key. This must be exactly 16 bytes. if less than 16 bytes, it will be padded with 0.
-/// If more than 16 bytes, it will be truncated
+/// Gets a valid key. This must be exactly 32 bytes. if less than 32 bytes, it will be padded with 0.
+/// If more than 32 bytes, it will be truncated
 pub fn get_valid_key(key: &str) -> Vec<u8> {
     let mut bytes = key.as_bytes().to_vec();
 
