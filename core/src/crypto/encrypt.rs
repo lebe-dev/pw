@@ -6,7 +6,7 @@ use crypto::aes_gcm::AesGcm;
 
 use crate::crypto::get_valid_key;
 
-///encrypt "data" using "password" as the password
+/// Encrypt "data" using "password" as the password
 /// Output is [hexNonce]/[hexCipher]/[hexMac] (nonce and iv are the same thing)
 pub fn encrypt(data: &[u8], password: &str) -> String {
     let key_size = crypto::aes::KeySize::KeySize256;
