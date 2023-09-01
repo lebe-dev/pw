@@ -1,18 +1,20 @@
 pub mod decrypt;
 pub mod encrypt;
 
+const KEY_LENGTH: usize = 32;
+
 /// Gets a valid key. This must be exactly 32 bytes. if less than 32 bytes, it will be padded with 0.
 /// If more than 32 bytes, it will be truncated
 pub fn get_valid_key(key: &str) -> Vec<u8> {
     let mut bytes = key.as_bytes().to_vec();
 
-    if bytes.len() < 32 {
-        for _ in 0..(32 - bytes.len()) {
+    if bytes.len() < KEY_LENGTH {
+        for _ in 0..(KEY_LENGTH - bytes.len()) {
             bytes.push(0x00);
         }
 
-    } else if bytes.len() > 32 {
-        bytes = bytes[0..32].to_vec();
+    } else if bytes.len() > KEY_LENGTH {
+        bytes = bytes[0..KEY_LENGTH].to_vec();
     }
 
     bytes
