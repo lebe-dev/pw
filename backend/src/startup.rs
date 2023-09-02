@@ -10,6 +10,7 @@ use rust_embed::RustEmbed;
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
 use crate::routes::version_route;
+use crate::secret::storage::InMemorySecretStorage;
 
 #[derive(RustEmbed)]
 #[folder = "./static/"]
@@ -38,7 +39,9 @@ impl Application {
         self.port
     }
 
-    pub async fn build(config: AppConfig) -> Result<Self, anyhow::Error> {
+    pub async fn build(config: AppConfig,
+               secret_storage: InMemorySecretStorage) -> Result<Self, anyhow::Error> {
+
         let logging_config = get_logging_config(&config.log_level);
 
         match log4rs::init_config(logging_config) {
@@ -52,7 +55,7 @@ impl Application {
         let listener = TcpListener::bind(&address)?;
         let port = listener.local_addr().expect("unable to get socket").port();
 
-        let server = run(config, listener).await?;
+        let server = run(config, secret_storage, listener).await?;
 
         Ok(Self { port, server })
     }
@@ -72,7 +75,7 @@ async fn dist(path: web::Path<String>) -> impl Responder {
     handle_embedded_file(path.as_str())
 }
 
-pub async fn run(config: AppConfig,
+pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
                  listener: TcpListener) -> anyhow::Result<Server> {
 
     let app_banner = format!("PW v{}", Application::get_version());
@@ -91,6 +94,7 @@ pub async fn run(config: AppConfig,
         actix_web::App::new()
             .wrap(cors)
             .app_data(web::Data::new(config.clone()))
+            .app_data(web::Data::new(secret_storage.clone()))
             .service(version_route)
             .service(index)
             .service(dist)

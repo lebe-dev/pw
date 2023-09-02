@@ -9,6 +9,7 @@ use common::secret::SecretDownloadPolicy;
 use common::secret::SecretTTL;
 use common::secret::storage::SecretStorage;
 
+#[derive(Clone)]
 pub struct InMemorySecretStorage {
     cache: Cache<String,SecretEntity>
 }

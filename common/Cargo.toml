@@ -1,0 +1,27 @@
+[package]
+name = "common"
+version = "1.0.0"
+edition = "2021"
+
+[features]
+default = []
+crypto = ["dep:hex", "dep:rust-crypto", "dep:rand"]
+test-utils = ["dep:fake", "dep:env_logger"]
+
+[dependencies]
+thiserror = "1.0.44"
+
+serde = { version = "1.0.178", features = ["derive"] }
+
+fake = { version = "2.6.1", optional = true }
+env_logger = { version = "0.9.3", optional = true }
+
+log = "0.4.19"
+
+hex = { version = "0.4.3", optional = true }
+rust-crypto = { version = "0.2.36", optional = true }
+rand = { version = "0.8.5", optional = true }
+
+[dev-dependencies]
+env_logger = "0.9.3"
+fake = "2.6.1"
