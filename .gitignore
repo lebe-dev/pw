@@ -2,3 +2,5 @@
 /backend/target
 /webui/target
 /core/target
+/pw.yml
+/backend/pw.yml

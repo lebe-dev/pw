@@ -1,0 +1,5 @@
+port: 13800
+
+log-level: info
+
+storage-items-capacity: 3000
