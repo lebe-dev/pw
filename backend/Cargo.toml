@@ -17,7 +17,7 @@ path = "src/main.rs"
 name = "backend"
 
 [dependencies]
-core = { path = "../core" }
+common = { path = "../common", features = ["crypto"] }
 
 anyhow = "1.0.72"
 
@@ -40,6 +40,6 @@ log = "0.4.19"
 log4rs = "1.2.0"
 
 [dev-dependencies]
-core = { path = "../core", features = ["utils"] }
+common = { path = "../common", features = ["crypto", "test-utils"] }
 env_logger = "0.9.3"
 fake = "2.6.1"

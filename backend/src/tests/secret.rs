@@ -1,9 +1,10 @@
 use chrono::{Days, Local};
 
-use core::secret::{Secret, SecretDownloadPolicy, SecretTTL};
+use common::secret::{Secret, SecretDownloadPolicy, SecretTTL};
 
 use crate::secret::storage::SecretEntity;
-use crate::tests::get_random_string;
+
+use common::tests::get_random_string;
 
 pub fn get_sample_secret() -> Secret {
     Secret {
