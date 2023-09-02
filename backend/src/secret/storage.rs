@@ -29,11 +29,11 @@ impl Display for SecretEntity {
 
 impl SecretEntity {
     fn is_expired(&self) -> bool {
-        let mut expired = true;
-
         let now_unixtime = Local::now().timestamp();
 
         let minutes_passed = (now_unixtime - self.created) / 60;
+
+        let expired: bool;
 
         match self.secret.ttl {
             SecretTTL::OneHour => expired = minutes_passed > 60,
@@ -177,7 +177,8 @@ mod tests {
 
     use crate::secret::storage::{InMemorySecretStorage, SecretEntity};
     use crate::tests::get_random_string;
-    use crate::tests::secret::{get_sample_expired_secret_entity, get_sample_secret};
+    use crate::tests::secret::get_sample_expired_secret_entity;
+    use crate::tests::secret::get_sample_secret;
 
     #[test]
     fn expired_secrets_should_be_removed_during_any_load_attempt() {
@@ -209,16 +210,16 @@ mod tests {
         let storage = get_storage();
 
         let secret1 = get_sample_secret();
-        &storage.store(&secret1.id, &secret1);
+        storage.store(&secret1.id, &secret1);
 
         let mut secret2 = get_sample_secret();
         secret2.id = secret1.id.clone();
 
-        &storage.store(&secret2.id, &secret2);
+        storage.store(&secret2.id, &secret2);
 
-        let result = &storage.load(&secret1.id).unwrap();
+        let result = storage.load(&secret1.id).unwrap();
 
-        assert_eq!(&secret2, result);
+        assert_eq!(secret2, result);
     }
 
     #[test]
@@ -228,10 +229,10 @@ mod tests {
         let mut secret = get_sample_secret();
         secret.download_policy = SecretDownloadPolicy::OneTime;
 
-        &storage.store(&secret.id, &secret);
+        storage.store(&secret.id, &secret);
 
-        assert!(&storage.load(&secret.id).is_some());
-        assert!(&storage.load(&secret.id).is_none());
+        assert!(storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_none());
     }
 
     #[test]
@@ -241,13 +242,13 @@ mod tests {
         let mut secret = get_sample_secret();
         secret.download_policy = SecretDownloadPolicy::Unlimited;
 
-        &storage.store(&secret.id, &secret);
+        storage.store(&secret.id, &secret);
 
-        assert!(&storage.load(&secret.id).is_some());
-        assert!(&storage.load(&secret.id).is_some());
-        assert!(&storage.load(&secret.id).is_some());
-        assert!(&storage.load(&secret.id).is_some());
-        assert!(&storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_some());
+        assert!(storage.load(&secret.id).is_some());
     }
 
     #[test]
