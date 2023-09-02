@@ -31,3 +31,8 @@ Response body:
 **Errors:**
 
 - `400 Bad Request` - secret wasn't found by id or invalid request
+
+## 3. Get app version
+
+- URL: `/api/version`
+- Method: `GET`
