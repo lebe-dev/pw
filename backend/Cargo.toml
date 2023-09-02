@@ -1,0 +1,17 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+core = { path = "../core" }
+
+chrono = "0.4.28"
+mini-moka = "0.10.2"
+
+log = "0.4.19"
+
+[dev-dependencies]
+core = { path = "../core", features = ["utils"] }
+env_logger = "0.9.3"
+fake = "2.6.1"
