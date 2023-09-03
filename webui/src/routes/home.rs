@@ -1,5 +1,7 @@
-use aes_wasm::aes256gcm::*;
 use dioxus::prelude::*;
+use log::info;
+
+use common::secret::SecretTTL;
 
 const KEY_LENGTH: usize = 32;
 
@@ -19,20 +21,11 @@ pub fn get_valid_key(key: &str) -> [u8; 32] {
 }
 
 pub fn HomePage(cx: Scope) -> Element {
+    let is_form_valid_state = use_state::<bool>(cx, || false);
+    let message_state = use_state::<String>(cx, || "".to_string());
 
-    let key = get_valid_key("testDemo");
-    let nonce = Nonce::default();
-    let msg = b"hello world";
-    let ad = b"additional data";
-    let (ciphertext, tag) = encrypt_detached(msg, ad, &key, nonce);
-    let plaintext = decrypt_detached(ciphertext, &tag, ad, &key, nonce).unwrap();
-    let ciphertext_and_tag = encrypt(msg, ad, &key, nonce);
-
-    let encrypted = hex::encode(&ciphertext_and_tag);
-
-    let plaintext = decrypt(ciphertext_and_tag, ad, &key, nonce).unwrap();
-
-    let decrypted = String::from_utf8_lossy(&plaintext).to_string();
+    let secret_ttl_state = use_state::<SecretTTL>(cx, || SecretTTL::OneHour);
+    let one_time_download_state = use_state::<bool>(cx, || false);
 
     cx.render(rsx! {
         div {
@@ -60,7 +53,19 @@ pub fn HomePage(cx: Scope) -> Element {
                     class: "form-control",
                     rows: 5,
                     autofocus: true,
-                    placeholder: "The data will be encrypted in the browser"
+                    placeholder: "The data will be encrypted in the browser",
+                    oninput: move |evt| {
+                        let value = evt.value.clone();
+                        info!("message: {value}");
+                        message_state.set(value.to_string());
+
+                        if value.is_empty() {
+                            is_form_valid_state.set(false);
+
+                        } else {
+                            is_form_valid_state.set(true);
+                        }
+                    }
                 },
                 div {
                     div {
@@ -75,7 +80,10 @@ pub fn HomePage(cx: Scope) -> Element {
                             name: "secret-ttl",
                             r#type: "radio",
                             class: "me-1",
-                            checked: true
+                            checked: true,
+                            onclick: move |_| {
+                                secret_ttl_state.set(SecretTTL::OneHour)
+                            }
                         },
                         "One hour"
                     },
@@ -86,7 +94,10 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "ttl-two-hours",
                             name: "secret-ttl",
                             r#type: "radio",
-                            class: "me-1"
+                            class: "me-1",
+                            onclick: move |_| {
+                                secret_ttl_state.set(SecretTTL::TwoHours)
+                            }
                         },
                         "Two hours"
                     },
@@ -97,7 +108,10 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "ttl-one-day",
                             name: "secret-ttl",
                             r#type: "radio",
-                            class: "me-1"
+                            class: "me-1",
+                            onclick: move |_| {
+                                secret_ttl_state.set(SecretTTL::OneDay)
+                            }
                         },
                         "One day"
                     }
@@ -112,7 +126,16 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "one-time-download",
                             name: "one-time-download",
                             r#type: "checkbox",
-                            class: "me-1"
+                            class: "me-1",
+                            oninput: move |evt| {
+                                let value = evt.value.clone();
+                                info!("value: {value}");
+
+                                match value.as_str() {
+                                    "true" => one_time_download_state.set(true),
+                                    _ => one_time_download_state.set(false)
+                                };
+                            }
                         },
                         "One time download"
                     }
@@ -120,8 +143,9 @@ pub fn HomePage(cx: Scope) -> Element {
 
                 button {
                     id: "encrypt-btn",
+                    r#type: "button",
                     class: "btn btn-dark mt-5",
-                    disabled: true,
+                    disabled: "{!is_form_valid_state}",
                     "Encrypt message"
                 },
 
@@ -137,6 +161,7 @@ pub fn HomePage(cx: Scope) -> Element {
                     },
                     a {
                         class: "me-1 ms-1",
+                        href: "#",
                         "HOW IT WORKS"
                     }
                     span {
@@ -145,6 +170,7 @@ pub fn HomePage(cx: Scope) -> Element {
                     },
                     a {
                         class: "ms-1",
+                        href: "#",
                         "GITHUB"
                     }
                 }
