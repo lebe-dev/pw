@@ -1,2 +1,61 @@
-/**
- */
+body {
+    background-color: #fbfbfb;
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23cccccc' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+nav {
+    opacity: 1 !important;
+}
+
+.container {
+    max-width: 1024px;
+
+    opacity: 1 !important;
+}
+
+textarea:focus, input:focus{
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#message-input {
+    max-width: 1024px;
+
+    border: 2px solid #212121 !important;
+
+    outline: none !important;
+}
+
+#message-input:focus,#message-input:active {
+    max-width: 1024px;
+    outline: none;
+
+    border: 2px solid #212121 !important;
+}
+
+#encrypt-btn {
+    width: 300px;
+    height: 42px;
+}
+
+.footer-links {
+    color: #9b9b9b;
+
+    font-size: 0.85rem;
+}
+
+.footer-links a {
+    color: #9b9b9b;
+
+    font-size: 0.85rem;
+
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    cursor: pointer;
+
+    text-decoration: underline;
+
+    color: #1a1d20;
+}
