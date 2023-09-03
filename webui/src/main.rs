@@ -7,6 +7,7 @@ use log::info;
 use crate::routes::home::HomePage;
 
 pub mod routes;
+pub mod config;
 
 pub const APP_VERSION: &str = "1.0.0";
 

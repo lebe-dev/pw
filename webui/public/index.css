@@ -26,6 +26,11 @@ textarea:focus, input:focus{
     outline: none !important;
 }
 
+#message-length-usage {
+    font-size: 0.75rem;
+    color: #6a6a6a;
+}
+
 #message-input:focus,#message-input:active {
     max-width: 1024px;
     outline: none;
