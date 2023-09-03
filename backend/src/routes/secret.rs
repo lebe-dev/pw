@@ -3,15 +3,22 @@ use actix_web::{get, HttpResponse, post, Responder, web};
 use common::secret::Secret;
 use common::secret::storage::SecretStorage;
 
+use crate::config::AppConfig;
 use crate::secret::storage::InMemorySecretStorage;
+use crate::secret::usecase::store_secret;
 
 #[post("/api/secret")]
 pub async fn store_secret_route(
+    app_config: web::Data<AppConfig>,
     secret_storage: web::Data<InMemorySecretStorage>,
     secret: web::Json<Secret>) -> impl Responder {
 
-    secret_storage.store(&secret.id, &secret);
-    HttpResponse::Ok().finish()
+    match store_secret(
+        secret_storage.as_ref(), &secret,
+        app_config.encrypted_message_max_length) {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::Forbidden().finish()
+    }
 }
 
 #[get("/api/secret/{id}")]
