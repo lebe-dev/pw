@@ -11,13 +11,16 @@ pub struct AppConfig {
 
     pub log_level: String,
 
-    pub storage_items_capacity: u32
+    pub storage_items_capacity: u32,
+
+    /// Message max length, all above will be truncated
+    pub message_max_length: u16
 }
 
 impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "port: {}, log-level: {}, storage-items-capacity: {}",
-               self.port, self.log_level, self.storage_items_capacity)
+        write!(f, "port: {}, log-level: {}, storage-items-capacity: {}, message-max-length: {}",
+               self.port, self.log_level, self.storage_items_capacity, self.message_max_length)
     }
 }
 
@@ -33,12 +36,4 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     info!("config: {}", config);
 
     Ok(config)
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn config_should_be_loaded() {
-
-    }
 }

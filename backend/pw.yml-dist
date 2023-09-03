@@ -2,4 +2,7 @@ port: 13800
 
 log-level: info
 
+# Limit - how many secrets hold inside in-memory storage
 storage-items-capacity: 3000
+
+message-max-length: 4096

@@ -1,5 +1,0 @@
-port: 12345
-
-log-level: debug
-
-storage-items-capacity: 3000
