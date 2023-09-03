@@ -9,7 +9,7 @@ use rust_embed::RustEmbed;
 
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
-use crate::routes::version_route;
+use crate::routes::{get_config_route, get_version_route};
 use crate::secret::storage::InMemorySecretStorage;
 
 #[derive(RustEmbed)]
@@ -95,7 +95,8 @@ pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
             .wrap(cors)
             .app_data(web::Data::new(config.clone()))
             .app_data(web::Data::new(secret_storage.clone()))
-            .service(version_route)
+            .service(get_config_route)
+            .service(get_version_route)
             .service(index)
             .service(dist)
 
