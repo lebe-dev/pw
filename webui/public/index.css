@@ -64,3 +64,11 @@ textarea:focus, input:focus{
 
     color: #1a1d20;
 }
+
+.prevent-select {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

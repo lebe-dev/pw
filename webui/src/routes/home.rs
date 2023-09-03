@@ -100,6 +100,7 @@ pub fn HomePage(cx: Scope) -> Element {
                 },
                 div {
                     id: "message-length-usage",
+                    class: "font-monospace",
                     "{message_length_state} / {message_max_length_state}"
                 },
                 div {
@@ -114,7 +115,7 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "ttl-one-hour",
                             name: "secret-ttl",
                             r#type: "radio",
-                            class: "me-1",
+                            class: "prevent-select me-1",
                             checked: true,
                             onclick: move |_| {
                                 secret_ttl_state.set(SecretTTL::OneHour)
@@ -129,7 +130,7 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "ttl-two-hours",
                             name: "secret-ttl",
                             r#type: "radio",
-                            class: "me-1",
+                            class: "prevent-select me-1",
                             onclick: move |_| {
                                 secret_ttl_state.set(SecretTTL::TwoHours)
                             }
@@ -143,7 +144,7 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "ttl-one-day",
                             name: "secret-ttl",
                             r#type: "radio",
-                            class: "me-1",
+                            class: "prevent-select me-1",
                             onclick: move |_| {
                                 secret_ttl_state.set(SecretTTL::OneDay)
                             }
@@ -161,7 +162,7 @@ pub fn HomePage(cx: Scope) -> Element {
                             id: "one-time-download",
                             name: "one-time-download",
                             r#type: "checkbox",
-                            class: "me-1",
+                            class: "prevent-select me-1",
                             oninput: move |evt| {
                                 let value = evt.value.clone();
                                 info!("value: {value}");
