@@ -6,3 +6,6 @@ log-level: info
 storage-items-capacity: 3000
 
 message-max-length: 4096
+
+# Encrypted payload length > source message length
+encrypted-message-max-length: 32000

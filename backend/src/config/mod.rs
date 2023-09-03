@@ -14,7 +14,11 @@ pub struct AppConfig {
     pub storage_items_capacity: u32,
 
     /// Message max length, all above will be truncated
-    pub message_max_length: u16
+    pub message_max_length: u16,
+
+    /// Encrypted message max length.
+    ///
+    pub encrypted_message_max_length: u16
 }
 
 impl Display for AppConfig {
