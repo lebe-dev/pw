@@ -1,6 +1,7 @@
 /target
 /backend/target
 /webui/target
+/webui/dist
 /core/target
 /pw.yml
 /backend/pw.yml
