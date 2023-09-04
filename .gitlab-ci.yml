@@ -1,5 +1,5 @@
 stages:
-  - frontend
+  - webui
   - app
   - app-image
 
