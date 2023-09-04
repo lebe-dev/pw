@@ -1,32 +1,18 @@
 stages:
-  - webui
   - app
-  - app-image
-
-build-webui:
-  stage: webui
-  script:
-    - cd webui
-    - cargo test
-    - dx build --release
-
-  artifacts:
-    name: webui
-    paths:
-      - webui/dist
-    expire_in: 1 week
-
-  tags:
-    - rockylinux8
+  - image
 
 build-app:
   stage: app
 
   script:
-    - 'cd backend'
+    - 'cd webui'
+    - 'cargo test'
+    - 'dx build --release'
+    - 'cd ../backend'
     - 'mkdir static'
     - 'cargo test'
-    - 'cp -r ../frontend/dist/ static/'
+    - 'cp -r ../webui/dist/ static/'
     - 'cargo test'
     - 'cargo build --release'
     - 'cd ..'
@@ -48,7 +34,7 @@ build-app:
     expire_in: 1 week
 
 build-app-image:
-  stage: app-image
+  stage: image
 
   script:
     - 'ls -liah'
