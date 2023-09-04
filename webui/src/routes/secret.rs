@@ -15,8 +15,9 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     info!("secret id: {encoded_id}");
 
     let (secret_id, private_key) = get_encoded_url_slug_parts(&encoded_id)
-        .expect("url slug decode error");
-    info!("secret id and private key have been decoded");
+        .unwrap_or(("invalid-slug".to_string(), "".to_string()));
+
+    info!("secret id '{secret_id}'");
 
     let force_get_secret = use_state(cx, || ());
 
@@ -80,7 +81,24 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                   }
                   None => {
                     rsx! {
-                        "Secret wasn't found"
+                        div {
+                            class: "text-start mb-3",
+                            h5 {
+                                "Secret wasn't found"
+                            }
+                        },
+                        div {
+                          "Possible reasons:"
+                        },
+                        ul {
+                            class: "mb-5",
+                            li {
+                                "Link has been expired"
+                            },
+                            li {
+                                "It was one-time link and someone opened it already"
+                            }
+                        }
                     }
                   }
                 },
