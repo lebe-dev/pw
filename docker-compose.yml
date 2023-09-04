@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  app:
+    container_name: pw
+    image: tinyops/pw:1.0.0
+    restart: always
+    volumes:
+      - ./pw.yml:/app/app.yml
+      # Enable logs in config first
+      #- ./logs:/app/logs
+    ports:
+      - "18080:8080"
