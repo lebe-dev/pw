@@ -1,0 +1,57 @@
+stages:
+  - frontend
+  - app
+  - app-image
+
+build-webui:
+  stage: webui
+  script:
+    - cd webui
+    - cargo test
+    - dx build --release
+
+  artifacts:
+    name: webui
+    paths:
+      - webui/dist
+    expire_in: 1 week
+
+  tags:
+    - rockylinux8
+
+build-app:
+  stage: app
+
+  script:
+    - 'cd backend'
+    - 'mkdir static'
+    - 'cargo test'
+    - 'cp -r ../frontend/dist/ static/'
+    - 'cargo test'
+    - 'cargo build --release'
+    - 'cd ..'
+    - 'cp target/release/backend pw'
+    - 'eu-elfcompress pw'
+    - 'strip pw'
+    - 'upx -9 --lzma pw || true'
+    - 'VERSION=$(cat backend/Cargo.toml | grep version | head -1 | cut -d "\"" -f 2)'
+    - 'echo $VERSION > build-version'
+
+  artifacts:
+    name: pw-app
+    paths:
+      - build-version
+      - pw
+      - README.md
+      - backend/pw.yml-dist
+      - docs/*.md
+    expire_in: 1 week
+
+build-app-image:
+  stage: app-image
+
+  script:
+    - 'ls -liah'
+
+  tags:
+    - rockylinux8
