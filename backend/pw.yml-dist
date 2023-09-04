@@ -1,6 +1,6 @@
 port: 13800
 
-log-level: info
+log-level: off
 
 # Limit - how many secrets hold inside in-memory storage
 storage-items-capacity: 3000
