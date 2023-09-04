@@ -8,5 +8,8 @@ pub enum OperationError {
     IOError(#[from] io::Error),
 
     #[error("decryption error")]
-    DecryptionError
+    DecryptionError,
+
+    #[error("url decode error")]
+    UrlDecodeError
 }

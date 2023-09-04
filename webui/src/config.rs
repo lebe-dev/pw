@@ -17,12 +17,12 @@ pub async fn fetch_app_config() -> anyhow::Result<AppConfigDto> {
     Ok(config)
 }
 
-fn get_base_host() -> String {
+pub fn get_base_host() -> String {
     let protocol = window().unwrap().location().protocol().unwrap();
     let hostname = window().unwrap().location().hostname().unwrap();
     let port = window().unwrap().location().port().unwrap();
 
-    if port != "80" && port != "443" {
+    if !port.is_empty() && port != "80" && port != "443" {
         format!("{protocol}//{hostname}:{port}")
 
     } else {

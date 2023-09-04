@@ -38,6 +38,16 @@ textarea:focus, input:focus{
     border: 2px solid #212121 !important;
 }
 
+#message {
+    white-space: pre-wrap;
+}
+
+.secret-url {
+    word-break: break-all;
+
+    font-size: 1rem;
+}
+
 #encrypt-btn {
     width: 300px;
     height: 42px;

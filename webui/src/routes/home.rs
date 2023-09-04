@@ -1,10 +1,17 @@
+use aes_wasm::aes256gcm::{encrypt, Nonce};
 use dioxus::prelude::*;
 use log::{error, info};
 
 use common::dto::AppConfigDto;
-use common::secret::SecretTTL;
+use common::secret::{Secret, SecretDownloadPolicy, SecretTTL};
+use common::secret::id::get_secret_id;
+use common::secret::key::get_encryption_key;
+use common::secret::url::get_encoded_url_slug;
 
-use crate::config::fetch_app_config;
+use crate::components::footer::PageFooter;
+use crate::components::header::PageHeader;
+use crate::config::{fetch_app_config, get_base_host};
+use crate::secret::store_secret;
 
 const KEY_LENGTH: usize = 32;
 
@@ -39,6 +46,8 @@ pub fn HomePage(cx: Scope) -> Element {
     let secret_ttl_state = use_state::<SecretTTL>(cx, || SecretTTL::OneHour);
     let one_time_download_state = use_state::<bool>(cx, || false);
 
+    let secret_url_state = use_state::<Option<String>>(cx, || None);
+
     {
         let app_config = app_config_state.clone();
         let message_max_length_state = message_max_length_state.clone();
@@ -55,27 +64,77 @@ pub fn HomePage(cx: Scope) -> Element {
         });
     }
 
-    cx.render(rsx! {
-        div {
-            nav {
-                class: "navbar bg-dark text-info",
-                div {
-                    class: "container-fluid",
-                    a {
-                        class: "navbar-brand text-light",
-                        href: "#",
-                        "PW"
-                    }
-                }
-            },
-            div {
-                class: "container bg-white p-5 text-center shadow-sm",
+    let on_encrypt_message = move |_| {
+
+        cx.spawn({
+
+            let message_state = message_state.clone();
+            let secret_ttl_state = secret_ttl_state.clone();
+            let one_time_download_state = one_time_download_state.clone();
+            let secret_url_state = secret_url_state.clone();
+
+            let encryption_key = &get_encryption_key();
+            let encryption_key_array = get_valid_key(&encryption_key);
+            let nonce = Nonce::default();
+
+            // TODO: replace with random
+            let ad: &[u8; 15] = b"additional data";
+
+            let ciphertext = encrypt(
+                message_state.get(), ad, &encryption_key_array, nonce);
+
+            let payload = hex::encode(ciphertext);
+
+            let download_policy: SecretDownloadPolicy = if *one_time_download_state.get() {
+                SecretDownloadPolicy::OneTime
+
+            } else {
+                SecretDownloadPolicy::Unlimited
+            };
+
+            let secret = Secret {
+                id: get_secret_id(),
+                payload: payload.to_string(),
+                ttl: secret_ttl_state.get().clone(),
+                download_policy
+            };
+
+            let url_slug_for_encode = get_encoded_url_slug(&secret.id, encryption_key);
+
+            let url = format!("{}/secret/{}", get_base_host(), url_slug_for_encode);
+
+            async move {
+                store_secret(&secret).await.unwrap();
+                secret_url_state.set(Some(url));
+            }
+
+        });
+
+    };
+
+    let content = match secret_url_state.get() {
+        Some(url) => {
+            rsx! {
                 div {
                     class: "text-start",
-                    h4 {
+                    h5 {
+                        "Secret URL"
+                    }
+                },
+                div {
+                    class: "secret-url p-3 rounded-3 bg-light",
+                    format!("{url}")
+                }
+            }
+        }
+        None => {
+            rsx! {
+                div {
+                    class: "text-start",
+                    h5 {
                         "Message"
                     }
-                }
+                },
                 textarea {
                     id: "message-input",
                     class: "form-control mb-1",
@@ -182,34 +241,22 @@ pub fn HomePage(cx: Scope) -> Element {
                     r#type: "button",
                     class: "btn btn-dark mt-5",
                     disabled: "{!is_form_valid_state}",
+                    onclick: on_encrypt_message,
                     "Encrypt message"
                 },
+            }
+        }
+    };
 
-                div {
-                    class: "footer-links mt-5",
-                    span {
-                        class: "me-1",
-                        "v1.0.0"
-                    },
-                    span {
-                        class: "ms-1 me-1",
-                        "|"
-                    },
-                    a {
-                        class: "me-1 ms-1",
-                        href: "#",
-                        "HOW IT WORKS"
-                    }
-                    span {
-                        class: "ms-1 me-1",
-                        "|"
-                    },
-                    a {
-                        class: "ms-1",
-                        href: "#",
-                        "GITHUB"
-                    }
-                }
+    cx.render(rsx! {
+        div {
+            PageHeader {},
+            div {
+                class: "container bg-white p-5 text-center shadow-sm",
+
+                content,
+
+                PageFooter {}
             }
         }
     })
