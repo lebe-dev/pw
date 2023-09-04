@@ -13,3 +13,9 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 ## Credits
 
 - [kodgehopper](https://www.boringadv.com/2022/12/05/simple-encryption-in-rust/)
+
+## Roadmap
+
+1. Configuration via environment variables
+2. Add custom translation support
+3. Improve UX
