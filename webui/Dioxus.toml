@@ -13,7 +13,7 @@ watch_path = ["src", "public"]
 index_on_404 = true
 
 [web.resource]
-style = ["bootstrap.min.css", "index.css"]
+style = ["/bootstrap.min.css", "/index.css"]
 
 script = []
 
