@@ -1,22 +1,23 @@
 # Installation (Linux)
 
+Create unprivileged user `pw`:
+
 ```shell
-mkdir -p /opt/pw
+useradd pw -d /opt/pw
+
+# Set strong password
+passwd pw
 ```
 
 Copy `pw` to `/opt/pw`.
+
+Prepare config:
 
 ```shell
 cp pw.yml-dist /opt/pw/pw.yml
 ```
 
 Edit `/opt/pw/pw.yml` for your needs.
-
-Create unprivileged user `pw`:
-
-```shell
-useradd pw
-```
 
 Update permissions:
 
