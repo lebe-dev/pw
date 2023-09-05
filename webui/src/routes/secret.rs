@@ -2,17 +2,27 @@ use aes_wasm::aes256gcm::{decrypt, Nonce};
 use dioxus::prelude::*;
 use log::{error, info};
 
+use common::dto::AppConfigDto;
+use common::locale::Locale;
 use common::secret::Secret;
 use common::secret::url::get_encoded_url_slug_parts;
 
 use crate::components::footer::PageFooter;
 use crate::components::header::PageHeader;
+use crate::config::fetch_app_config;
 use crate::routes::home::get_valid_key;
 use crate::secret::get_secret_by_id;
 
 #[inline_props]
 pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     info!("secret id: {encoded_id}");
+
+    let force_get_app_config_dto = use_state(cx, || ());
+
+    let app_config_state = use_state::<AppConfigDto>(cx, || AppConfigDto {
+        message_max_length: 4096,
+        locale: Locale::default()
+    });
 
     let (secret_id, private_key) = get_encoded_url_slug_parts(&encoded_id)
         .unwrap_or(("invalid-slug".to_string(), "".to_string()));
@@ -22,6 +32,21 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     let force_get_secret = use_state(cx, || ());
 
     let secret_state = use_state::<Option<Secret>>(cx, || None);
+
+    {
+        let app_config = app_config_state.clone();
+
+        use_effect(cx, force_get_app_config_dto, |_| async move {
+            match fetch_app_config().await {
+                Ok(config) => {
+                    info!("config: {:?}", config);
+                    app_config.set(config);
+                }
+                Err(e) => error!("unable to fetch app config: {}", e)
+            }
+
+        });
+    }
 
     {
         let secret_state = secret_state.clone();
@@ -49,7 +74,6 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
 
                 match secret_state.get() {
                   Some(secret) => {
-                    info!("RENDER EXISTING SECRET: {}", secret);
                     let payload = hex::decode(&secret.payload).expect("unable to decode hex");
                     info!("payload decode - ok");
 
@@ -69,7 +93,7 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                         div {
                             class: "text-start mb-3",
                             h5 {
-                                "Message"
+                                "{app_config_state.locale.secret_url_page.title}"
                             }
                         },
                         div {
@@ -84,27 +108,33 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                         div {
                             class: "text-start mb-3",
                             h5 {
-                                "Secret wasn't found"
+                                "{app_config_state.locale.secret_not_found_page.title}"
                             }
                         },
                         div {
-                          "Possible reasons:"
+                            class: "mb-2",
+                            "{app_config_state.locale.secret_not_found_page.possible_reasons_text}:"
                         },
+
                         ul {
                             class: "mb-5",
-                            li {
-                                "Link has been expired"
-                            },
-                            li {
-                                "It was one-time link and someone opened it already"
-                            }
+                            app_config_state.locale.secret_not_found_page.possible_reasons_items.iter().map(|reason| {
+                                rsx! {
+                                    li {
+                                        "{reason}"
+                                    },
+                                }
+                            })
                         }
+
                     }
                   }
                 },
             },
 
-            PageFooter {}
+            PageFooter {
+                how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}"
+            }
         },
       }
     })

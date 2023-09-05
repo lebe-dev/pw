@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use log::{error, info};
 
 use common::dto::AppConfigDto;
-use common::locale::{FooterLabels, HomePageLabels, LifetimeLabels, Locale, SecretNotFoundPageLabels, SecretUrlPageLabels};
+use common::locale::Locale;
 use common::secret::{Secret, SecretDownloadPolicy, SecretTTL};
 use common::secret::id::get_secret_id;
 use common::secret::key::get_encryption_key;
@@ -36,34 +36,7 @@ pub fn HomePage(cx: Scope) -> Element {
 
     let app_config_state = use_state::<AppConfigDto>(cx, || AppConfigDto {
         message_max_length: 4096,
-        locale: Locale {
-            id: "".to_string(),
-            home_page: HomePageLabels {
-                title: "".to_string(),
-                message_placeholder: "".to_string(),
-                secret_lifetime_title: "".to_string(),
-                lifetime: LifetimeLabels {
-                    one_hour: "".to_string(),
-                    two_hours: "".to_string(),
-                    one_day: "".to_string(),
-                    one_time_download: "".to_string(),
-                },
-                encrypt_message_button: "".to_string(),
-                secret_url_title: "".to_string(),
-                copy_button: "".to_string(),
-            },
-            secret_url_page: SecretUrlPageLabels {
-                title: "".to_string(),
-            },
-            secret_not_found_page: SecretNotFoundPageLabels {
-                title: "".to_string(),
-                possible_reasons_text: "".to_string(),
-                possible_reasons_items: vec![],
-            },
-            footer_labels: FooterLabels {
-                how_it_works: "".to_string(),
-            },
-        }
+        locale: Locale::default()
     });
 
     let message_max_length_state = use_state::<u16>(cx, || 0);
@@ -150,7 +123,7 @@ pub fn HomePage(cx: Scope) -> Element {
                 div {
                     class: "text-start",
                     h5 {
-                        "Secret URL"
+                        "{app_config_state.locale.home_page.secret_url_title}"
                     }
                 },
                 div {
@@ -162,8 +135,7 @@ pub fn HomePage(cx: Scope) -> Element {
                     id: "copy-url-button",
                     class: "btn btn-sm btn-dark",
                     "data-clipboard-target": "#url",
-                    title: "Copy to clipboard",
-                    "Copy"
+                    "{app_config_state.locale.home_page.copy_button}"
                 }
             }
         }
@@ -172,7 +144,7 @@ pub fn HomePage(cx: Scope) -> Element {
                 div {
                     class: "text-start",
                     h5 {
-                        "Message"
+                        "{app_config_state.locale.home_page.title}"
                     }
                 },
                 textarea {
@@ -180,7 +152,7 @@ pub fn HomePage(cx: Scope) -> Element {
                     class: "form-control mb-1",
                     rows: 5,
                     autofocus: true,
-                    placeholder: "The data will be encrypted in the browser",
+                    placeholder: "{app_config_state.locale.home_page.message_placeholder}",
                     maxlength: "{message_max_length_state}",
                     oninput: move |evt| {
                         let value = evt.value.clone();
@@ -205,7 +177,7 @@ pub fn HomePage(cx: Scope) -> Element {
                 div {
                     div {
                         class: "mt-3",
-                        "Secret lifetime:"
+                        "{app_config_state.locale.home_page.secret_lifetime_title}:"
                     },
                     label {
                         id: "ttl-one-hour",
@@ -220,7 +192,7 @@ pub fn HomePage(cx: Scope) -> Element {
                                 secret_ttl_state.set(SecretTTL::OneHour)
                             }
                         },
-                        "One hour"
+                        "{app_config_state.locale.home_page.lifetime.one_hour}"
                     },
                     label {
                         id: "ttl-two-hours",
@@ -234,7 +206,7 @@ pub fn HomePage(cx: Scope) -> Element {
                                 secret_ttl_state.set(SecretTTL::TwoHours)
                             }
                         },
-                        "Two hours"
+                        "{app_config_state.locale.home_page.lifetime.two_hours}"
                     },
                     label {
                         id: "ttl-one-day",
@@ -248,7 +220,7 @@ pub fn HomePage(cx: Scope) -> Element {
                                 secret_ttl_state.set(SecretTTL::OneDay)
                             }
                         },
-                        "One day"
+                        "{app_config_state.locale.home_page.lifetime.one_day}"
                     }
                 },
 
@@ -272,7 +244,7 @@ pub fn HomePage(cx: Scope) -> Element {
                                 };
                             }
                         },
-                        "One time download"
+                        "{app_config_state.locale.home_page.lifetime.one_time_download}"
                     }
                 },
 
@@ -282,7 +254,7 @@ pub fn HomePage(cx: Scope) -> Element {
                     class: "btn btn-dark mt-5",
                     disabled: "{!is_form_valid_state}",
                     onclick: on_encrypt_message,
-                    "Encrypt message"
+                    "{app_config_state.locale.home_page.encrypt_message_button}"
                 },
             }
         }
@@ -296,7 +268,9 @@ pub fn HomePage(cx: Scope) -> Element {
 
                 content,
 
-                PageFooter {}
+                PageFooter {
+                    how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}"
+                }
             }
         }
     })

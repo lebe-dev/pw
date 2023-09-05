@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
-pub fn PageFooter(cx: Scope) -> Element {
+#[inline_props]
+pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str) -> Element {
     render! {
         div {
             class: "footer-links mt-5",
@@ -13,9 +14,9 @@ pub fn PageFooter(cx: Scope) -> Element {
                 "|"
             },
             a {
-                class: "me-1 ms-1",
+                class: "text-uppercase me-1 ms-1",
                 href: "#",
-                "HOW IT WORKS"
+                "{cx.props.how_it_works_label}"
             }
             span {
                 class: "ms-1 me-1",

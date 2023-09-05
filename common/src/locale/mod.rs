@@ -15,6 +15,39 @@ pub struct Locale {
     pub footer_labels: FooterLabels
 }
 
+impl Default for Locale {
+    fn default() -> Self {
+        Locale {
+            id: "".to_string(),
+            home_page: HomePageLabels {
+                title: "".to_string(),
+                message_placeholder: "".to_string(),
+                secret_lifetime_title: "".to_string(),
+                lifetime: LifetimeLabels {
+                    one_hour: "".to_string(),
+                    two_hours: "".to_string(),
+                    one_day: "".to_string(),
+                    one_time_download: "".to_string(),
+                },
+                encrypt_message_button: "".to_string(),
+                secret_url_title: "".to_string(),
+                copy_button: "".to_string(),
+            },
+            secret_url_page: SecretUrlPageLabels {
+                title: "".to_string(),
+            },
+            secret_not_found_page: SecretNotFoundPageLabels {
+                title: "".to_string(),
+                possible_reasons_text: "".to_string(),
+                possible_reasons_items: vec![],
+            },
+            footer_labels: FooterLabels {
+                how_it_works: "".to_string(),
+            },
+        }
+    }
+}
+
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct HomePageLabels {
