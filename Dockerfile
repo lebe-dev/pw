@@ -29,7 +29,7 @@ RUN cd backend && \
 RUN upx -9 --lzma target/release/backend && \
     chmod +x target/release/backend
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
