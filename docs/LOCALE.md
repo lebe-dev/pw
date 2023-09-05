@@ -11,3 +11,5 @@ Set locale with `locale-id` property in `pw.yml`.
 Use existing locale file as an example.
 
 Update `locale-id` value in `pw.yml`, set new id.
+
+Restart application.
