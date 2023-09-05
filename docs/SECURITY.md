@@ -4,6 +4,7 @@
 - Browser encrypt data
 - Browser generate and encode unique Secret URL which contains secret id and encryption key
 - Backend stores ONLY encrypted data
+- Backend doesn't use disk to store data
 
 ## Decryption
 

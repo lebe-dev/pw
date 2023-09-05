@@ -2,7 +2,7 @@
 
 ## 1. Save secret
 
-- Backend application stores secrets in memory structures with limited lifespan (TTL)
+- Backend application [stores secrets in memory cache](https://github.com/lebe-dev/pw/blob/main/backend/src/secret/storage.rs) with limited lifespan (TTL)
 - Frontend app:
   - Encrypt secret data
   - Generate secret ID
@@ -21,5 +21,5 @@
 
 ## 3. How TTL works
 
-- Backend store secrets inside in-memory key-value database with limited lifetime. Max lifetime is one day.
+- Backend store secrets inside [in-memory key-value storage](https://github.com/lebe-dev/pw/blob/main/backend/src/secret/storage.rs) with limited lifetime. Max lifetime is one day.
 - User can restrict how many times URL can be used 
