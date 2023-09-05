@@ -2,11 +2,9 @@ use std::net::TcpListener;
 
 use actix_cors::Cors;
 use actix_plus_static_files::{build_hashmap_from_included_dir, Dir, include_dir, ResourceFiles};
-use actix_web::{HttpResponse, HttpServer, Responder, web};
+use actix_web::{HttpServer, middleware, web};
 use actix_web::dev::Server;
 use log::info;
-use mime_guess::from_path;
-use rust_embed::RustEmbed;
 
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
@@ -14,20 +12,7 @@ use crate::routes::{get_config_route, get_version_route};
 use crate::routes::secret::{get_secret_route, store_secret_route};
 use crate::secret::storage::InMemorySecretStorage;
 
-#[derive(RustEmbed)]
-#[folder = "./static/"]
-struct Asset;
-
 const STATIC_DIR: Dir = include_dir!("./static");
-
-fn handle_embedded_file(path: &str) -> HttpResponse {
-    match Asset::get(path) {
-        Some(content) => HttpResponse::Ok()
-            .content_type(from_path(path).first_or_octet_stream().as_ref())
-            .body(content.data.into_owned()),
-        None => HttpResponse::NotFound().body("404 Not Found"),
-    }
-}
 
 pub struct Application {
     port: u16,
@@ -69,16 +54,6 @@ impl Application {
     }
 }
 
-#[actix_web::get("/")]
-async fn index() -> impl Responder {
-    handle_embedded_file("index.html")
-}
-
-#[actix_web::get("/{_:.*}")]
-async fn dist(path: web::Path<String>) -> impl Responder {
-    handle_embedded_file(path.as_str())
-}
-
 pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
                  listener: TcpListener) -> anyhow::Result<Server> {
 
@@ -99,6 +74,7 @@ pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
 
         actix_web::App::new()
             .wrap(cors)
+            .wrap(middleware::Compress::default())
             .app_data(web::Data::new(config.clone()))
             .app_data(web::Data::new(secret_storage.clone()))
             .service(get_config_route)
