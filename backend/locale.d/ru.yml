@@ -1,27 +1,28 @@
 id: 'ru'
 
 home-page:
-  title: 'Message'
-  message-placeholder: 'The data will be encrypted in the browser'
-  secret-lifetime-title: 'Secret lifetime'
+  title: 'Сообщение'
+  message-placeholder: 'Данные будут зашифрованы в браузере'
+  secret-lifetime-title: 'Время жизни'
   lifetime:
-    one-hour: 'One hour'
-    two-hours: 'Two hours'
-    one-day: 'One day'
-    one-time-download: 'One time download'
-  encrypt-message-button: 'Encrypt message'
-  secret-url-title: 'Secret URL'
-  copy-button: 'Copy'
+    one-hour: 'Один час'
+    two-hours: 'Два часа'
+    one-day: 'Один день'
+    one-time-download: 'Одноразовая ссылка'
+  encrypt-message-button: 'Зашифровать сообщение'
+  secret-url-title: 'Ссылка'
+  copy-button: 'Копировать'
 
 secret-url-page:
-  title: 'Message'
+  title: 'Сообщение'
 
 secret-not-found-page:
-  title: "Secret wasn't found"
-  possible-reasons-text: 'Possible reasons'
+  title: "Сообщение не найдено"
+  possible-reasons-text: 'Возможные причины'
   possible-reasons-items:
-    - 'Link has been expired'
-    - 'It was one-time link and someone opened it already'
+    - 'Ссылка истекла'
+    - 'Это была одноразовая ссылка и кто-то её открыл до вас'
+    - 'Неправильная ссылка'
 
 footer:
-  how-it-works: 'how it works'
+  how-it-works: 'как это работает'
