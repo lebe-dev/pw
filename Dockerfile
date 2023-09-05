@@ -7,7 +7,7 @@ RUN mkdir -p /build/backend/static && \
     wget https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz && \
     unxz upx-4.0.2-amd64_linux.tar.xz && tar xvf upx-4.0.2-amd64_linux.tar && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx && \
-    npm i -g wasm-opt uglifyjs && \
+    npm i -g wasm-opt uglify-js && \
     cargo install dioxus-cli --locked && \
     rustup target add wasm32-unknown-unknown
 
