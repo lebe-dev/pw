@@ -34,8 +34,6 @@ actix-web = { version = "4.3.1", features = ["rustls"]}
 actix-cors = "0.6.4"
 actix-plus-static-files = { git = "https://github.com/lebe-dev/actix-plus.git" }
 actix-files = "0.6.2"
-rust-embed = "6.8.1"
-mime_guess = "2.0.4"
 
 log = "0.4.19"
 log4rs = "1.2.0"
