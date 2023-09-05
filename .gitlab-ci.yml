@@ -24,9 +24,6 @@ build-linux:
   stage: app
 
   script:
-#    - 'cd webui'
-#    - 'cargo test'
-#    - 'dx build --release'
     - 'cd backend'
     - 'mkdir static'
     - 'cargo test'
@@ -35,6 +32,7 @@ build-linux:
     - 'cargo build --release'
     - 'cd ..'
     - 'cp backend/pw.yml-dist .'
+    - 'cp -r backend/locale.d .'
     - 'cp target/release/backend pw'
     - 'eu-elfcompress pw'
     - 'strip pw'
@@ -50,6 +48,7 @@ build-linux:
       - README.md
       - pw.yml-dist
       - docs
+      - locale.d
     expire_in: 1 week
 
 build-windows:
@@ -64,6 +63,7 @@ build-windows:
     - cd ..
     - copy target\release\backend.exe pw.exe
     - copy backend\pw.yml-dist pw.yml-dist
+    - 'xcopy backend\locale.d locale.d /E'
 
   artifacts:
     name: app-windows
