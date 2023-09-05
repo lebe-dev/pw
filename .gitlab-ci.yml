@@ -20,7 +20,7 @@ build-webui:
   tags:
     - rockylinux8
 
-build-app-linux:
+build-linux:
   stage: app
 
   script:
@@ -77,7 +77,7 @@ build-windows:
   tags:
     - windows
 
-build-app-image:
+build-image:
   stage: image
 
   script:
