@@ -12,7 +12,7 @@ docker build -t pw:1.0.0 .
 
 ## How to build standalone version
 
-**1. Install Rust 1.72**
+**1. Install Rust 1.72 or later**
 
 **2. Install Dioxus CLI**
 
