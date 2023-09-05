@@ -25,6 +25,6 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 
 ## Roadmap
 
-1. Configuration via environment variables
-2. Add custom translation support
+1. Short links support
+2. Configuration via environment variables
 3. Improve UX
