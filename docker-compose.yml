@@ -7,7 +7,6 @@ services:
     restart: always
     volumes:
       - ./pw.yml:/app/pw.yml
-      # Enable logs in config first
-      #- ./logs:/app/logs
+      #- ./locale.d:/app/locale.d
     ports:
       - "8080:8080"
