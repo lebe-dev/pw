@@ -2,8 +2,12 @@
 
 Locale files are located inside `locale.d` directory. 
 
+## How to switch language
+
+Set locale with `locale-id` property in `pw.yml`.
+
 ## How to add new locale
 
-Use existing locale file as example.
+Use existing locale file as an example.
 
 Update `locale-id` value in `pw.yml`, set new id.
