@@ -19,6 +19,26 @@
 
 AES 256, длина ключа 32 символа.
 
-**4. Как собрать свой docker-образ?**
+**4. Сколько ресурсов необходимо для приложения?**
+
+Docker-контейнер потребляет 20 МБ ОЗУ.
+
+```shell
+$ docker stats --no-stream
+
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET I/O      BLOCK I/O     PIDS
+4102d50dbd33   pw                 0.21%     20.33MiB / 62.43GiB   0.03%     586B / 0B    0B / 4.1kB    34
+```
+
+Образ приложения весит 50 МБ:
+
+```shell
+$ docker images
+
+REPOSITORY                                   TAG                    IMAGE ID       CREATED         SIZE
+tinyops/pw                                   1.0.0                  eaab467e40b6   6 hours ago     49.7MB
+```
+
+**5. Как собрать свой docker-образ?**
 
 См.[статью](BUILD.md).

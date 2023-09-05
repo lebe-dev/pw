@@ -18,6 +18,26 @@ Secret URLs have limited lifespan (one hour, two hours or one day max).
 
 AES 256, key length 32.
 
-**4. I want to build my own image. What should I do?**
+**4. How many resources are needed for the application?**
+
+Docker-container consumes 20 MB of RAM.
+
+```shell
+$ docker stats --no-stream
+
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET I/O      BLOCK I/O     PIDS
+4102d50dbd33   pw                 0.21%     20.33MiB / 62.43GiB   0.03%     586B / 0B    0B / 4.1kB    34
+```
+
+Image size is 50 MB:
+
+```shell
+$ docker images
+
+REPOSITORY                                   TAG                    IMAGE ID       CREATED         SIZE
+tinyops/pw                                   1.0.0                  eaab467e40b6   6 hours ago     49.7MB
+```
+
+**5. I want to build my own image. What should I do?**
 
 Visit [tutorial](BUILD.md).
