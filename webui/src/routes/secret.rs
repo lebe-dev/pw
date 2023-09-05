@@ -133,7 +133,8 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
             },
 
             PageFooter {
-                how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}"
+                how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}",
+                locale_id: "{app_config_state.locale.id}"
             }
         },
       }

@@ -254,7 +254,8 @@ pub fn HomePage(cx: Scope) -> Element {
                 content,
 
                 PageFooter {
-                    how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}"
+                    how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}",
+                    locale_id: "{app_config_state.locale.id}"
                 }
             }
         }

@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[inline_props]
-pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str) -> Element {
+pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str, locale_id: &'a str) -> Element {
     render! {
         div {
             class: "footer-links mt-5",
@@ -15,7 +15,8 @@ pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str) -> Element {
             },
             a {
                 class: "text-uppercase me-1 ms-1",
-                href: "#",
+                href: "https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.{cx.props.locale_id}.md",
+                target: "_blank",
                 "{cx.props.how_it_works_label}"
             }
             span {
@@ -24,7 +25,8 @@ pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str) -> Element {
             },
             a {
                 class: "ms-1",
-                href: "#",
+                href: "https://github.com/lebe-dev/pw",
+                target: "_blank",
                 "GITHUB"
             }
         }
