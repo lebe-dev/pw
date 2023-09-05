@@ -114,6 +114,9 @@ pub fn HomePage(cx: Scope) -> Element {
 
     let content = match secret_url_state.get() {
         Some(url) => {
+            let eval = use_eval(cx).clone();
+            eval("new ClipboardJS('#copy-url-button');").expect("ClipboardJS initialization error");
+
             rsx! {
                 div {
                     class: "text-start",
@@ -122,8 +125,16 @@ pub fn HomePage(cx: Scope) -> Element {
                     }
                 },
                 div {
-                    class: "secret-url p-3 rounded-3 bg-light",
+                    id: "url",
+                    class: "secret-url p-3 rounded-3 bg-light mb-3",
                     format!("{url}")
+                },
+                button {
+                    id: "copy-url-button",
+                    class: "btn btn-sm btn-dark",
+                    "data-clipboard-target": "#url",
+                    title: "Copy to clipboard",
+                    "Copy"
                 }
             }
         }

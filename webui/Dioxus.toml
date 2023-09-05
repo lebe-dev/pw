@@ -15,7 +15,7 @@ index_on_404 = true
 [web.resource]
 style = ["/bootstrap.min.css", "/index.css"]
 
-script = []
+script = ["/clipboard.min.js"]
 
 [web.resource.dev]
 style = []
