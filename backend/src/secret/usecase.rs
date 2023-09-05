@@ -11,7 +11,7 @@ pub fn store_secret(secret_storage: &impl SecretStorage,
 
     if payload.len() <= payload_max_length as usize {
 
-        &payload.truncate(payload_max_length as usize);
+        payload.truncate(payload_max_length as usize);
 
         let new_secret = Secret {
             id: secret.id.to_string(),
