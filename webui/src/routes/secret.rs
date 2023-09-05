@@ -78,7 +78,7 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                     info!("payload decode - ok");
 
                     // TODO: replace with random
-                    let ad: &[u8; 15] = b"additional data";
+                    let ad: &[u8; 15] = b"SuPpErStr0Ng038";
 
                     let key = get_valid_key(&private_key);
                     let nonce = Nonce::default();
