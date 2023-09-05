@@ -80,7 +80,7 @@ pub fn HomePage(cx: Scope) -> Element {
             let nonce = Nonce::default();
 
             // TODO: replace with random
-            let ad: &[u8; 15] = b"additional data";
+            let ad: &[u8; 15] = b"SuPpErStr0Ng038";
 
             let ciphertext = encrypt(
                 message_state.get(), ad, &encryption_key_array, nonce);
