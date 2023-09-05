@@ -16,21 +16,6 @@ use crate::secret::store_secret;
 
 const KEY_LENGTH: usize = 32;
 
-pub fn get_valid_key(key: &str) -> [u8; 32] {
-    let mut bytes = key.as_bytes().to_vec();
-
-    if bytes.len() < KEY_LENGTH {
-        for _ in 0..(KEY_LENGTH - bytes.len()) {
-            bytes.push(0x00);
-        }
-
-    } else if bytes.len() > KEY_LENGTH {
-        bytes = bytes[0..KEY_LENGTH].to_vec();
-    }
-
-    bytes.try_into().unwrap()
-}
-
 pub fn HomePage(cx: Scope) -> Element {
     let force_get_app_config_dto = use_state(cx, || ());
 
@@ -274,4 +259,19 @@ pub fn HomePage(cx: Scope) -> Element {
             }
         }
     })
+}
+
+pub fn get_valid_key(key: &str) -> [u8; 32] {
+    let mut bytes = key.as_bytes().to_vec();
+
+    if bytes.len() < KEY_LENGTH {
+        for _ in 0..(KEY_LENGTH - bytes.len()) {
+            bytes.push(0x00);
+        }
+
+    } else if bytes.len() > KEY_LENGTH {
+        bytes = bytes[0..KEY_LENGTH].to_vec();
+    }
+
+    bytes.try_into().unwrap()
 }
