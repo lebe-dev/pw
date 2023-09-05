@@ -6,8 +6,8 @@ services:
     image: tinyops/pw:1.0.0
     restart: always
     volumes:
-      - ./pw.yml:/app/app.yml
+      - ./pw.yml:/app/pw.yml
       # Enable logs in config first
       #- ./logs:/app/logs
     ports:
-      - "18080:8080"
+      - "8080:8080"
