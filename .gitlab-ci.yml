@@ -1,21 +1,40 @@
 stages:
+  - webui
   - app
   - image
 
-build-app:
+build-webui:
+  stage: webui
+
+  script:
+    - cd webui
+    - cargo test
+    - dx build --release
+
+  artifacts:
+    name: webui
+    paths:
+      - webui/dist
+    expire_in: 1 week
+
+  tags:
+    - rockylinux8
+
+build-app-linux:
   stage: app
 
   script:
-    - 'cd webui'
-    - 'cargo test'
-    - 'dx build --release'
-    - 'cd ../backend'
+#    - 'cd webui'
+#    - 'cargo test'
+#    - 'dx build --release'
+    - 'cd backend'
     - 'mkdir static'
     - 'cargo test'
     - 'cp -r ../webui/dist/ static/'
     - 'cargo test'
     - 'cargo build --release'
     - 'cd ..'
+    - 'cp backend/pw.yml-dist .'
     - 'cp target/release/backend pw'
     - 'eu-elfcompress pw'
     - 'strip pw'
@@ -29,15 +48,42 @@ build-app:
       - build-version
       - pw
       - README.md
-      - backend/pw.yml-dist
-      - docs/*.md
+      - pw.yml-dist
+      - docs
     expire_in: 1 week
+
+build-windows:
+  stage: app
+
+  script:
+    - cd backend
+    - mkdir static
+    - 'xcopy ..\webui\dist\ static\ /E /H'
+    - cargo test
+    - cargo build --release
+    - cd ..
+    - copy target\release\backend.exe pw.exe
+    - copy backend\pw.yml-dist pw.yml-dist
+
+  artifacts:
+    name: app-windows
+    paths:
+      - pw.exe
+      - pw.yml-dist
+      - README.md
+      - docs
+    expire_in: 1 week
+
+  tags:
+    - windows
 
 build-app-image:
   stage: image
 
   script:
-    - 'ls -liah'
+    - 'VERSION=$(cat backend/Cargo.toml | grep "version" | head -1 | cut -d "\"" -f2)'
+    - 'docker build --progress=plain -t tinyops/pw:${VERSION} -f Dockerfile .'
+    - 'docker push tinyops/pw:${VERSION}'
 
   tags:
     - rockylinux8
