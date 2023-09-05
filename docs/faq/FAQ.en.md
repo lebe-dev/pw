@@ -12,6 +12,8 @@ Server side knows nothing about original message it just stores encrypted data (
 When you open a secret URL, client (browser) loads encrypted data from server side. Then client side will decrypt
 data with strong key encoded into URL.
 
+Secret URLs have limited lifespan (one hour, two hours or one day max).
+
 **3. What algorithm is used for encryption?**
 
 AES 256, key length 32.
