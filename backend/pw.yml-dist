@@ -9,3 +9,6 @@ message-max-length: 4096
 
 # Encrypted payload length > source message length
 encrypted-message-max-length: 32000
+
+# Look for `id` inside `locale.d` directory
+locale-id: 'en'

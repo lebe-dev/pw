@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use log::{error, info};
 
 use common::dto::AppConfigDto;
+use common::locale::{FooterLabels, HomePageLabels, LifetimeLabels, Locale, SecretNotFoundPageLabels, SecretUrlPageLabels};
 use common::secret::{Secret, SecretDownloadPolicy, SecretTTL};
 use common::secret::id::get_secret_id;
 use common::secret::key::get_encryption_key;
@@ -35,6 +36,34 @@ pub fn HomePage(cx: Scope) -> Element {
 
     let app_config_state = use_state::<AppConfigDto>(cx, || AppConfigDto {
         message_max_length: 4096,
+        locale: Locale {
+            id: "".to_string(),
+            home_page: HomePageLabels {
+                title: "".to_string(),
+                message_placeholder: "".to_string(),
+                secret_lifetime_title: "".to_string(),
+                lifetime: LifetimeLabels {
+                    one_hour: "".to_string(),
+                    two_hours: "".to_string(),
+                    one_day: "".to_string(),
+                    one_time_download: "".to_string(),
+                },
+                encrypt_message_button: "".to_string(),
+                secret_url_title: "".to_string(),
+                copy_button: "".to_string(),
+            },
+            secret_url_page: SecretUrlPageLabels {
+                title: "".to_string(),
+            },
+            secret_not_found_page: SecretNotFoundPageLabels {
+                title: "".to_string(),
+                possible_reasons_text: "".to_string(),
+                possible_reasons_items: vec![],
+            },
+            footer_labels: FooterLabels {
+                how_it_works: "".to_string(),
+            },
+        }
     });
 
     let message_max_length_state = use_state::<u16>(cx, || 0);

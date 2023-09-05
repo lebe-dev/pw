@@ -1,0 +1,27 @@
+id: 'ru'
+
+home-page:
+  title: 'Message'
+  message-placeholder: 'The data will be encrypted in the browser'
+  secret-lifetime-title: 'Secret lifetime'
+  lifetime:
+    one-hour: 'One hour'
+    two-hours: 'Two hours'
+    one-day: 'One day'
+    one-time-download: 'One time download'
+  secret-url-title: 'Secret URL'
+  encrypt-message-button: 'Encrypt message'
+  copy-button: 'Copy'
+
+secret-url-page:
+  title: 'Message'
+
+secret-not-found-page:
+  title: "Secret wasn't found"
+  possible-reasons-text: 'Possible reasons'
+  possible-reasons-items:
+    - 'Link has been expired'
+    - 'It was one-time link and someone opened it already'
+
+footer:
+  how-it-works: 'how it works'

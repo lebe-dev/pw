@@ -1,4 +1,5 @@
 use actix_web::{get, HttpResponse, Responder, web};
+use log::error;
 
 use common::dto::AppConfigDto;
 
@@ -9,11 +10,22 @@ pub mod secret;
 
 #[get("/api/config")]
 pub async fn get_config_route(app_config: web::Data<AppConfig>) -> impl Responder {
-    let config = AppConfigDto {
-        message_max_length: app_config.message_max_length,
-    };
+    let locale_found = app_config.locales.iter().find(|l|l.id == app_config.locale_id);
 
-    HttpResponse::Ok().json(config)
+    match locale_found {
+        Some(locale) => {
+            let config = AppConfigDto {
+                message_max_length: app_config.message_max_length,
+                locale: locale.clone()
+            };
+
+            HttpResponse::Ok().json(config)
+        }
+        None => {
+            error!("misconfiguration, locale wasn't found by id '{}'", app_config.locale_id);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
 }
 
 #[get("/api/version")]
