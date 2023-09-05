@@ -1,6 +1,7 @@
 use std::net::TcpListener;
 
 use actix_cors::Cors;
+use actix_plus_static_files::{build_hashmap_from_included_dir, Dir, include_dir, ResourceFiles};
 use actix_web::{HttpResponse, HttpServer, Responder, web};
 use actix_web::dev::Server;
 use log::info;
@@ -16,6 +17,8 @@ use crate::secret::storage::InMemorySecretStorage;
 #[derive(RustEmbed)]
 #[folder = "./static/"]
 struct Asset;
+
+const STATIC_DIR: Dir = include_dir!("./static");
 
 fn handle_embedded_file(path: &str) -> HttpResponse {
     match Asset::get(path) {
@@ -52,7 +55,7 @@ impl Application {
 
         info!("config: {:?}", config);
 
-        let address = format!("localhost:{}", config.port);
+        let address = format!("0.0.0.0:{}", config.port);
         let listener = TcpListener::bind(&address)?;
         let port = listener.local_addr().expect("unable to get socket").port();
 
@@ -83,6 +86,8 @@ pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
     println!("{app_banner}");
     info!("{app_banner}");
 
+    let hash_map = build_hashmap_from_included_dir(&STATIC_DIR);
+
     let server = HttpServer::new(move || {
 
         let cors = Cors::default()
@@ -100,8 +105,9 @@ pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
             .service(get_secret_route)
             .service(store_secret_route)
             .service(get_version_route)
-            .service(index)
-            .service(dist)
+            .service(ResourceFiles::new(
+                "/", hash_map.clone()).resolve_not_found_to_root()
+            )
 
     }).listen(listener)?.run();
 
