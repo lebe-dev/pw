@@ -13,6 +13,7 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 ## Docs
 
 - [FAQ](docs/FAQ.md)
+- [Installation](docs/install/INSTALL.md)
 - [Security](docs/SECURITY.md)
 - [Localization](docs/LOCALE.md)
 - [API](docs/API.md)
