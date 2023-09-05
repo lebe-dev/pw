@@ -6,8 +6,10 @@ PW is a project for sharing secrets.
 
 ## Getting started
 
+Prepare [pw.yml](backend/pw.yml-dist) and run:
+
 ```shell
-docker run -p 8080:8080 --rm -t tinyops/pw:1.0.0
+docker run -p 8080:8080 --rm -v ./pw.yml:/app/pw.yml -t tinyops/pw:1.0.0
 ```
 
 Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](docs/install/BINARY-LINUX.md) | [Windows Service](docs/install/BINARY-WINDOWS.md)

@@ -14,5 +14,3 @@
 ## Docker
 
 - App runs with minimal privileges, with user `pw`
-- App doesn't have write permission inside docker container
-- Directory `/app` doesn't have write permissions.
