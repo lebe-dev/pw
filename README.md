@@ -2,6 +2,8 @@
 
 PW is a project for sharing secrets.
 
+[Screenshot of PW application for sharing secrets](pw-screenshot.png)
+
 ## Getting started
 
 ```shell
