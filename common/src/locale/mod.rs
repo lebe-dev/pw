@@ -18,31 +18,34 @@ pub struct Locale {
 impl Default for Locale {
     fn default() -> Self {
         Locale {
-            id: "".to_string(),
+            id: "en".to_string(),
             home_page: HomePageLabels {
-                title: "".to_string(),
-                message_placeholder: "".to_string(),
-                secret_lifetime_title: "".to_string(),
+                title: "Message".to_string(),
+                message_placeholder: "The data will be encrypted in the browser".to_string(),
+                secret_lifetime_title: "Secret lifetime".to_string(),
                 lifetime: LifetimeLabels {
-                    one_hour: "".to_string(),
-                    two_hours: "".to_string(),
-                    one_day: "".to_string(),
-                    one_time_download: "".to_string(),
+                    one_hour: "One hour".to_string(),
+                    two_hours: "Two hours".to_string(),
+                    one_day: "One day".to_string(),
+                    one_time_download: "One time download".to_string(),
                 },
-                encrypt_message_button: "".to_string(),
-                secret_url_title: "".to_string(),
-                copy_button: "".to_string(),
+                encrypt_message_button: "Encrypt message".to_string(),
+                secret_url_title: "Secret URL".to_string(),
+                copy_button: "Copy".to_string(),
             },
             secret_url_page: SecretUrlPageLabels {
-                title: "".to_string(),
+                title: "Message".to_string(),
             },
             secret_not_found_page: SecretNotFoundPageLabels {
-                title: "".to_string(),
-                possible_reasons_text: "".to_string(),
-                possible_reasons_items: vec![],
+                title: "Secret wasn't found".to_string(),
+                possible_reasons_text: "Possible reasons".to_string(),
+                possible_reasons_items: vec![
+                    "Link has been expired".to_string(),
+                    "It was one-time link and someone opened it already".to_string()
+                ],
             },
             footer_labels: FooterLabels {
-                how_it_works: "".to_string(),
+                how_it_works: "FAQ".to_string(),
             },
         }
     }
