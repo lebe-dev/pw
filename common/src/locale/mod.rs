@@ -28,6 +28,7 @@ impl Default for Locale {
                     two_hours: "Two hours".to_string(),
                     one_day: "One day".to_string(),
                     one_time_download: "One time download".to_string(),
+                    one_time_download_precaution_message: "This link is for one-time use only, so don't try to open it or the secret will disappear.".to_string(),
                 },
                 encrypt_message_button: "Encrypt message".to_string(),
                 secret_url_title: "Secret URL".to_string(),
@@ -79,6 +80,8 @@ pub struct LifetimeLabels {
     pub one_day: String,
     #[serde(alias = "oneTimeDownload")]
     pub one_time_download: String,
+    #[serde(alias = "oneTimeDownloadPrecautionMessage")]
+    pub one_time_download_precaution_message: String,
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

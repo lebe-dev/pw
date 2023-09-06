@@ -116,6 +116,14 @@ pub fn HomePage(cx: Scope) -> Element {
                     class: "secret-url p-3 rounded-3 bg-light mb-3",
                     format!("{url}")
                 },
+                if *one_time_download_state.get() {
+                    rsx! {
+                        div {
+                            class: "p-1 rounded-3 border border-warning text-dark mt-3 mb-3",
+                            "{app_config_state.locale.home_page.lifetime.one_time_download_precaution_message}"
+                        }
+                    }
+                },
                 button {
                     id: "copy-url-button",
                     class: "btn btn-sm btn-dark",

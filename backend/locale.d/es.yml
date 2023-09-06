@@ -13,6 +13,7 @@ home-page:
     two-hours: 'Dos horas'
     one-day: 'Un día'
     one-time-download: 'Descarga única'
+    one-time-download-precaution-message: "Este enlace es para un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
   encrypt-message-button: 'Cifrar mensaje'
   secret-url-title: 'Secreta URL'
   copy-button: 'Copia'

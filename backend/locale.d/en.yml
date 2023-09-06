@@ -9,6 +9,7 @@ home-page:
     two-hours: 'Two hours'
     one-day: 'One day'
     one-time-download: 'One time download'
+    one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
   encrypt-message-button: 'Encrypt message'
   secret-url-title: 'Secret URL'
   copy-button: 'Copy'
