@@ -1,10 +1,9 @@
-use uuid::Uuid;
+use fake::{Fake, Faker};
 
 /// Generate random encryption key
 /// based on uuid
 pub fn get_encryption_key() -> String {
-    let uuid = Uuid::new_v4();
-    uuid.to_string()
+    Faker.fake::<String>()
 }
 
 #[cfg(test)]

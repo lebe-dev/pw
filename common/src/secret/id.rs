@@ -1,8 +1,7 @@
-use uuid::Uuid;
+use fake::{Fake, Faker};
 
 pub fn get_secret_id() -> String {
-    let uuid = Uuid::new_v4();
-    uuid.to_string()
+    Faker.fake::<String>()
 }
 
 #[cfg(test)]
