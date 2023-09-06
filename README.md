@@ -1,6 +1,6 @@
 # PW
 
-PW is a project for sharing secrets.
+PW is a project for sharing secrets (any confidential information).
 
 ![Screenshot of PW application for sharing secrets](pw-screenshot.png)
 
@@ -28,6 +28,5 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 
 ## Roadmap
 
-1. Short links support
+1. Improve UX
 2. Configuration via environment variables
-3. Improve UX
