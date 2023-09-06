@@ -9,8 +9,8 @@ home-page:
     two-hours: 'Two hours'
     one-day: 'One day'
     one-time-download: 'One time download'
-  secret-url-title: 'Secret URL'
   encrypt-message-button: 'Encrypt message'
+  secret-url-title: 'Secret URL'
   copy-button: 'Copy'
 
 secret-url-page:
@@ -24,4 +24,4 @@ secret-not-found-page:
     - 'It was one-time link and someone opened it already'
 
 footer:
-  how-it-works: 'how it works'
+  how-it-works: 'FAQ'
