@@ -173,7 +173,7 @@ pub fn HomePage(cx: Scope) -> Element {
                         "{app_config_state.locale.home_page.secret_lifetime_title}:"
                     },
                     label {
-                        id: "ttl-one-hour",
+                        r#for: "ttl-one-hour",
                         class: "mt-2 me-2",
                         input {
                             id: "ttl-one-hour",
@@ -188,7 +188,7 @@ pub fn HomePage(cx: Scope) -> Element {
                         "{app_config_state.locale.home_page.lifetime.one_hour}"
                     },
                     label {
-                        id: "ttl-two-hours",
+                        r#for: "ttl-two-hours",
                         class: "me-2",
                         input {
                             id: "ttl-two-hours",
@@ -202,7 +202,7 @@ pub fn HomePage(cx: Scope) -> Element {
                         "{app_config_state.locale.home_page.lifetime.two_hours}"
                     },
                     label {
-                        id: "ttl-one-day",
+                        r#for: "ttl-one-day",
                         class: "me-2",
                         input {
                             id: "ttl-one-day",
@@ -220,7 +220,7 @@ pub fn HomePage(cx: Scope) -> Element {
                 div {
                   class: "mt-3",
                   label {
-                        id: "one-time-download",
+                        r#for: "one-time-download",
                         class: "mt-2 me-2",
                         input {
                             id: "one-time-download",
