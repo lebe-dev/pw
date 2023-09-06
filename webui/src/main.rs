@@ -20,7 +20,7 @@ enum Route {
     #[route("/")]
     HomePage {},
 
-    #[route("/secret/:encoded_id")]
+    #[route("/s/:encoded_id")]
     SecretPage { encoded_id: String },
 }
 

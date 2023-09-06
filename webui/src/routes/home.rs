@@ -88,7 +88,7 @@ pub fn HomePage(cx: Scope) -> Element {
 
             let url_slug_for_encode = get_encoded_url_slug(&secret.id, encryption_key);
 
-            let url = format!("{}/secret/{}", get_base_host(), url_slug_for_encode);
+            let url = format!("{}/s/{}", get_base_host(), url_slug_for_encode);
 
             async move {
                 store_secret(&secret).await.unwrap();
