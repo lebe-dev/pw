@@ -25,7 +25,7 @@ pub fn HomePage(cx: Scope) -> Element {
     let force_get_app_config_dto = use_state(cx, || ());
 
     let app_config_state = use_state::<AppConfigDto>(cx, || AppConfigDto {
-        message_max_length: 4096,
+        message_max_length: 1024,
         locale: Locale::default()
     });
 
