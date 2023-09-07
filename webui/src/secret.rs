@@ -44,7 +44,11 @@ pub async fn get_secret_by_id(secret_id: &str) -> anyhow::Result<Option<Secret>>
 
         Ok(Some(secret))
 
-    } else {
+    } else if status == StatusCode::BAD_REQUEST {
+        info!("secret wasn't found by id '{secret_id}'");
         Ok(None)
+
+    } else {
+        Err(anyhow!("unable to get secret by id"))
     }
 }
