@@ -1,6 +1,6 @@
 # PW
 
-PW is a project for sharing secrets (any confidential information).
+PW is a project for sharing secrets (any confidential information). All data is encrypted in the browser.
 
 ![Screenshot of PW application for sharing secrets](pw-screenshot.png)
 
