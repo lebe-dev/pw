@@ -10,7 +10,7 @@ PW is a project for sharing secrets (any confidential information).
 docker run -d --name pw -p 8080:8080 --rm -t tinyops/pw:1.0.0
 ```
 
-Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](docs/install/BINARY-LINUX.md) | [Windows Service](docs/install/BINARY-WINDOWS.md)
+Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](docs/install/BINARY-LINUX.md)
 
 ## Docs
 
@@ -28,5 +28,6 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 
 ## Roadmap
 
-1. Improve UX
-2. Configuration via environment variables
+1. Support Windows
+2. Improve UX
+3. Configuration via environment variables

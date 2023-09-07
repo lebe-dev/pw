@@ -3,5 +3,6 @@
 Ways:
 
 - [Docker](DOCKER.md) (the most convenient way)
-- [Linux](BINARY-LINUX.md)
+  - [Docker container with Ansible role](https://github.com/lebe-dev/ansible-role-pw)
+- [Linux service](BINARY-LINUX.md)
 - [Windows](BINARY-WINDOWS.md)
