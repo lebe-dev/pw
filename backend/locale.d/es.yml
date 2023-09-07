@@ -4,6 +4,14 @@
 
 id: 'es'
 
+messages:
+  loading-title: 'Cargando..'
+  error-title: 'Error'
+
+errors:
+  loading-data: "No se pudieron cargar datos"
+  store-secret: 'Error de secreto de tienda'
+
 home-page:
   title: 'Mensaje'
   message-placeholder: 'Los datos se cifrarán en el navegador'

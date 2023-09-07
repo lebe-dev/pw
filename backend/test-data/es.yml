@@ -1,29 +1,41 @@
-id: 'en'
+###################################################################
+# Translated with Google Translate                                #
+###################################################################
+
+id: 'es'
+
+messages:
+  loading-title: 'Cargando..'
+  error-title: 'Error'
+
+errors:
+  loading-data: "No se pudieron cargar datos"
+  store-secret: 'Error de secreto de tienda'
 
 home-page:
-  title: 'Message'
-  message-placeholder: 'The data will be encrypted in the browser'
-  secret-lifetime-title: 'Secret lifetime'
+  title: 'Mensaje'
+  message-placeholder: 'Los datos se cifrarán en el navegador'
+  secret-lifetime-title: 'Vida secreta'
   lifetime:
-    one-hour: 'One hour'
-    two-hours: 'Two hours'
-    one-day: 'One day'
-    one-time-download: 'One time download'
-    one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
-  encrypt-message-button: 'Encrypt message'
-  secret-url-title: 'Secret URL'
-  copy-button: 'Copy'
+    one-hour: 'Una hora'
+    two-hours: 'Dos horas'
+    one-day: 'Un día'
+    one-time-download: 'Descarga única'
+    one-time-download-precaution-message: "Este enlace es para un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
+  encrypt-message-button: 'Cifrar mensaje'
+  secret-url-title: 'Secreta URL'
+  copy-button: 'Copia'
 
 secret-url-page:
-  title: 'Message'
-  one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
+  title: 'Mensaje'
+  one-time-download-precaution-message: "Este enlace es para un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
 
 secret-not-found-page:
-  title: "Secret wasn't found"
-  possible-reasons-text: 'Possible reasons'
+  title: "No se encontró el secreto"
+  possible-reasons-text: 'Posibles razones'
   possible-reasons-items:
-    - 'Link has been expired'
-    - 'It was one-time link and someone opened it already'
+    - 'El enlace ha caducado'
+    - 'Era un enlace de una sola vez y alguien ya lo abrió'
 
 footer:
   how-it-works: 'FAQ'

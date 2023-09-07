@@ -1,5 +1,13 @@
 id: 'ru'
 
+messages:
+  loading-title: 'Загрузка..'
+  error-title: 'Ошибка'
+
+errors:
+  loading-data: "Ошибка загрузки данных"
+  store-secret: 'Ошибка сохранения'
+
 home-page:
   title: 'Сообщение'
   message-placeholder: 'Данные будут зашифрованы в браузере'

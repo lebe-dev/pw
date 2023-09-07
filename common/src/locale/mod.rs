@@ -5,6 +5,10 @@ use serde::{Deserialize, Serialize};
 pub struct Locale {
     pub id: String,
 
+    pub messages: MessageLabels,
+
+    pub errors: ErrorLabels,
+
     #[serde(alias = "homePage")]
     pub home_page: HomePageLabels,
     #[serde(alias = "secretUrlPage")]
@@ -19,6 +23,14 @@ impl Default for Locale {
     fn default() -> Self {
         Locale {
             id: "en".to_string(),
+            messages: MessageLabels {
+                loading_title: "Loading..".to_string(),
+                error_title: "Error".to_string(),
+            },
+            errors: ErrorLabels {
+                loading_data: "Couldn't load data".to_string(),
+                store_secret: "Store secret error".to_string(),
+            },
             home_page: HomePageLabels {
                 title: "Message".to_string(),
                 message_placeholder: "The data will be encrypted in the browser".to_string(),
@@ -51,6 +63,26 @@ impl Default for Locale {
             },
         }
     }
+}
+
+#[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "kebab-case")]
+pub struct MessageLabels {
+    #[serde(alias = "loadingTitle")]
+    pub loading_title: String,
+
+    #[serde(alias = "errorTitle")]
+    pub error_title: String
+}
+
+#[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "kebab-case")]
+pub struct ErrorLabels {
+    #[serde(alias = "loadingData")]
+    pub loading_data: String,
+
+    #[serde(alias = "storeSecret")]
+    pub store_secret: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

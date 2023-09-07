@@ -1,5 +1,13 @@
 id: 'en'
 
+messages:
+  loading-title: 'Loading..'
+  error-title: 'Error'
+
+errors:
+  loading-data: "Couldn't load data"
+  store-secret: 'Store secret error'
+
 home-page:
   title: 'Message'
   message-placeholder: 'The data will be encrypted in the browser'
