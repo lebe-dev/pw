@@ -5,6 +5,9 @@
 - Browser generate and encode unique Secret URL which contains secret id and encryption key
 - Backend stores ONLY encrypted data
 - Backend doesn't use disk to store data
+- Backend do cleanup for in-memory storage:
+  - Each time when someone retrieve secret
+  - By schedule (interval depends on option `secrets-cleanup-schedule`)
 
 ## Decryption
 

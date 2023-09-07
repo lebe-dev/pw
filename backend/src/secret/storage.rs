@@ -98,6 +98,16 @@ impl SecretStorage for InMemorySecretStorage {
             }
         }
     }
+
+    fn cleanup(&self) {
+        info!("cleanup expired secrets");
+        self.cache.iter().for_each(|secret| {
+            if secret.is_expired() {
+                self.cache.invalidate(&secret.secret.id.to_string());
+                info!("secret (id '{}') has been removed", secret.secret.id)
+            }
+        })
+    }
 }
 
 #[cfg(test)]

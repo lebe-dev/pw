@@ -20,13 +20,14 @@ pub struct AppConfig {
     pub message_max_length: u16,
 
     /// Encrypted message max length.
-    ///
     pub encrypted_message_max_length: u16,
 
     pub locale_id: String,
 
     #[serde(default = "get_default_locales")]
-    pub locales: Vec<Locale>
+    pub locales: Vec<Locale>,
+
+    pub secrets_cleanup_schedule: String
 }
 
 fn get_default_locales() -> Vec<Locale> {
@@ -35,8 +36,11 @@ fn get_default_locales() -> Vec<Locale> {
 
 impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "port: {}, log-level: {}, storage-items-capacity: {}, message-max-length: {}",
-               self.port, self.log_level, self.storage_items_capacity, self.message_max_length)
+        write!(f,
+               "port: {}, log-level: {}, storage-items-capacity: {}, message-max-length: {},\
+               encrypted-message-max-length: {}, locale-id: '{}', secrets-cleanup-schedule: {}",
+               self.port, self.log_level, self.storage_items_capacity, self.message_max_length,
+               self.encrypted_message_max_length, self.locale_id, self.secrets_cleanup_schedule)
     }
 }
 
@@ -60,6 +64,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         encrypted_message_max_length: config.encrypted_message_max_length,
         locale_id: config.locale_id,
         locales,
+        secrets_cleanup_schedule: config.secrets_cleanup_schedule,
     };
 
     info!("config: {}", config);

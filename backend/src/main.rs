@@ -7,7 +7,7 @@ use backend::config::load_config_from_file;
 use backend::secret::storage::{InMemorySecretStorage, SecretEntity};
 use backend::startup::Application;
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     let config_file = Path::new("pw.yml").to_str().expect("unexpected error");
 

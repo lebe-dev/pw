@@ -12,3 +12,7 @@ encrypted-message-max-length: 32000
 
 # Look for `id` inside `locale.d` directory
 locale-id: 'en'
+
+# Schedule format: https://docs.rs/job_scheduler/latest/job_scheduler/
+# Every 60 seconds
+secrets-cleanup-schedule: '1/60 * * * * *'
