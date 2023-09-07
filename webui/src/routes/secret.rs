@@ -29,8 +29,8 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
         locale: Locale::default()
     });
 
-    let (secret_id, private_key) = get_encoded_url_slug_parts(&encoded_id)
-        .unwrap_or(("invalid-slug".to_string(), "".to_string()));
+    let (secret_id, private_key, additional_data_hex) = get_encoded_url_slug_parts(&encoded_id)
+        .unwrap_or(("invalid-slug".to_string(), "".to_string(), "".to_string()));
 
     info!("secret id '{secret_id}'");
 
@@ -113,12 +113,14 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                         info!("payload decode - ok");
 
                         // TODO: replace with random
-                        let ad: &[u8; 15] = b"SuPpErStr0Ng038";
+                        // let ad: &[u8; 15] = b"SuPpErStr0Ng038";
 
                         let key = get_valid_key(&private_key);
                         let nonce = Nonce::default();
 
-                        let message = decrypt(payload, ad, &key, nonce).unwrap();
+                        let additional_data: [u8; 15] = hex::decode(additional_data_hex).unwrap().try_into().unwrap();
+
+                        let message = decrypt(payload, &additional_data, &key, nonce).unwrap();
 
                         info!("decrypt - ok");
 

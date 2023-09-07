@@ -74,11 +74,11 @@ pub fn HomePage(cx: Scope) -> Element {
             let encryption_key_array = get_valid_key(&encryption_key);
             let nonce = Nonce::default();
 
-            // TODO: replace with random
-            let ad: &[u8; 15] = b"SuPpErStr0Ng038";
+            let additional_data: [u8; 15] = get_random_additional_data().unwrap();;
+            let additional_data_hex = hex::encode(additional_data);
 
             let ciphertext = encrypt(
-                message_state.get(), ad, &encryption_key_array, nonce);
+                message_state.get(), additional_data, &encryption_key_array, nonce);
 
             let payload = hex::encode(ciphertext);
 
@@ -96,7 +96,8 @@ pub fn HomePage(cx: Scope) -> Element {
                 download_policy
             };
 
-            let url_slug_for_encode = get_encoded_url_slug(&secret.id, encryption_key);
+            let url_slug_for_encode = get_encoded_url_slug(
+                &secret.id, encryption_key, &additional_data_hex);
 
             let url = format!("{}/s/{}", get_base_host(), url_slug_for_encode);
 
@@ -315,4 +316,10 @@ pub fn get_valid_key(key: &str) -> [u8; 32] {
     }
 
     bytes.try_into().unwrap()
+}
+
+fn get_random_additional_data() -> Result<[u8; 15], getrandom::Error> {
+    let mut buf = [0u8; 15];
+    getrandom::getrandom(&mut buf)?;
+    Ok(buf)
 }
