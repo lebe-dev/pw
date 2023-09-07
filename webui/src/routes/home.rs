@@ -257,7 +257,7 @@ pub fn HomePage(cx: Scope) -> Element {
         div {
             PageHeader {},
             div {
-                class: "container bg-white p-5 text-center shadow-sm",
+                class: "container bg-white p-3 p-lg-5 text-center shadow-sm",
 
                 content,
 

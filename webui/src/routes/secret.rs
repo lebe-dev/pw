@@ -67,7 +67,7 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
         PageHeader {},
 
         div {
-            class: "container bg-white p-5 text-center shadow-sm",
+            class: "container bg-white p-3 p-lg-5 text-center shadow-sm",
 
             div {
                 class: "mb-4 text-start",
