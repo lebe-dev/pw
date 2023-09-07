@@ -36,6 +36,7 @@ impl Default for Locale {
             },
             secret_url_page: SecretUrlPageLabels {
                 title: "Message".to_string(),
+                one_time_download_precaution_message: "This link is for one-time use only, so don't try to open it or the secret will disappear.".to_string(),
             },
             secret_not_found_page: SecretNotFoundPageLabels {
                 title: "Secret wasn't found".to_string(),
@@ -87,7 +88,10 @@ pub struct LifetimeLabels {
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct SecretUrlPageLabels {
-    pub title: String
+    pub title: String,
+
+    #[serde(alias = "oneTimeDownloadPrecautionMessage")]
+    pub one_time_download_precaution_message: String,
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

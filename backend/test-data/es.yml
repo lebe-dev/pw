@@ -1,4 +1,4 @@
-id: 'ru'
+id: 'en'
 
 home-page:
   title: 'Message'
@@ -10,12 +10,13 @@ home-page:
     one-day: 'One day'
     one-time-download: 'One time download'
     one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
-  secret-url-title: 'Secret URL'
   encrypt-message-button: 'Encrypt message'
+  secret-url-title: 'Secret URL'
   copy-button: 'Copy'
 
 secret-url-page:
   title: 'Message'
+  one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
 
 secret-not-found-page:
   title: "Secret wasn't found"
@@ -25,4 +26,4 @@ secret-not-found-page:
     - 'It was one-time link and someone opened it already'
 
 footer:
-  how-it-works: 'how it works'
+  how-it-works: 'FAQ'

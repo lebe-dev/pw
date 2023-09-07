@@ -16,6 +16,7 @@ home-page:
 
 secret-url-page:
   title: 'Message'
+  one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
 
 secret-not-found-page:
   title: "Secret wasn't found"

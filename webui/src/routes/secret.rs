@@ -4,7 +4,7 @@ use log::{error, info};
 
 use common::dto::AppConfigDto;
 use common::locale::Locale;
-use common::secret::Secret;
+use common::secret::{Secret, SecretDownloadPolicy};
 use common::secret::url::get_encoded_url_slug_parts;
 
 use crate::components::footer::PageFooter;
@@ -100,7 +100,15 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                             id: "message",
                             class: "p-3 rounded-2 bg-light",
                             "{message}"
-                        }
+                        },
+                        if secret.download_policy == SecretDownloadPolicy::OneTime {
+                            rsx! {
+                                div {
+                                    class: "p-1 rounded-3 border border-warning text-dark mt-3 mb-3",
+                                    "{app_config_state.locale.secret_url_page.one_time_download_precaution_message}"
+                                }
+                            }
+                        },
                     }
                   }
                   None => {

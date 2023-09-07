@@ -16,6 +16,7 @@ home-page:
 
 secret-url-page:
   title: 'Сообщение'
+  one-time-download-precaution-message: "Эта ссылка одноразовая, поэтому не пытайтесь её открыть, иначе секрет будет удалён."
 
 secret-not-found-page:
   title: "Сообщение не найдено"
