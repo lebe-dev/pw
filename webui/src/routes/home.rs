@@ -11,12 +11,17 @@ use common::secret::url::get_encoded_url_slug;
 
 use crate::components::footer::PageFooter;
 use crate::components::header::PageHeader;
+use crate::components::notification::Notification;
+use crate::components::notification::NotificationType;
 use crate::config::{fetch_app_config, get_base_host};
+use crate::routes::PageState;
 use crate::secret::store_secret;
 
 const KEY_LENGTH: usize = 32;
 
 pub fn HomePage(cx: Scope) -> Element {
+    let page_state = use_state(cx, || PageState::Loading);
+
     let force_get_app_config_dto = use_state(cx, || ());
 
     let app_config_state = use_state::<AppConfigDto>(cx, || AppConfigDto {
@@ -36,6 +41,7 @@ pub fn HomePage(cx: Scope) -> Element {
     let secret_url_state = use_state::<Option<String>>(cx, || None);
 
     {
+        let page_state = page_state.clone();
         let app_config = app_config_state.clone();
         let message_max_length_state = message_max_length_state.clone();
         use_effect(cx, force_get_app_config_dto, |_| async move {
@@ -44,8 +50,12 @@ pub fn HomePage(cx: Scope) -> Element {
                     info!("config: {:?}", config);
                     message_max_length_state.set(config.message_max_length);
                     app_config.set(config);
+                    page_state.set(PageState::Ready);
                 }
-                Err(e) => error!("unable to fetch app config: {}", e)
+                Err(e) => {
+                    error!("unable to fetch app config: {}", e);
+                    page_state.set(PageState::Error);
+                }
             }
 
         });
@@ -259,7 +269,29 @@ pub fn HomePage(cx: Scope) -> Element {
             div {
                 class: "container bg-white p-3 p-lg-5 text-center shadow-sm",
 
-                content,
+                match page_state.get() {
+                  PageState::Loading => {
+                    rsx! {
+                        Notification {
+                            notification_type: NotificationType::Loading,
+                            title: "{app_config_state.locale.messages.loading_title}",
+                            message: ""
+                        }
+                    }
+                  }
+                  PageState::Ready => {
+                    content
+                  }
+                  _ => {
+                    rsx! {
+                        Notification {
+                            notification_type: NotificationType::Error,
+                            title: "{app_config_state.locale.messages.error_title}",
+                            message: "{app_config_state.locale.errors.loading_data}"
+                        }
+                    }
+                  }
+                },
 
                 PageFooter {
                     how_it_works_label: "{app_config_state.locale.footer_labels.how_it_works}",
