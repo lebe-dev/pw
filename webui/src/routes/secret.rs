@@ -9,13 +9,18 @@ use common::secret::url::get_encoded_url_slug_parts;
 
 use crate::components::footer::PageFooter;
 use crate::components::header::PageHeader;
+use crate::components::notification::Notification;
+use crate::components::notification::NotificationType;
 use crate::config::fetch_app_config;
 use crate::routes::home::get_valid_key;
+use crate::routes::PageState;
 use crate::secret::get_secret_by_id;
 
 #[inline_props]
 pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     info!("secret id: {encoded_id}");
+
+    let page_state = use_state(cx, || PageState::Loading);
 
     let force_get_app_config_dto = use_state(cx, || ());
 
@@ -35,14 +40,19 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
 
     {
         let app_config = app_config_state.clone();
+        let page_state = page_state.clone();
 
         use_effect(cx, force_get_app_config_dto, |_| async move {
             match fetch_app_config().await {
                 Ok(config) => {
                     info!("config: {:?}", config);
                     app_config.set(config);
+
                 }
-                Err(e) => error!("unable to fetch app config: {}", e)
+                Err(e) => {
+                    page_state.set(PageState::Error);
+                    error!("unable to fetch app config: {}", e);
+                }
             }
 
         });
@@ -50,13 +60,27 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
 
     {
         let secret_state = secret_state.clone();
+        let page_state = page_state.clone();
 
         use_effect(cx, force_get_secret, |_| async move {
-            match get_secret_by_id(&secret_id).await {
-                Ok(secret) => {
-                    secret_state.set(secret)
+
+            if *page_state.get() == PageState::Loading {
+
+                match get_secret_by_id(&secret_id).await {
+                    Ok(secret) => {
+                        secret_state.set(secret.clone());
+
+                        match secret {
+                            Some(_) => page_state.set(PageState::Ready),
+                            None => page_state.set(PageState::NotFound)
+                        }
+                    },
+                    Err(e) => {
+                        page_state.set(PageState::Error);
+                        error!("unable to fetch secret by id: {}", e);
+                    }
                 }
-                Err(e) => error!("unable to fetch app config: {}", e)
+
             }
 
         });
@@ -72,72 +96,91 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
             div {
                 class: "mb-4 text-start",
 
-                match secret_state.get() {
-                  Some(secret) => {
-                    let payload = hex::decode(&secret.payload).expect("unable to decode hex");
-                    info!("payload decode - ok");
-
-                    // TODO: replace with random
-                    let ad: &[u8; 15] = b"SuPpErStr0Ng038";
-
-                    let key = get_valid_key(&private_key);
-                    let nonce = Nonce::default();
-
-                    let message = decrypt(payload, ad, &key, nonce).unwrap();
-
-                    info!("decrypt - ok");
-
-                    let message = String::from_utf8_lossy(&message).to_string();
-
-                    rsx! {
-                        div {
-                            class: "text-start mb-3",
-                            h5 {
-                                "{app_config_state.locale.secret_url_page.title}"
+                match page_state.get() {
+                    PageState::Loading => {
+                        rsx! {
+                            Notification {
+                                notification_type: NotificationType::Loading,
+                                title: "{app_config_state.locale.messages.loading_title}", message: ""
                             }
-                        },
-                        div {
-                            id: "message",
-                            class: "p-3 rounded-2 bg-light",
-                            "{message}"
-                        },
-                        if secret.download_policy == SecretDownloadPolicy::OneTime {
-                            rsx! {
-                                div {
-                                    class: "p-1 rounded-3 border border-warning text-dark mt-3 mb-3",
-                                    "{app_config_state.locale.secret_url_page.one_time_download_precaution_message}"
-                                }
-                            }
-                        },
-                    }
-                  }
-                  None => {
-                    rsx! {
-                        div {
-                            class: "text-start mb-3",
-                            h5 {
-                                "{app_config_state.locale.secret_not_found_page.title}"
-                            }
-                        },
-                        div {
-                            class: "mb-2",
-                            "{app_config_state.locale.secret_not_found_page.possible_reasons_text}:"
-                        },
-
-                        ul {
-                            class: "mb-5",
-                            app_config_state.locale.secret_not_found_page.possible_reasons_items.iter().map(|reason| {
-                                rsx! {
-                                    li {
-                                        "{reason}"
-                                    },
-                                }
-                            })
                         }
-
                     }
-                  }
-                },
+                    PageState::Ready => {
+                        let secret = secret_state.get().clone().unwrap();
+
+                        let payload = hex::decode(&secret.payload)
+                                               .expect("unable to decode hex");
+                        info!("payload decode - ok");
+
+                        // TODO: replace with random
+                        let ad: &[u8; 15] = b"SuPpErStr0Ng038";
+
+                        let key = get_valid_key(&private_key);
+                        let nonce = Nonce::default();
+
+                        let message = decrypt(payload, ad, &key, nonce).unwrap();
+
+                        info!("decrypt - ok");
+
+                        let message = String::from_utf8_lossy(&message).to_string();
+
+                        rsx! {
+                            div {
+                                class: "text-start mb-3",
+                                h5 {
+                                    "{app_config_state.locale.secret_url_page.title}"
+                                }
+                            },
+                            div {
+                                id: "message",
+                                class: "p-3 rounded-2 bg-light",
+                                "{message}"
+                            },
+                            if secret.download_policy == SecretDownloadPolicy::OneTime {
+                                rsx! {
+                                    div {
+                                        class: "p-1 rounded-3 border border-warning text-dark mt-3 mb-3",
+                                        "{app_config_state.locale.secret_url_page.one_time_download_precaution_message}"
+                                    }
+                                }
+                            },
+                        }
+                    }
+                    PageState::NotFound => {
+                        rsx! {
+                            div {
+                                class: "text-start mb-3",
+                                h5 {
+                                    "{app_config_state.locale.secret_not_found_page.title}"
+                                }
+                            },
+                            div {
+                                class: "mb-2",
+                                "{app_config_state.locale.secret_not_found_page.possible_reasons_text}:"
+                            },
+
+                            ul {
+                                class: "mb-5",
+                                app_config_state.locale.secret_not_found_page.possible_reasons_items.iter().map(|reason| {
+                                    rsx! {
+                                        li {
+                                            "{reason}"
+                                        },
+                                    }
+                                })
+                            }
+
+                        }
+                    }
+                    PageState::Error => {
+                        rsx! {
+                            Notification {
+                                notification_type: NotificationType::Error,
+                                title: "{app_config_state.locale.messages.error_title}", message: "{app_config_state.locale.errors.loading_data}"
+                            }
+                        }
+                    }
+                }
             },
 
             PageFooter {
