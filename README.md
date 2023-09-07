@@ -31,6 +31,8 @@ Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](do
 
 ## Roadmap
 
-1. Build static release
-2. Support Windows
-3. Configuration via environment variables
+1. Improve translations
+2. Build static release
+3. Add translations
+4. Support Windows
+5. Configuration via environment variables
