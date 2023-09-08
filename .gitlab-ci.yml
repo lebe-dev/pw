@@ -51,32 +51,32 @@ build-linux:
       - locale.d
     expire_in: 1 week
 
-build-windows:
-  stage: app
-
-  script:
-    - cd backend
-    - mkdir static
-    - 'xcopy ..\webui\dist\ static\ /E /H'
-    - cargo test
-    - cargo build --release
-    - cd ..
-    - copy target\release\backend.exe pw.exe
-    - copy backend\pw.yml-dist pw.yml-dist
-    - 'xcopy backend\locale.d locale.d\ /E /H'
-
-  artifacts:
-    name: app-windows
-    paths:
-      - pw.exe
-      - pw.yml-dist
-      - README.md
-      - docs
-      - locale.d
-    expire_in: 1 week
-
-  tags:
-    - windows
+#build-windows:
+#  stage: app
+#
+#  script:
+#    - cd backend
+#    - mkdir static
+#    - 'xcopy ..\webui\dist\ static\ /E /H'
+#    - cargo test
+#    - cargo build --release
+#    - cd ..
+#    - copy target\release\backend.exe pw.exe
+#    - copy backend\pw.yml-dist pw.yml-dist
+#    - 'xcopy backend\locale.d locale.d\ /E /H'
+#
+#  artifacts:
+#    name: app-windows
+#    paths:
+#      - pw.exe
+#      - pw.yml-dist
+#      - README.md
+#      - docs
+#      - locale.d
+#    expire_in: 1 week
+#
+#  tags:
+#    - windows
 
 build-image:
   stage: image
