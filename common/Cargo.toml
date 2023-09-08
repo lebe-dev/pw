@@ -1,6 +1,6 @@
 [package]
 name = "common"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 
 [features]
@@ -20,6 +20,7 @@ fake = { version = "2.6.1" }
 env_logger = { version = "0.9.3", optional = true }
 
 base64 = "0.21.3"
+
 log = "0.4.19"
 
 [dev-dependencies]
