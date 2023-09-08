@@ -14,8 +14,6 @@ pub struct AppConfig {
 
     pub log_level: String,
 
-    pub storage_items_capacity: u32,
-
     /// Message max length, all above will be truncated
     pub message_max_length: u16,
 
@@ -37,9 +35,9 @@ fn get_default_locales() -> Vec<Locale> {
 impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f,
-               "port: {}, log-level: {}, storage-items-capacity: {}, message-max-length: {},\
+               "port: {}, log-level: {}, message-max-length: {},\
                encrypted-message-max-length: {}, locale-id: '{}', redis-url: '{}'",
-               self.port, self.log_level, self.storage_items_capacity, self.message_max_length,
+               self.port, self.log_level, self.message_max_length,
                self.encrypted_message_max_length, self.locale_id, self.redis_url)
     }
 }
@@ -59,7 +57,6 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     let config = AppConfig {
         port: config.port,
         log_level: config.log_level,
-        storage_items_capacity: config.storage_items_capacity,
         message_max_length: config.message_max_length,
         encrypted_message_max_length: config.encrypted_message_max_length,
         locale_id: config.locale_id,

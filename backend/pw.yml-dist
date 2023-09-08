@@ -2,9 +2,6 @@ port: 8080
 
 log-level: info
 
-# Limit - how many secrets hold inside in-memory storage
-storage-items-capacity: 1024
-
 message-max-length: 1024
 
 # Encrypted payload length > source message length
