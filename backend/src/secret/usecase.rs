@@ -40,6 +40,7 @@ mod tests {
     use crate::secret::usecase::store_secret;
     use crate::tests::secret::get_sample_secret;
 
+    #[ignore]
     #[test]
     fn valid_payload_length_test() {
         let secret_storage = RedisSecretStorage::new(DEFAULT_REDIS_CNN_URL);
@@ -52,6 +53,7 @@ mod tests {
         assert!(store_secret(&secret_storage, &secret, 3000).is_ok());
     }
 
+    #[ignore]
     #[test]
     fn return_error_for_too_large_payload() {
         let secret_storage = RedisSecretStorage::new(DEFAULT_REDIS_CNN_URL);
