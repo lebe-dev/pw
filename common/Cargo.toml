@@ -11,6 +11,8 @@ test-utils = ["dep:env_logger"]
 [dependencies]
 thiserror = "1.0.44"
 
+anyhow = "1.0.72"
+
 serde = { version = "1.0.178", features = ["derive"] }
 
 hex = { version = "0.4.3", optional = true }

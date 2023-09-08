@@ -10,7 +10,7 @@ use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
 use crate::routes::{get_config_route, get_version_route};
 use crate::routes::secret::{get_secret_route, store_secret_route};
-use crate::secret::storage::InMemorySecretStorage;
+use crate::secret::storage::RedisSecretStorage;
 
 const STATIC_DIR: Dir = include_dir!("./static");
 
@@ -29,7 +29,7 @@ impl Application {
     }
 
     pub async fn build(config: AppConfig,
-               secret_storage: InMemorySecretStorage) -> Result<Self, anyhow::Error> {
+                       secret_storage: RedisSecretStorage) -> Result<Self, anyhow::Error> {
 
         let logging_config = get_logging_config(&config.log_level);
 
@@ -54,7 +54,7 @@ impl Application {
     }
 }
 
-pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
+pub async fn run(config: AppConfig, secret_storage: RedisSecretStorage,
                  listener: TcpListener) -> anyhow::Result<Server> {
 
     let app_banner = format!("PW v{}", Application::get_version());
