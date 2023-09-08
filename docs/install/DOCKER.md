@@ -30,6 +30,7 @@ services:
     container_name: pw-cache
     image: redis:7.2.1-alpine3.18
     restart: always
+    command: 'redis-server --save "" --appendonly no --maxmemory 128mb'
     ports:
       - '6379:6379'
 ```
