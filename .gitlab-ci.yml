@@ -6,6 +6,9 @@ stages:
 build-webui:
   stage: webui
 
+  only:
+    - main
+
   script:
     - cd webui
     - cargo test
