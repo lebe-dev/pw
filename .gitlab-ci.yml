@@ -11,9 +11,6 @@ build-webui:
     - cargo test
     - dx build --release
 
-  only:
-    - main
-
   artifacts:
     name: webui
     paths:
@@ -25,6 +22,9 @@ build-webui:
 
 build-linux:
   stage: app
+
+  only:
+    - main
 
   script:
     - 'cd backend'
