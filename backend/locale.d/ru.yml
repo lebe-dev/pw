@@ -17,21 +17,21 @@ home-page:
     two-hours: 'Два часа'
     one-day: 'Один день'
     one-time-download: 'Одноразовая ссылка'
-    one-time-download-precaution-message: "Эта ссылка одноразовая, поэтому не пытайтесь её открыть, иначе секрет будет удалён."
+    one-time-download-precaution-message: "Создана одноразовая ссылка. Получатель сможет открыть её только один раз."
   encrypt-message-button: 'Зашифровать сообщение'
   secret-url-title: 'Ссылка'
   copy-button: 'Копировать'
 
 secret-url-page:
   title: 'Сообщение'
-  one-time-download-precaution-message: "Эта ссылка одноразовая, поэтому не пытайтесь её открыть, иначе секрет будет удалён."
+  one-time-download-precaution-message: "Эта одноразовая ссылка. Не закрывайте и не обновляйте страницу, пока не сохраните информацию."
 
 secret-not-found-page:
   title: "Сообщение не найдено"
   possible-reasons-text: 'Возможные причины'
   possible-reasons-items:
-    - 'Ссылка истекла'
-    - 'Это была одноразовая ссылка и кто-то её открыл до вас'
+    - 'Время действия ссылки истекло'
+    - 'Эта ссылка была одноразовая, и кто-то открыл её до вас'
     - 'Неправильная ссылка'
 
 footer:
