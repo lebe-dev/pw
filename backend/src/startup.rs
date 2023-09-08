@@ -1,14 +1,10 @@
 use std::net::TcpListener;
-use std::time::Duration;
 
 use actix_cors::Cors;
 use actix_plus_static_files::{build_hashmap_from_included_dir, Dir, include_dir, ResourceFiles};
 use actix_web::{HttpServer, middleware, web};
 use actix_web::dev::Server;
-use job_scheduler::{Job, JobScheduler};
 use log::info;
-
-use common::secret::storage::SecretStorage;
 
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
@@ -64,22 +60,6 @@ pub async fn run(config: AppConfig, secret_storage: InMemorySecretStorage,
     let app_banner = format!("PW v{}", Application::get_version());
     println!("{app_banner}");
     info!("{app_banner}");
-
-    let mut sched = JobScheduler::new();
-
-    let job_secret_storage = secret_storage.clone();
-
-    sched.add(Job::new(config.secrets_cleanup_schedule.to_string().parse()
-                           .expect("invalid cleanup schedule"), move || {
-        job_secret_storage.cleanup()
-    }));
-
-    actix_rt::spawn(async move {
-        loop {
-            sched.tick();
-            std::thread::sleep(Duration::from_millis(500))
-        }
-    });
 
     let hash_map = build_hashmap_from_included_dir(&STATIC_DIR);
 
