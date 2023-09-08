@@ -1,5 +1,9 @@
 # Installation (Linux)
 
+## 1. Install redis
+
+## 2. Install pw
+
 Create unprivileged user `pw`:
 
 ```shell
