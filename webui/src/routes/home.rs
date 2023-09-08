@@ -271,19 +271,10 @@ pub fn HomePage(cx: Scope) -> Element {
                 class: "container bg-white p-3 p-lg-5 text-center shadow-sm",
 
                 match page_state.get() {
-                  PageState::Loading => {
-                    rsx! {
-                        Notification {
-                            notification_type: NotificationType::Loading,
-                            title: "{app_config_state.locale.messages.loading_title}",
-                            message: ""
-                        }
-                    }
-                  }
-                  PageState::Ready => {
+                  _ => {
                     content
                   }
-                  _ => {
+                  PageState::Error => {
                     rsx! {
                         Notification {
                             notification_type: NotificationType::Error,
