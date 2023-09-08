@@ -12,7 +12,7 @@ pub mod config;
 pub mod secret;
 pub mod components;
 
-pub const APP_VERSION: &str = "1.0.1";
+pub const APP_VERSION: &str = "1.1.0";
 
 
 #[derive(Routable, Clone)]

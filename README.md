@@ -7,7 +7,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 ## Getting started
 
 ```shell
-docker run -d --name pw -p 8080:8080 --rm -t tinyops/pw:1.0.1
+docker run -d --name pw -p 8080:8080 --rm -t tinyops/pw:1.1.0
 ```
 
 Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](docs/install/BINARY-LINUX.md)
