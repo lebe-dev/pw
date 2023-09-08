@@ -21,6 +21,8 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     info!("secret id: {encoded_id}");
 
     let page_state = use_state(cx, || PageState::Loading);
+    let page_title = use_state(cx, || "Message".to_string());
+    let page_message = use_state(cx, || "Loading..".to_string());
 
     let force_get_app_config_dto = use_state(cx, || ());
 
@@ -41,13 +43,16 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
     {
         let app_config = app_config_state.clone();
         let page_state = page_state.clone();
+        let page_title = page_title.clone();
+        let page_message = page_message.clone();
 
         use_effect(cx, force_get_app_config_dto, |_| async move {
             match fetch_app_config().await {
                 Ok(config) => {
                     info!("config: {:?}", config);
+                    page_title.set(config.clone().locale.secret_url_page.title.to_string());
+                    page_message.set(config.clone().locale.messages.loading_title.to_string());
                     app_config.set(config);
-
                 }
                 Err(e) => {
                     page_state.set(PageState::Error);
@@ -99,10 +104,17 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                 match page_state.get() {
                     PageState::Loading => {
                         rsx! {
-                            Notification {
-                                notification_type: NotificationType::Loading,
-                                title: "{app_config_state.locale.messages.loading_title}", message: ""
-                            }
+                                div {
+                                    class: "text-start mb-3",
+                                    h5 {
+                                        "{page_title}"
+                                    }
+                                },
+                                div {
+                                    id: "message",
+                                    class: "p-3 rounded-2 bg-light",
+                                    "{page_message}"
+                                }
                         }
                     }
                     PageState::Ready => {
@@ -112,13 +124,11 @@ pub fn SecretPage(cx: Scope, encoded_id: String) -> Element {
                                                .expect("unable to decode hex");
                         info!("payload decode - ok");
 
-                        // TODO: replace with random
-                        // let ad: &[u8; 15] = b"SuPpErStr0Ng038";
-
                         let key = get_valid_key(&private_key);
                         let nonce = Nonce::default();
 
-                        let additional_data: [u8; 15] = hex::decode(additional_data_hex).unwrap().try_into().unwrap();
+                        let additional_data: [u8; 15] = hex::decode(additional_data_hex).unwrap()
+                                                            .try_into().unwrap();
 
                         let message = decrypt(payload, &additional_data, &key, nonce).unwrap();
 
