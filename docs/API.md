@@ -26,7 +26,6 @@ Response body:
 **Errors:**
 
 - `400 Bad Request` - invalid request
-- `403 Forbidden` - invalid request
 
 ## 2. Retrieve secret
 
