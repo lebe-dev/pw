@@ -18,13 +18,20 @@ version: '3.3'
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.0.0
+    image: tinyops/pw:1.1.0
     restart: always
     volumes:
       - ./pw.yml:/app/app.yml
-      - ./logs:/app/logs
+      #- ./locale.d:/app/locale.d
     ports:
       - "8080:8080"
+
+  cache:
+    container_name: pw-cache
+    image: redis:7.2.1-alpine3.18
+    restart: always
+    ports:
+      - '6379:6379'
 ```
 
 **4. Run**
