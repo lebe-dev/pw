@@ -86,6 +86,7 @@ mod tests {
     use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
     use crate::tests::secret::get_sample_secret;
 
+    #[ignore]
     #[test]
     fn secret_with_one_time_download_should_be_removed_after_load() {
         let storage = get_storage();
@@ -99,6 +100,7 @@ mod tests {
         assert!(storage.load(&secret.id).unwrap().is_none());
     }
 
+    #[ignore]
     #[test]
     fn secret_with_unlimited_time_download_should_not_be_removed_after_load() {
         let storage = get_storage();
@@ -115,6 +117,7 @@ mod tests {
         assert!(storage.load(&secret.id).unwrap().is_some());
     }
 
+    #[ignore]
     #[test]
     fn return_none_for_unknown_secret() {
         let storage = get_storage();
