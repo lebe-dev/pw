@@ -17,7 +17,7 @@ pub async fn store_secret_route(
         secret_storage.as_ref(), &secret,
         app_config.encrypted_message_max_length) {
         Ok(_) => HttpResponse::Ok().finish(),
-        Err(_) => HttpResponse::Forbidden().finish()
+        Err(_) => HttpResponse::InternalServerError().finish()
     }
 }
 

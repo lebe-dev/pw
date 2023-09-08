@@ -1,5 +1,5 @@
-use anyhow::anyhow;
-use log::{error, info};
+use anyhow::{anyhow, Context};
+use log::{debug, error, info};
 use redis::{Commands, ExistenceCheck, SetExpiry, SetOptions};
 
 use common::secret::{Secret, SecretDownloadPolicy};
@@ -21,8 +21,10 @@ impl RedisSecretStorage {
     }
 
     pub fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()> {
+        info!("store secret: {}", secret);
+        debug!("cnn url: {}", self.cnn_url);
         let client = redis::Client::open(&*self.cnn_url)?;
-        let mut cnn = client.get_connection()?;
+        let mut cnn = client.get_connection().context("couldn't connect to redis")?;
 
         let ttl_seconds = match secret.ttl {
             SecretTTL::OneHour => 60 * 60,
@@ -30,11 +32,13 @@ impl RedisSecretStorage {
             SecretTTL::OneDay => 60 * 60 * 24
         };
 
+        debug!("ttl seconds: {ttl_seconds}");
+
         let opts = SetOptions::default().conditional_set(ExistenceCheck::NX)
             .with_expiration(SetExpiry::EX(ttl_seconds))
             .get(true);
 
-        let json = serde_json::to_string(&secret).unwrap();
+        let json = serde_json::to_string(&secret).context("secret deserialization error")?;
 
         cnn.set_options(id.to_string(), json, opts)?;
 

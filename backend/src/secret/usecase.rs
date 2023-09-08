@@ -21,9 +21,13 @@ pub fn store_secret(secret_storage: &RedisSecretStorage,
             download_policy: secret.download_policy.clone(),
         };
 
-        secret_storage.store(&secret.id, &new_secret)?;
-
-        Ok(())
+        match secret_storage.store(&secret.id, &new_secret) {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                error!("unable to store secret: {}", e);
+                Err(anyhow!("unable to store secret"))
+            }
+        }
 
     } else {
         error!("payload length ({}) is bigger than allowed {}", payload.len(), payload_max_length);
