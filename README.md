@@ -4,9 +4,6 @@ PW is a project for sharing secrets (any confidential information). All data is 
 
 ![Screenshot of PW application for sharing secrets](pw-screenshot.png)
 
-
-Demo: [https://pw.tinyops.ru](https://pw.tinyops.ru)
-
 ## Getting started
 
 ```shell
