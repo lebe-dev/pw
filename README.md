@@ -4,13 +4,11 @@ PW is a project for sharing secrets (any confidential information). All data is 
 
 ![Screenshot of PW application for sharing secrets](pw-screenshot.png)
 
+[Demo](https://pw.tinyops.ru) | [Demo (RU)](https://pw-ru.tinyops.ru)
+
 ## Getting started
 
-```shell
-docker run -d --name pw -p 8080:8080 --rm -t tinyops/pw:1.1.0
-```
-
-Other options: [docker-compose.yml](docs/install/DOCKER.md) | [Linux Service](docs/install/BINARY-LINUX.md)
+[Install with docker](docs/install/DOCKER.md)
 
 ## Docs
 
