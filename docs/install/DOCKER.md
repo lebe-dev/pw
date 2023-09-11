@@ -21,7 +21,7 @@ services:
     image: tinyops/pw:1.1.0
     restart: always
     volumes:
-      - ./pw.yml:/app/app.yml
+      - ./pw.yml:/app/pw.yml
       #- ./locale.d:/app/locale.d
     ports:
       - "8080:8080"
