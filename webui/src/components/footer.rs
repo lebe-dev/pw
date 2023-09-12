@@ -7,7 +7,7 @@ pub fn PageFooter<'a>(cx: Scope, how_it_works_label: &'a str, locale_id: &'a str
             class: "footer-links mt-5",
             span {
                 class: "me-1",
-                "v1.1.0"
+                "v1.1.1"
             },
             span {
                 class: "ms-1 me-1",
