@@ -11,17 +11,17 @@ build-webui:
 
   script:
     - cd webui
-    - cargo test
-    - dx build --release
+    - npm i
+    - npm run dev
 
   artifacts:
     name: webui
     paths:
-      - webui/dist
+      - webui/build
     expire_in: 1 week
 
   tags:
-    - rockylinux8
+    - linux
 
 build-linux:
   stage: app
@@ -33,7 +33,7 @@ build-linux:
     - 'cd backend'
     - 'mkdir static'
     - 'cargo test'
-    - 'cp -r ../webui/dist/ static/'
+    - 'cp -r ../webui/build/ static/'
     - 'cargo test'
     - 'cargo build --release'
     - 'cd ..'
