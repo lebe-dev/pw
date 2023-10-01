@@ -18,9 +18,9 @@ RUN mkdir -p /build/backend/static && \
     unxz upx-4.0.2-amd64_linux.tar.xz && tar xvf upx-4.0.2-amd64_linux.tar && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
 
-COPY . /build
-
 COPY --from=webui-build /build/build/ /build/static/
+
+COPY . /build
 
 RUN cd backend && \
     cargo test && \
