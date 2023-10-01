@@ -6,3 +6,7 @@
 /pw.yml
 /backend/pw.yml
 /pw.log
+/backend/static
+/webui/.svelte-kit
+/webui/build
+/webui/node_modules
