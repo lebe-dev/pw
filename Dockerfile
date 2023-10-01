@@ -1,3 +1,13 @@
+FROM node:20.8.0-alpine3.18 as webui-build
+
+WORKDIR /build
+
+COPY webui/ /build
+
+RUN npm i
+
+RUN npm run build
+
 FROM rust:1.72.0-alpine3.18 as app-build
 
 WORKDIR /build
@@ -6,24 +16,13 @@ RUN mkdir -p /build/backend/static && \
     apk add nodejs npm musl-dev elfutils xz wget pkgconfig libressl-dev perl make && \
     wget https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz && \
     unxz upx-4.0.2-amd64_linux.tar.xz && tar xvf upx-4.0.2-amd64_linux.tar && \
-    cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx && \
-    npm i -g wasm-opt uglify-js && \
-    cargo install dioxus-cli --locked && \
-    rustup target add wasm32-unknown-unknown
+    cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
 
 COPY . /build
 
-RUN cd webui && \
-    cargo test && \
-    dx build --release && \
-    cd dist/assets/dioxus && \
-    cp pw_bg.wasm pw_bg.wasm_ && \
-    wasm-opt pw_bg.wasm_ -Os -o pw_bg.wasm && \
-    mv pw.js pw.js_ && \
-    uglifyjs --compress --mangle -o pw.js -- pw.js_ && \
-    rm -f pw_bg.wasm_ && cd ../../../ && \
-    cp -r dist/. ../backend/static && \
-    cd ../backend && \
+COPY --from=webui-build /build/build/ /build/static/
+
+RUN cd backend && \
     cargo test && \
     cargo build --release && \
     eu-elfcompress ../target/release/backend && \
