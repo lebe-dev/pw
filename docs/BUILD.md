@@ -14,24 +14,21 @@ docker build -t pw:1.0.0 .
 
 **1. Install Rust 1.72 or later**
 
-**2. Install Dioxus CLI**
-
-```shell
-cargo install dioxus-cli --locked
-```
+**2. Install NodeJS and npm**
 
 **3. Build webui module**
 
 ```shell
 cd webui
-dx build --release
+npm i
+npm run build
 ```
 
 **4. Build app**
 
 ```shell
 mkdir backend/static
-cp -r ../webui/dist/ static/
+cp -r ../webui/build/ static/
 cd backend
 cargo build --release
 cd ..
