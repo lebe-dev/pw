@@ -9,7 +9,7 @@
 		</div>
 	</nav>
 
-	<div class="container w-full max-w-5xl bg-white shadow-md p-4 p-lg-10">
+	<div class="container w-full max-w-5xl bg-white shadow-md p-4 lg:p-10">
 		<slot />
 	</div>
 
