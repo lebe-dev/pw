@@ -7,6 +7,7 @@ pub mod key;
 pub mod url;
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Secret {
     pub id: String,
 
@@ -28,6 +29,7 @@ impl Display for Secret {
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "PascalCase")]
 pub enum SecretTTL {
     OneHour,
     TwoHours,
@@ -35,6 +37,7 @@ pub enum SecretTTL {
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "PascalCase")]
 pub enum SecretDownloadPolicy {
     OneTime,
     Unlimited

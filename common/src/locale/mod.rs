@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct Locale {
     pub id: String,
 
@@ -9,11 +9,11 @@ pub struct Locale {
 
     pub errors: ErrorLabels,
 
-    #[serde(alias = "homePage")]
+    #[serde(alias = "home-page")]
     pub home_page: HomePageLabels,
-    #[serde(alias = "secretUrlPage")]
+    #[serde(alias = "secret-url-page")]
     pub secret_url_page: SecretUrlPageLabels,
-    #[serde(alias = "secretNotFoundPage")]
+    #[serde(alias = "secret-not-found-page")]
     pub secret_not_found_page: SecretNotFoundPageLabels,
     #[serde(alias = "footer")]
     pub footer_labels: FooterLabels
@@ -66,79 +66,79 @@ impl Default for Locale {
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct MessageLabels {
-    #[serde(alias = "loadingTitle")]
+    #[serde(alias = "loading-title")]
     pub loading_title: String,
 
-    #[serde(alias = "errorTitle")]
+    #[serde(alias = "error-title")]
     pub error_title: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct ErrorLabels {
-    #[serde(alias = "loadingData")]
+    #[serde(alias = "loading-data")]
     pub loading_data: String,
 
-    #[serde(alias = "storeSecret")]
+    #[serde(alias = "store-secret")]
     pub store_secret: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct HomePageLabels {
     pub title: String,
-    #[serde(alias = "messagePlaceholder")]
+    #[serde(alias = "message-placeholder")]
     pub message_placeholder: String,
-    #[serde(alias = "secretLifetimeTitle")]
+    #[serde(alias = "secret-lifetime-title")]
     pub secret_lifetime_title: String,
     pub lifetime: LifetimeLabels,
-    #[serde(alias = "encryptMessageButton")]
+    #[serde(alias = "encrypt-message-button")]
     pub encrypt_message_button: String,
-    #[serde(alias = "secretUrlTitle")]
+    #[serde(alias = "secret-url-title")]
     pub secret_url_title: String,
-    #[serde(alias = "copyButton")]
+    #[serde(alias = "copy-button")]
     pub copy_button: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct LifetimeLabels {
-    #[serde(alias = "oneHour")]
+    #[serde(alias = "one-hour")]
     pub one_hour: String,
-    #[serde(alias = "twoHours")]
+    #[serde(alias = "two-hours")]
     pub two_hours: String,
-    #[serde(alias = "oneDay")]
+    #[serde(alias = "one-day")]
     pub one_day: String,
-    #[serde(alias = "oneTimeDownload")]
+    #[serde(alias = "one-time-download")]
     pub one_time_download: String,
-    #[serde(alias = "oneTimeDownloadPrecautionMessage")]
+    #[serde(alias = "one-time-download-precaution-message")]
     pub one_time_download_precaution_message: String,
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct SecretUrlPageLabels {
     pub title: String,
 
-    #[serde(alias = "oneTimeDownloadPrecautionMessage")]
+    #[serde(alias = "one-time-download-precaution-message")]
     pub one_time_download_precaution_message: String,
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct SecretNotFoundPageLabels {
     pub title: String,
-    #[serde(alias = "possibleReasonsText")]
+    #[serde(alias = "possible-reasons-text")]
     pub possible_reasons_text: String,
-    #[serde(alias = "possibleReasonsItems")]
+    #[serde(alias = "possible-reasons-items")]
     pub possible_reasons_items: Vec<String>
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
 pub struct FooterLabels {
-    #[serde(alias = "howItWorks")]
+    #[serde(alias = "how-it-works")]
     pub how_it_works: String
 }
