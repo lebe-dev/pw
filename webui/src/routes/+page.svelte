@@ -112,7 +112,7 @@
 
 			<div class="text-xl mb-2 text-start">{data.config.locale.homePage.title}</div>
 			<textarea class="w-full border-2 rounded border-gray-600 outline-0 p-3"
-					  placeholder="The data will be encrypted in the browser"
+					  placeholder={data.config.locale.homePage.messagePlaceholder}
 					  rows="5"
 					  maxlength={messageTotal}
 					  bind:value={message}
