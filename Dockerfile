@@ -17,16 +17,17 @@ RUN mkdir -p /build/static && \
     unxz upx-4.0.2-amd64_linux.tar.xz && tar xvf upx-4.0.2-amd64_linux.tar && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
 
-COPY /backend /build
+COPY . /build
 
 COPY --from=webui-build /build/build/ /build/static/
 
-RUN cargo test && \
+RUN cd backend && \
+    cargo test && \
     cargo build --release && \
-    eu-elfcompress target/release/backend && \
-    strip target/release/backend && \
-    upx -9 --lzma target/release/backend && \
-    chmod +x target/release/backend
+    eu-elfcompress ../target/release/backend && \
+    strip ../target/release/backend && \
+    upx -9 --lzma ../target/release/backend && \
+    chmod +x ../target/release/backend
 
 FROM alpine:3.18.3
 
@@ -37,8 +38,8 @@ RUN apk add libressl-dev && \
     chmod 700 /app && \
     chown -R pw: /app
 
-COPY --from=app-build /build/pw.yml-dist /app/pw.yml
-COPY --from=app-build /build/locale.d /app/locale.d
+COPY --from=app-build /build/backend/pw.yml-dist /app/pw.yml
+COPY --from=app-build /build/backend/locale.d /app/locale.d
 COPY --from=app-build /build/target/release/backend /app/pw
 
 RUN chown -R pw: /app && chmod +x /app/pw
