@@ -20,14 +20,11 @@ PW is a project for sharing secrets (any confidential information). All data is 
 - [How to build](docs/BUILD.md)
 - [Architecture](docs/ARCHITECTURE.md)
 
-## Credits
-
-- [kodgehopper](https://www.boringadv.com/2022/12/05/simple-encryption-in-rust/)
-
 ## Roadmap
 
-1. Improve translations
-2. Build static release
-3. Add translations
-4. Support Windows
-5. Configuration via environment variables
+1. Configuration via environment variables
+2. Add helm chart 
+3. Improve translations
+4. Build static release
+5. Add translations
+6. Support Windows
