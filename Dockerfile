@@ -18,8 +18,9 @@ RUN mkdir -p /build/static && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
 
 COPY . /build
-COPY --from=webui-build /build/build/ /build/static/
-COPY favicon.png /build/static/
+COPY --from=webui-build /build/build/ /build/backend/static/
+
+COPY favicon.png /build/backend/static/
 
 RUN cd backend && \
     cargo test && \
@@ -47,5 +48,3 @@ RUN chown -R pw: /app && chmod +x /app/pw
 USER pw
 
 CMD ["/app/pw"]
-
-
