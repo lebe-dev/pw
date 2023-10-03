@@ -1,3 +1,6 @@
 /target
 /webui/.svelte-kit
 /webui/node_modules
+/webui/build
+/.idea
+/backend/static

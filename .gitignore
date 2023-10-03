@@ -10,3 +10,4 @@
 /webui/.svelte-kit
 /webui/build
 /webui/node_modules
+/.idea
