@@ -7,8 +7,9 @@
 	import {Secret, SecretDownloadPolicy, SecretTTL} from "$lib/secret";
 	import ClipboardJS from "clipboard";
 	import PrecautionMessage from "../components/PrecautionMessage.svelte";
+	import {showError} from "$lib/notifications";
 
-	let loading: boolean = true;
+	let inProgress: boolean = true;
 
 	let secretStored = false;
 
@@ -32,26 +33,28 @@
 			method: 'GET'
 		});
 
-		data.config = await response.json();
+		if (response.status === 200) {
+			data.config = await response.json();
+			console.log('config:', data.config);
 
-		console.log('config:', data.config);
+			messageTotal = data.config.messageMaxLength;
 
-		messageTotal = data.config.messageMaxLength;
+			inProgress = false;
 
-		loading = false;
+		} else {
+			showError('Unable to load config');
+
+			inProgress = false;
+		}
 	});
 
 	function onToggleDownloadPolicy() {
-		console.log(`current: ${secretDownloadPolicy}`);
-
 		if (secretDownloadPolicy === SecretDownloadPolicy.OneTime) {
 			secretDownloadPolicy = SecretDownloadPolicy.Unlimited
 
 		} else {
 			secretDownloadPolicy = SecretDownloadPolicy.OneTime
 		}
-
-		console.log(`after: ${secretDownloadPolicy}`);
 	}
 
 	function onMessageUpdate() {
@@ -60,7 +63,6 @@
 
 	async function onEncrypt() {
 		const key = await generateRandomKey();
-		console.log('KEY:', key, 'length:', key.length);
 
 		const ciphertext = AES.encrypt(message, key).toString();
 
@@ -69,8 +71,6 @@
 		secret.payload = ciphertext;
 		secret.ttl = secretTTL;
 		secret.downloadPolicy = secretDownloadPolicy;
-
-		console.log('secret:', secret);
 
 		const additionalData = await getRandomAdditionalData();
 
@@ -81,6 +81,8 @@
 		secretUrl = `${baseUrl}/s/${slug}`;
 
 		console.log('secret url:', secretUrl);
+
+		inProgress = true;
 
 		const response = await fetch('/api/secret', {
 			method: 'POST',
@@ -96,6 +98,11 @@
 
 		if (status === 200) {
 			secretStored = true;
+			inProgress = false;
+
+		} else {
+			showError('Encryption error');
+			inProgress = false;
 		}
 	}
 </script>
@@ -105,7 +112,7 @@
 	<meta name="description" content="Secure share secrets" />
 </svelte:head>
 
-{#if !loading}
+{#if !inProgress}
 
 	<div class="text-center">
 		{#if !secretStored}
