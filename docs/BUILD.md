@@ -7,7 +7,7 @@
 2. Build image:
 
 ```shell
-docker build -t pw:1.0.0 .
+docker build -t pw:1.2.3 .
 ```
 
 ## How to build standalone version

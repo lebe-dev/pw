@@ -18,7 +18,7 @@ version: '3.3'
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.2.1
+    image: tinyops/pw:1.2.3
     restart: always
     volumes:
       - ./pw.yml:/app/pw.yml
