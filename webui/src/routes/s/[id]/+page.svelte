@@ -62,7 +62,7 @@
 	{#if !notFound}
 		<div class="text-xl mb-2 text-start">{data.config.locale.secretUrlPage.title}</div>
 
-		<div id="secret-url" class="text-md bg-gray-50 mb-5 rounded p-5 break-all mb-5">
+		<div id="secret-url" class="text-md bg-gray-50 mb-5 rounded p-5 break-all whitespace-pre-wrap">
 			{message}
 		</div>
 
@@ -73,7 +73,7 @@
 	{:else}
 		<div class="text-xl mb-4 text-start">{data.config.locale.secretNotFoundPage.title}</div>
 
-		<div id="secret-url" class="text-md mb-5 rounded break-all mb-5">
+		<div id="secret-url" class="text-md rounded break-all mb-5">
 			<div class="mb-2">{data.config.locale.secretNotFoundPage.possibleReasonsText}:</div>
 
 			<ul class="ps-6">
