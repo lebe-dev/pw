@@ -62,7 +62,7 @@
 	{#if !notFound}
 		<div class="text-xl mb-2 text-start">{data.config.locale.secretUrlPage.title}</div>
 
-		<div id="secret-url" class="text-md bg-gray-50 mb-5 rounded p-5 break-all whitespace-pre-wrap">
+		<div id="secret-url" class="text-md bg-gray-50 mb-5 rounded p-5 break-all font-mono whitespace-pre-wrap">
 			{message}
 		</div>
 
