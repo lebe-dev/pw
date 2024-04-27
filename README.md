@@ -8,7 +8,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 
 ## Getting started
 
-[Install with docker](docs/install/DOCKER.md)
+[Install with docker](docs/install/DOCKER.md) or [Kubernetes](docs/install/KUBERNETES.md)
 
 ## Docs
 
@@ -23,8 +23,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 ## Roadmap
 
 1. Configuration via environment variables
-2. Add helm chart 
-3. Improve translations
-4. Build static release
-5. Add translations
-6. Support Windows
+2. Improve translations
+3. Build static release
+4. Add translations
+5. Support Windows
