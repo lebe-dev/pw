@@ -22,8 +22,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 
 ## Roadmap
 
-1. Configuration via environment variables
-2. Improve translations
-3. Build static release
-4. Add translations
-5. Support Windows
+1. Improve translations
+2. Build static release
+3. Add translations
+4. Support Windows
