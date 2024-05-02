@@ -21,7 +21,7 @@ pub struct Application {
 
 impl Application {
     pub fn get_version() -> String {
-        "1.2.1".to_string()
+        "1.2.4".to_string()
     }
 
     pub fn port(&self) -> u16 {
