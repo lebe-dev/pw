@@ -1,3 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pw-cm
+  namespace: pw
+data:
+  PW_PORT: '8080'
+  PW_LOG_LEVEL: 'info'
+  PW_MESSAGE_MAX_LENGTH: '4096'
+  PW_ENCRYPTED_MESSAGE_MAX_LENGTH: '15000'
+  PW_LOCALE_ID: 'ru'
+  PW_REDIS_URL: 'redis://pw-redis-svc:6379/'
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,13 +31,9 @@ spec:
           image: tinyops/pw:1.2.3
           ports:
             - containerPort: 8080
-          volumeMounts:
-            - mountPath: /app/pw.yml
-              name: config-volume
-      volumes:
-        - name: config-volume
-          hostPath:
-            path: /path/to/your/pw.yml
+          envFrom:
+            - configMapRef:
+                name: pw-cm
 ---
 apiVersion: v1
 kind: Service
