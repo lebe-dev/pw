@@ -8,7 +8,13 @@ PW is a project for sharing secrets (any confidential information). All data is 
 
 ## Getting started
 
-[Install with docker](docs/install/DOCKER.md) or [Kubernetes](docs/install/KUBERNETES.md)
+```shell
+docker-compose up -d  
+```
+
+Then visit http://localhost:8080.
+
+Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](docs/install/KUBERNETES.md)
 
 ## Docs
 
