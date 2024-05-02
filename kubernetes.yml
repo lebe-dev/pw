@@ -64,7 +64,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    - host: pw.company.com
+      http:
         paths:
           - path: /
             pathType: Prefix
