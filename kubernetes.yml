@@ -8,7 +8,7 @@ data:
   PW_LOG_LEVEL: 'info'
   PW_MESSAGE_MAX_LENGTH: '4096'
   PW_ENCRYPTED_MESSAGE_MAX_LENGTH: '15000'
-  PW_LOCALE_ID: 'ru'
+  PW_LOCALE_ID: 'en'
   PW_REDIS_URL: 'redis://pw-redis-svc:6379/'
 ---
 apiVersion: apps/v1
@@ -28,12 +28,20 @@ spec:
     spec:
       containers:
         - name: pw
-          image: tinyops/pw:1.2.3
+          image: tinyops/pw:1.2.4
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: pw-cm
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+              readOnly: true
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /etc/localtime
 ---
 apiVersion: v1
 kind: Service
