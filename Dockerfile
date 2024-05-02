@@ -1,4 +1,4 @@
-FROM node:20.8.0-alpine3.18 as webui-build
+FROM node:20.12.2-alpine3.19 as webui-build
 
 WORKDIR /build
 
@@ -7,7 +7,7 @@ COPY webui/ /build
 RUN npm i && \
     npm run build
 
-FROM rust:1.72.0-alpine3.18 as app-build
+FROM rust:1.77.2-alpine3.19 as app-build
 
 WORKDIR /build
 
