@@ -14,7 +14,7 @@ Start backend:
 cargo run
 ````
 
-Install NodeJS + npm:
+Install NodeJS 20.x + npm then install dependencies:
 
 ```shell
 cd ../webui
@@ -39,11 +39,16 @@ Use config for nginx:
 server {
     listen 80;
 
-    server_name  pw.test;
+    server_name localhost;
 
     location /api {
         proxy_set_header Host $host;
         proxy_pass http://localhost:8080;
+    }
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://localhost:4200;
     }
 }
 ```

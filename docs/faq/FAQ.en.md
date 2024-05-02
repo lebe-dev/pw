@@ -40,4 +40,4 @@ tinyops/pw                                   1.0.0                  eaab467e40b6
 
 **5. I want to build my own image. What should I do?**
 
-Visit [tutorial](BUILD.md).
+Visit [tutorial](../BUILD.md).

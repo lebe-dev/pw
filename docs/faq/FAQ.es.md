@@ -20,4 +20,4 @@ AES 256, key length 32.
 
 **4. I want to build my own image. What should I do?**
 
-Visit [tutorial](BUILD.md).
+Visit [tutorial](../BUILD.md).
