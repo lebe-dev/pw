@@ -7,12 +7,12 @@
 2. Build image:
 
 ```shell
-docker build -t pw:1.2.3 .
+docker build --progress=plain -t pw:1.3.0 .
 ```
 
 ## How to build standalone version
 
-**1. Install Rust 1.72 or later**
+**1. Install Rust 1.78 or later**
 
 **2. Install NodeJS and npm**
 
