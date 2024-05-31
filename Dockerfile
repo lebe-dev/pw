@@ -7,7 +7,7 @@ COPY webui/ /build
 RUN npm i && \
     npm run build
 
-FROM rust:1.77.2-alpine3.19 as app-build
+FROM rust:1.78.0-alpine3.20 as app-build
 
 WORKDIR /build
 
