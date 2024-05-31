@@ -4,6 +4,9 @@
 
 id: 'es'
 
+header:
+  back-to-home-hint: 'Volver a la página de inicio'
+
 messages:
   loading-title: 'Cargando..'
   error-title: 'Error'
@@ -20,6 +23,7 @@ home-page:
     one-hour: 'Una hora'
     two-hours: 'Dos horas'
     one-day: 'Un día'
+    one-week: 'Una semana'
     one-time-download: 'Descarga única'
     one-time-download-precaution-message: "Este enlace es para un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
   encrypt-message-button: 'Cifrar mensaje'

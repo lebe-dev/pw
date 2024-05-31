@@ -5,16 +5,22 @@ use serde::{Deserialize, Serialize};
 pub struct Locale {
     pub id: String,
 
+    #[serde(alias = "header")]
+    pub header_labels: HeaderLabels,
+
     pub messages: MessageLabels,
 
     pub errors: ErrorLabels,
 
     #[serde(alias = "home-page")]
     pub home_page: HomePageLabels,
+
     #[serde(alias = "secret-url-page")]
     pub secret_url_page: SecretUrlPageLabels,
+
     #[serde(alias = "secret-not-found-page")]
     pub secret_not_found_page: SecretNotFoundPageLabels,
+
     #[serde(alias = "footer")]
     pub footer_labels: FooterLabels
 }
@@ -23,6 +29,9 @@ impl Default for Locale {
     fn default() -> Self {
         Locale {
             id: "en".to_string(),
+            header_labels: HeaderLabels {
+                back_to_home_hint: "Back to home".to_string(),
+            },
             messages: MessageLabels {
                 loading_title: "Loading..".to_string(),
                 error_title: "Error".to_string(),
@@ -64,6 +73,13 @@ impl Default for Locale {
             },
         }
     }
+}
+
+#[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct HeaderLabels {
+    #[serde(alias = "back-to-home-hint")]
+    pub back_to_home_hint: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

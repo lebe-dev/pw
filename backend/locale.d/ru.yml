@@ -1,5 +1,8 @@
 id: 'ru'
 
+header:
+  back-to-home-hint: 'Вернуться на главную'
+
 messages:
   loading-title: 'Загрузка..'
   error-title: 'Ошибка'

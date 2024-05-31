@@ -1,5 +1,8 @@
 id: 'en'
 
+header:
+  back-to-home-hint: 'Back to home page'
+
 messages:
   loading-title: 'Loading..'
   error-title: 'Error'

@@ -100,7 +100,7 @@ pub fn load_locales_from_files(path: &str) -> anyhow::Result<Vec<Locale>> {
 
             if let Some(filename) = entry.file_name().to_str() {
                 if filename.ends_with("yml") {
-                    let path = entry.path().clone();
+                    let path = entry.path();
                     let path = format!("{}", path.display());
 
                     match load_locale_from_file(&path) {
@@ -134,11 +134,14 @@ mod tests {
     use std::path::Path;
 
     use common::locale::Locale;
+    use common::tests::init_logging;
 
     use crate::config::{load_locale_from_file, load_locales_from_files};
 
     #[test]
     fn load_locales_from_path() {
+        init_logging();
+
         let path = Path::new("test-data");
         let path = format!("{}", path.display());
         let locales = load_locales_from_files(&path).unwrap();
@@ -147,6 +150,8 @@ mod tests {
 
     #[test]
     fn load_locale_from_file_test() {
+        init_logging();
+
         let path = Path::new("test-data").join("en.yml");
         let locale = load_locale_from_file(&path.to_str().unwrap()).unwrap();
 

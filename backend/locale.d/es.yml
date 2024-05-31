@@ -4,6 +4,9 @@
 
 id: 'es'
 
+header:
+  back-to-home-hint: 'Volver a la página de inicio'
+
 messages:
   loading-title: 'Cargando..'
   error-title: 'Error'

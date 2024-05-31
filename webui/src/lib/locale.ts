@@ -1,6 +1,8 @@
 export class Locale {
     id: string = 'en';
 
+    headerLabels: HeaderLabels = new HeaderLabels();
+
     messages: MessageLabels = new MessageLabels();
 
     errors: ErrorLabels = new ErrorLabels();
@@ -12,6 +14,10 @@ export class Locale {
     secretNotFoundPage: SecretNotFoundPageLabels = new SecretNotFoundPageLabels();
 
     footerLabels: FooterLabels = new FooterLabels();
+}
+
+export class HeaderLabels {
+    backToHomeHint: string = 'Back to home';
 }
 
 export class MessageLabels {

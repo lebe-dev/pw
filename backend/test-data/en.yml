@@ -1,5 +1,8 @@
 id: 'en'
 
+header:
+  back-to-home-hint: 'Back to home'
+
 messages:
   loading-title: 'Loading..'
   error-title: 'Error'
@@ -16,6 +19,7 @@ home-page:
     one-hour: 'One hour'
     two-hours: 'Two hours'
     one-day: 'One day'
+    one-week: 'One week'
     one-time-download: 'One time download'
     one-time-download-precaution-message: "This link is for one-time use only, so don't try to open it or the secret will disappear."
   encrypt-message-button: 'Encrypt message'
