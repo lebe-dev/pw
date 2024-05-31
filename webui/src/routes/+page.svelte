@@ -189,7 +189,7 @@
 		{/if}
 
 		<div class="text-gray-400 text-sm">
-			v1.2.4 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
+			v1.3.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
 			   target="_blank">{data.config.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank">GITHUB</a>
 		</div>
 	</div>
