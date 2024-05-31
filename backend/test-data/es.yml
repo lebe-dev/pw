@@ -33,6 +33,9 @@ home-page:
 secret-url-page:
   title: 'Mensaje'
   one-time-download-precaution-message: "Este enlace es para un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
+  copy-button: 'Copy'
+  remove-button: 'Remove'
+  remove-confirm-message: 'Secret will be removed. Continue?'
 
 secret-not-found-page:
   title: "No se encontró el secreto"

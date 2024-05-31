@@ -59,6 +59,9 @@ impl Default for Locale {
             secret_url_page: SecretUrlPageLabels {
                 title: "Message".to_string(),
                 one_time_download_precaution_message: "This link is for one-time use only, so don't try to open it or the secret will disappear.".to_string(),
+                copy_button: "Copy".to_string(),
+                remove_button: "Remove".to_string(),
+                remove_confirm_message: "Secret will be removed. Continue?".to_string()
             },
             secret_not_found_page: SecretNotFoundPageLabels {
                 title: "Secret wasn't found".to_string(),
@@ -143,6 +146,15 @@ pub struct SecretUrlPageLabels {
 
     #[serde(alias = "one-time-download-precaution-message")]
     pub one_time_download_precaution_message: String,
+
+    #[serde(alias = "copy-button")]
+    pub copy_button: String,
+
+    #[serde(alias = "remove-button")]
+    pub remove_button: String,
+
+    #[serde(alias = "remove-confirm-message")]
+    pub remove_confirm_message: String
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

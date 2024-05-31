@@ -81,6 +81,27 @@ impl RedisSecretStorage {
             Ok(None)
         }
     }
+
+    pub fn remove(&self, id: &str) -> anyhow::Result<()> {
+        info!("remove secret by id '{id}'..");
+
+        let client = redis::Client::open(&*self.cnn_url)?;
+        let mut cnn = client.get_connection()?;
+
+        let id = id.to_string();
+
+        if cnn.exists(&id)? {
+            cnn.del(&id)?;
+
+            info!("secret with id '{id}' has been removed");
+
+            Ok(())
+
+        } else {
+            info!("secret wasn't found by id '{id}'");
+            Ok(())
+        }
+    }
 }
 
 #[cfg(test)]
@@ -124,6 +145,20 @@ mod tests {
 
     #[ignore]
     #[test]
+    fn remove_secret_test() {
+        let storage = get_storage();
+
+        let mut secret = get_sample_secret();
+        secret.download_policy = SecretDownloadPolicy::Unlimited;
+
+        storage.store(&secret.id, &secret).unwrap();
+        storage.remove(&secret.id).unwrap();
+
+        assert!(storage.load(&secret.id).unwrap().is_none());
+    }
+
+    #[ignore]
+    #[test]
     fn return_none_for_unknown_secret() {
         let storage = get_storage();
         assert!(storage.load(&get_random_string()).unwrap().is_none());
@@ -132,6 +167,5 @@ mod tests {
     fn get_storage() -> RedisSecretStorage {
         RedisSecretStorage::new(DEFAULT_REDIS_CNN_URL)
     }
-
 
 }

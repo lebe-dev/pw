@@ -24,11 +24,14 @@ home-page:
     one-time-download-precaution-message: "Создана одноразовая ссылка. Получатель сможет открыть её только один раз."
   encrypt-message-button: 'Зашифровать сообщение'
   secret-url-title: 'Ссылка'
-  copy-button: 'Копировать'
+  copy-button: 'Скопировать'
 
 secret-url-page:
   title: 'Сообщение'
   one-time-download-precaution-message: "Эта одноразовая ссылка. Не закрывайте и не обновляйте страницу, пока не сохраните информацию."
+  copy-button: 'Скопировать'
+  remove-button: 'Удалить'
+  remove-confirm-message: 'Секрет будет удалён. Продолжить?'
 
 secret-not-found-page:
   title: "Сообщение не найдено"

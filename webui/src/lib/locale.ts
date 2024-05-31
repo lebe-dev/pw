@@ -52,6 +52,9 @@ export class LifetimeLabels {
 export class SecretUrlPageLabels {
     title: string = 'Message';
     oneTimeDownloadPrecautionMessage: string = 'This link is for one-time use only, so don\'t try to open it or the secret will disappear.';
+    copyButton: string = 'Copy';
+    removeButton: string = 'Remove';
+    removeConfirmMessage: string = 'Secret will be removed. Continue?';
 }
 
 export class SecretNotFoundPageLabels {

@@ -9,7 +9,7 @@ use log::info;
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
 use crate::routes::{get_config_route, get_version_route};
-use crate::routes::secret::{get_secret_route, store_secret_route};
+use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
 use crate::secret::storage::RedisSecretStorage;
 
 const STATIC_DIR: Dir = include_dir!("./static");
@@ -80,6 +80,7 @@ pub async fn run(config: AppConfig, secret_storage: RedisSecretStorage,
             .service(get_config_route)
             .service(get_secret_route)
             .service(store_secret_route)
+            .service(remove_secret_route)
             .service(get_version_route)
             .service(ResourceFiles::new(
                 "/", hash_map.clone()).resolve_not_found_to_root()

@@ -36,7 +36,12 @@ Response body:
 
 - `400 Bad Request` - secret wasn't found by id or invalid request
 
-## 3. Get app config
+## 3. Remove secret
+
+- URL: `/api/secret/{secret-id}`
+- Method: `DELETE`
+
+## 4. Get app config
 
 - URL: `/api/config`
 - Method: `GET`
