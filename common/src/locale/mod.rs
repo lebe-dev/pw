@@ -39,6 +39,7 @@ impl Default for Locale {
                     one_hour: "One hour".to_string(),
                     two_hours: "Two hours".to_string(),
                     one_day: "One day".to_string(),
+                    one_week: "One week".to_string(),
                     one_time_download: "One time download".to_string(),
                     one_time_download_precaution_message: "This link is for one-time use only, so don't try to open it or the secret will disappear.".to_string(),
                 },
@@ -111,6 +112,8 @@ pub struct LifetimeLabels {
     pub two_hours: String,
     #[serde(alias = "one-day")]
     pub one_day: String,
+    #[serde(alias = "one-week")]
+    pub one_week: String,
     #[serde(alias = "one-time-download")]
     pub one_time_download: String,
     #[serde(alias = "one-time-download-precaution-message")]

@@ -33,7 +33,8 @@ impl Display for Secret {
 pub enum SecretTTL {
     OneHour,
     TwoHours,
-    OneDay
+    OneDay,
+    OneWeek
 }
 
 #[derive(Serialize,Deserialize,PartialEq,Clone,Debug)]

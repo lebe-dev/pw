@@ -38,6 +38,7 @@ export class LifetimeLabels {
     oneHour: string = 'One hour';
     twoHours: string = 'Two hours';
     oneDay: string = 'One day';
+    oneWeek: string = 'One week';
     oneTimeDownload: string = 'One time download';
     oneTimeDownloadPrecautionMessage: string = 'This link is for one-time use only, so don\'t try to open it or the secret will disappear.';
 }

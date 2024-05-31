@@ -19,7 +19,7 @@
 	let messageTotal: number = 0;
 
 	let secretTTL: SecretTTL = SecretTTL.OneHour;
-	let secretDownloadPolicy: SecretDownloadPolicy = SecretDownloadPolicy.Unlimited;
+	let secretDownloadPolicy: SecretDownloadPolicy = SecretDownloadPolicy.OneTime;
 
 	let secretUrl: string = '';
 
@@ -145,15 +145,21 @@
 						   on:click={() => secretTTL = SecretTTL.TwoHours}> {data.config.locale.homePage.lifetime.twoHours}
 				</label>
 
-				<label for="ttl-one-day">
+				<label for="ttl-one-day" class="me-3">
 					<input id="ttl-one-day" name="ttl" type="radio"
 						   on:click={() => secretTTL = SecretTTL.OneDay}> {data.config.locale.homePage.lifetime.oneDay}
+				</label>
+
+				<label for="ttl-one-week">
+					<input id="ttl-one-week" name="ttl" type="radio"
+						   on:click={() => secretTTL = SecretTTL.OneWeek}> {data.config.locale.homePage.lifetime.oneWeek}
 				</label>
 			</div>
 
 			<div class="mb-7">
 				<label for="one-time-link">
-					<input id="one-time-link" type="checkbox" on:click={onToggleDownloadPolicy}> {data.config.locale.homePage.lifetime.oneTimeDownload}
+					<input id="one-time-link" type="checkbox"
+						   on:click={onToggleDownloadPolicy} checked={true}> {data.config.locale.homePage.lifetime.oneTimeDownload}
 				</label>
 			</div>
 

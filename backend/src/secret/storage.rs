@@ -29,7 +29,8 @@ impl RedisSecretStorage {
         let ttl_seconds = match secret.ttl {
             SecretTTL::OneHour => 60 * 60,
             SecretTTL::TwoHours => 60 * 60 * 2,
-            SecretTTL::OneDay => 60 * 60 * 24
+            SecretTTL::OneDay => 60 * 60 * 24,
+            SecretTTL::OneWeek => 60 * 60 * 24 * 7,
         };
 
         debug!("ttl seconds: {ttl_seconds}");

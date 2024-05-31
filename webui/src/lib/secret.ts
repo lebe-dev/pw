@@ -9,7 +9,8 @@ export class Secret {
 export enum SecretTTL {
     OneHour = 'OneHour',
     TwoHours = 'TwoHours',
-    OneDay = 'OneDay'
+    OneDay = 'OneDay',
+    OneWeek = 'OneWeek'
 }
 
 export enum SecretDownloadPolicy {
