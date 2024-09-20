@@ -1,4 +1,4 @@
-FROM node:20.12.2-alpine3.19 as webui-build
+FROM node:22.9.0-alpine3.20 as webui-build
 
 WORKDIR /build
 
@@ -7,7 +7,7 @@ COPY webui/ /build
 RUN npm i && \
     npm run build
 
-FROM rust:1.78.0-alpine3.20 as app-build
+FROM rust:1.81.0-alpine3.20 as app-build
 
 WORKDIR /build
 
@@ -30,7 +30,7 @@ RUN cd backend && \
     upx -9 --lzma ../target/release/backend && \
     chmod +x ../target/release/backend
 
-FROM alpine:3.18.3
+FROM alpine:3.20.3
 
 WORKDIR /app
 

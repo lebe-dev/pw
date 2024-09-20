@@ -10,7 +10,7 @@ use walkdir::WalkDir;
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct AppConfig {
-    pub port: u16,
+    pub listen: String,
 
     pub log_level: String,
 
@@ -35,9 +35,9 @@ fn get_default_locales() -> Vec<Locale> {
 impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f,
-               "port: {}, log-level: {}, message-max-length: {},\
+               "listen: '{}', log-level: {}, message-max-length: {},\
                encrypted-message-max-length: {}, locale-id: '{}', redis-url: '{}'",
-               self.port, self.log_level, self.message_max_length,
+               self.listen, self.log_level, self.message_max_length,
                self.encrypted_message_max_length, self.locale_id, self.redis_url)
     }
 }
@@ -59,7 +59,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
 
     let locales = load_locales_from_files("locale.d")?;
 
-    let port = get_env_var("PW_PORT").unwrap_or(config.port.to_string());
+    let listen = get_env_var("PW_LISTEN").unwrap_or(config.listen.to_string());
     let log_level = get_env_var("PW_LOG_LEVEL").unwrap_or(config.log_level);
     let message_max_length = get_env_var("PW_MESSAGE_MAX_LENGTH").unwrap_or(config.message_max_length.to_string());
     let encrypted_message_max_length = get_env_var("PW_ENCRYPTED_MESSAGE_MAX_LENGTH").unwrap_or(config.encrypted_message_max_length.to_string());
@@ -67,7 +67,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     let redis_url = get_env_var("PW_REDIS_URL").unwrap_or(config.redis_url);
 
     let config = AppConfig {
-        port: port.parse()?,
+        listen: listen.parse()?,
         log_level,
         message_max_length: message_max_length.parse()?,
         encrypted_message_max_length: encrypted_message_max_length.parse()?,

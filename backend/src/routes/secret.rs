@@ -1,58 +1,52 @@
-use actix_web::{delete, get, post, web, HttpResponse, Responder};
-use log::error;
-
-use crate::config::AppConfig;
-use crate::secret::storage::RedisSecretStorage;
 use crate::secret::usecase::store_secret;
 use crate::secret::Secret;
+use crate::AppState;
+use axum::extract::{Path, State};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::Json;
+use log::error;
+use std::sync::Arc;
 
-#[post("/api/secret")]
 pub async fn store_secret_route(
-    app_config: web::Data<AppConfig>,
-    secret_storage: web::Data<RedisSecretStorage>,
-    secret: web::Json<Secret>) -> impl Responder {
+    State(state): State<Arc<AppState>>,
+    secret: Json<Secret>) -> StatusCode {
 
     match store_secret(
-        secret_storage.as_ref(), &secret,
-        app_config.encrypted_message_max_length) {
-        Ok(_) => HttpResponse::Ok().finish(),
-        Err(_) => HttpResponse::InternalServerError().finish()
+        &state.secret_storage, &secret,
+        state.config.encrypted_message_max_length) {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
     }
 }
 
-#[get("/api/secret/{id}")]
 pub async fn get_secret_route(
-    path: web::Path<(String, )>,
-    secret_storage: web::Data<RedisSecretStorage>) -> impl Responder {
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>) -> impl IntoResponse {
 
-    let secret_id = path.into_inner().0;
-
-    match secret_storage.load(&secret_id) {
+    match state.secret_storage.load(&id) {
         Ok(secret) => {
             match secret {
-                Some(secret) => HttpResponse::Ok().json(secret),
-                None => HttpResponse::BadRequest().finish()
+                Some(secret) => (StatusCode::OK, Json(secret)).into_response(),
+                None => StatusCode::BAD_REQUEST.into_response()
             }
         }
         Err(e) => {
             error!("{}", e);
-            HttpResponse::InternalServerError().finish()
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
 
-#[delete("/api/secret/{id}")]
 pub async fn remove_secret_route(
-    path: web::Path<(String, )>,
-    secret_storage: web::Data<RedisSecretStorage>) -> impl Responder {
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>) -> StatusCode {
 
-    let secret_id = path.into_inner().0;
-
-    match secret_storage.remove(&secret_id) {
-        Ok(_) => HttpResponse::Ok().finish(),
+    match state.secret_storage.remove(&id) {
+        Ok(_) => StatusCode::OK,
         Err(e) => {
             error!("{}", e);
-            HttpResponse::InternalServerError().finish()
+            StatusCode::INTERNAL_SERVER_ERROR
         }
     }
 }

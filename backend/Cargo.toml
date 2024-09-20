@@ -9,9 +9,6 @@ lto = true
 codegen-units = 1
 panic = 'abort'
 
-[lib]
-path = "src/lib.rs"
-
 [[bin]]
 path = "src/main.rs"
 name = "backend"
@@ -24,16 +21,14 @@ config = { version = "0.14.0", features = ["yaml"] }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 
-tokio = { version = "1.40.0", features = ["full"] }
-
 chrono = "0.4.38"
 
 redis = { version = "0.27.2", features = ["tokio-comp", "serde_json"] }
 
-actix-web = { version = "4.3.1", features = ["rustls"]}
-actix-cors = "0.6.4"
-actix-plus-static-files = { git = "https://github.com/lebe-dev/actix-plus.git" }
-actix-files = "0.6.2"
+tokio = { version = "1.40.0", features = ["full"] }
+axum = {  version = "0.7.5", features = ["json","http1","tokio"] }
+rust-embed = "8.5.0"
+mime_guess = "2.0.5"
 
 walkdir = "2.5.0"
 
