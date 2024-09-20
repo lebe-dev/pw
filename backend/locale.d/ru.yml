@@ -13,7 +13,7 @@ errors:
 
 home-page:
   title: 'Сообщение'
-  message-placeholder: 'Данные будут зашифрованы в браузере'
+  message-placeholder: 'Данные будут зашифрованы в браузере.'
   secret-lifetime-title: 'Время жизни'
   lifetime:
     one-hour: 'Один час'

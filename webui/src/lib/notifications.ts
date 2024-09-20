@@ -1,5 +1,5 @@
-import {toast} from '@zerodevx/svelte-toast';
+import {notifications} from "$lib/stores/notifications";
 
-export const showError = (message: string) => toast.push(message, {
-    duration: 10000,
-});
+export const showError = (message: string) => {
+    notifications.addError({message: message});
+};

@@ -13,7 +13,7 @@ errors:
 
 home-page:
   title: 'Message'
-  message-placeholder: 'The data will be encrypted in the browser'
+  message-placeholder: 'The data will be encrypted in the browser.'
   secret-lifetime-title: 'Secret lifetime'
   lifetime:
     one-hour: 'One hour'

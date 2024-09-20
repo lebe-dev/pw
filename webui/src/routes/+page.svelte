@@ -8,6 +8,8 @@
 	import ClipboardJS from "clipboard";
 	import PrecautionMessage from "../components/PrecautionMessage.svelte";
 	import {showError} from "$lib/notifications";
+	import RadioButton from "../components/RadioButton.svelte";
+	import CheckBox from "../components/CheckBox.svelte";
 
 	let inProgress: boolean = true;
 
@@ -117,8 +119,8 @@
 	<div class="text-center">
 		{#if !secretStored}
 
-			<div class="text-xl mb-2 text-start">{data.config.locale.homePage.title}</div>
-			<textarea class="w-full border-2 rounded border-gray-600 outline-0 p-3"
+			<div class="text-xl mb-2 text-start select-none">{data.config.locale.homePage.title}</div>
+			<textarea class="w-full border-2 rounded border-accent bg-secondary outline-0 p-3"
 					  placeholder={data.config.locale.homePage.messagePlaceholder}
 					  rows="5"
 					  maxlength={messageTotal}
@@ -126,53 +128,48 @@
 					  on:keyup={onMessageUpdate}
 					  autofocus={true}/>
 
-			<div class="text-xs text-gray-500 mb-5">
+			<div class="text-xs mb-5 select-none">
 				<span class={messageLength === messageTotal && messageTotal !== 0 ? 'text-red-600' : ''}>{messageLength} / {messageTotal}</span>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3 select-none">
 				{data.config.locale.homePage.secretLifetimeTitle}:
 			</div>
 
 			<div class="mb-4">
-				<label for="ttl-one-hour" class="me-3">
-					<input id="ttl-one-hour" name="ttl" type="radio" checked={true}
-						   on:click={() => secretTTL = SecretTTL.OneHour}> {data.config.locale.homePage.lifetime.oneHour}
-				</label>
+				<RadioButton enabled={secretTTL === SecretTTL.OneHour}
+							 toggle={() => secretTTL = SecretTTL.OneHour}
+							 text={data.config.locale.homePage.lifetime.oneHour}/>
 
-				<label for="ttl-two-hours" class="me-3">
-					<input id="ttl-two-hours" name="ttl" type="radio"
-						   on:click={() => secretTTL = SecretTTL.TwoHours}> {data.config.locale.homePage.lifetime.twoHours}
-				</label>
+				<RadioButton enabled={secretTTL === SecretTTL.TwoHours}
+							 toggle={() => secretTTL = SecretTTL.TwoHours}
+							 text={data.config.locale.homePage.lifetime.twoHours}/>
 
-				<label for="ttl-one-day" class="me-3">
-					<input id="ttl-one-day" name="ttl" type="radio"
-						   on:click={() => secretTTL = SecretTTL.OneDay}> {data.config.locale.homePage.lifetime.oneDay}
-				</label>
+				<RadioButton enabled={secretTTL === SecretTTL.OneDay}
+							 toggle={() => secretTTL = SecretTTL.OneDay}
+							 text={data.config.locale.homePage.lifetime.oneDay}/>
 
-				<label for="ttl-one-week">
-					<input id="ttl-one-week" name="ttl" type="radio"
-						   on:click={() => secretTTL = SecretTTL.OneWeek}> {data.config.locale.homePage.lifetime.oneWeek}
-				</label>
+				<RadioButton enabled={secretTTL === SecretTTL.OneWeek}
+							 toggle={() => secretTTL = SecretTTL.OneWeek}
+							 text={data.config.locale.homePage.lifetime.oneWeek}/>
 			</div>
 
 			<div class="mb-7">
-				<label for="one-time-link">
-					<input id="one-time-link" type="checkbox"
-						   on:click={onToggleDownloadPolicy} checked={true}> {data.config.locale.homePage.lifetime.oneTimeDownload}
-				</label>
+				<CheckBox enabled={secretDownloadPolicy === SecretDownloadPolicy.OneTime}
+							 toggle={onToggleDownloadPolicy}
+							 text={data.config.locale.homePage.lifetime.oneTimeDownload}/>
 			</div>
 
 			<div class="mb-9">
 				<button disabled={messageLength === 0} on:click={onEncrypt}
-						class="px-3 py-2 w-64 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-500 text-white rounded disabled:pointer-events-none">{data.config.locale.homePage.encryptMessageButton}</button>
+						class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none">{data.config.locale.homePage.encryptMessageButton}</button>
 			</div>
 
 		{:else}
 
 			<div class="text-xl mb-2 text-start">{data.config.locale.homePage.secretUrlTitle}</div>
 
-			<div id="secret-url" class="text-md bg-gray-50 mb-5 rounded p-5 break-all">
+			<div id="secret-url" class="text-md mb-5 border border-accent rounded p-5 select-all break-all">
 				{secretUrl}
 			</div>
 
@@ -182,9 +179,9 @@
 
 			<div class="mb-9 text-center">
 				<button id="copy-to-clipboard" data-clipboard-target="#secret-url"
-						class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-500 text-white rounded disabled:pointer-events-none">
+						class="px-3 py-1.5 btn btn-sm btn-neutral hover:btn-accent uppercase rounded disabled:pointer-events-none">
 
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline-block me-0.5 mb-1">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline-block">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
 					</svg>
 
@@ -194,9 +191,9 @@
 
 		{/if}
 
-		<div class="text-gray-400 text-sm">
-			v1.3.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
-			   target="_blank">{data.config.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank">GITHUB</a>
+		<div class="text-gray-400 text-sm select-none">
+			v1.4.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
+			   target="_blank" class="hover:text-accent">{data.config.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
 		</div>
 	</div>
 

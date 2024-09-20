@@ -17,7 +17,7 @@ errors:
 
 home-page:
   title: 'Mensaje'
-  message-placeholder: 'Los datos se cifrarán en el navegador'
+  message-placeholder: 'Los datos se cifrarán en el navegador.'
   secret-lifetime-title: 'Vida secreta'
   lifetime:
     one-hour: 'Una hora'
