@@ -1,9 +1,8 @@
-use actix_web::{get, HttpResponse, Responder, web};
+use actix_web::{get, web, HttpResponse, Responder};
 use log::error;
 
-use common::dto::AppConfigDto;
-
 use crate::config::AppConfig;
+use crate::dto::AppConfigDto;
 use crate::startup::Application;
 
 pub mod secret;

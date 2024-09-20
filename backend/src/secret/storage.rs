@@ -1,9 +1,7 @@
+use crate::secret::{Secret, SecretDownloadPolicy, SecretTTL};
 use anyhow::{anyhow, Context};
 use log::{debug, error, info};
 use redis::{Commands, ExistenceCheck, SetExpiry, SetOptions};
-
-use common::secret::{Secret, SecretDownloadPolicy};
-use common::secret::SecretTTL;
 
 pub const DEFAULT_REDIS_CNN_URL: &str = "redis://127.0.0.1";
 
@@ -106,10 +104,9 @@ impl RedisSecretStorage {
 
 #[cfg(test)]
 mod tests {
-    use common::secret::SecretDownloadPolicy;
-    use common::tests::get_random_string;
-
-    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
+    use crate::secret::storage::{RedisSecretStorage, DEFAULT_REDIS_CNN_URL};
+    use crate::secret::SecretDownloadPolicy;
+    use crate::tests::get_random_string;
     use crate::tests::secret::get_sample_secret;
 
     #[ignore]

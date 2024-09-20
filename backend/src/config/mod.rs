@@ -1,12 +1,11 @@
 use std::env;
 use std::fmt::{Display, Formatter};
 
+use crate::locale::Locale;
 use config::{Config, File};
 use log::{error, info};
 use serde::Deserialize;
 use walkdir::WalkDir;
-
-use common::locale::Locale;
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
@@ -133,10 +132,9 @@ pub fn load_locale_from_file(file_path: &str) -> anyhow::Result<Locale> {
 mod tests {
     use std::path::Path;
 
-    use common::locale::Locale;
-    use common::tests::init_logging;
-
     use crate::config::{load_locale_from_file, load_locales_from_files};
+    use crate::locale::Locale;
+    use crate::tests::init_logging;
 
     #[test]
     fn load_locales_from_path() {

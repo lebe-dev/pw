@@ -1,9 +1,7 @@
+use crate::secret::storage::RedisSecretStorage;
+use crate::secret::Secret;
 use anyhow::anyhow;
 use log::error;
-
-use common::secret::Secret;
-
-use crate::secret::storage::RedisSecretStorage;
 
 pub fn store_secret(secret_storage: &RedisSecretStorage,
                     secret: &Secret, payload_max_length: u16) -> anyhow::Result<()> {
@@ -37,11 +35,10 @@ pub fn store_secret(secret_storage: &RedisSecretStorage,
 
 #[cfg(test)]
 mod tests {
-    use common::secret::{SecretDownloadPolicy, SecretTTL};
-    use common::tests::get_random_string;
-
-    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
+    use crate::secret::storage::{RedisSecretStorage, DEFAULT_REDIS_CNN_URL};
     use crate::secret::usecase::store_secret;
+    use crate::secret::{SecretDownloadPolicy, SecretTTL};
+    use crate::tests::get_random_string;
     use crate::tests::secret::get_sample_secret;
 
     #[ignore]

@@ -1,5 +1,5 @@
-use common::secret::{Secret, SecretDownloadPolicy, SecretTTL};
-use common::tests::get_random_string;
+use crate::secret::{Secret, SecretDownloadPolicy, SecretTTL};
+use crate::tests::get_random_string;
 
 pub fn get_sample_secret() -> Secret {
     Secret {

@@ -1,11 +1,10 @@
-use actix_web::{delete, get, HttpResponse, post, Responder, web};
+use actix_web::{delete, get, post, web, HttpResponse, Responder};
 use log::error;
-
-use common::secret::Secret;
 
 use crate::config::AppConfig;
 use crate::secret::storage::RedisSecretStorage;
 use crate::secret::usecase::store_secret;
+use crate::secret::Secret;
 
 #[post("/api/secret")]
 pub async fn store_secret_route(
