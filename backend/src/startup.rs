@@ -1,15 +1,15 @@
 use std::net::TcpListener;
 
 use actix_cors::Cors;
-use actix_plus_static_files::{build_hashmap_from_included_dir, Dir, include_dir, ResourceFiles};
-use actix_web::{HttpServer, middleware, web};
+use actix_plus_static_files::{build_hashmap_from_included_dir, include_dir, Dir, ResourceFiles};
 use actix_web::dev::Server;
+use actix_web::{middleware, web, HttpServer};
 use log::info;
 
 use crate::config::AppConfig;
 use crate::logging::logging::get_logging_config;
-use crate::routes::{get_config_route, get_version_route};
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
+use crate::routes::{get_config_route, get_version_route};
 use crate::secret::storage::RedisSecretStorage;
 
 const STATIC_DIR: Dir = include_dir!("./static");
@@ -21,7 +21,7 @@ pub struct Application {
 
 impl Application {
     pub fn get_version() -> String {
-        "1.3.0".to_string()
+        "1.4.0".to_string()
     }
 
     pub fn port(&self) -> u16 {
