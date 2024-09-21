@@ -20,7 +20,7 @@ pub mod dto;
 #[cfg(test)]
 pub mod tests;
 
-pub const VERSION: &str = "1.4.0 #UNKNOWN";
+pub const VERSION: &str = "1.5.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 

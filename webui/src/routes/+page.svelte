@@ -182,7 +182,7 @@
 		{/if}
 
 		<div class="text-gray-400 text-sm select-none">
-			v1.4.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
+			v1.5.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
 			   target="_blank" class="hover:text-accent">{data.config.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
 		</div>
 	</div>
