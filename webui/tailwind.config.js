@@ -14,8 +14,7 @@ export default {
   ],
   daisyui: {
     themes: [
-      "light", "dark", "forest", "emerald", "business",
-      {
+      "light", "dark", {
         day: {
           "primary": "#121212",
           "secondary": "#ffffff",
