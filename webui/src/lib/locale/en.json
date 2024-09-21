@@ -1,0 +1,47 @@
+{
+  "headerLabels": {
+    "backToHomeHint": "Back to home"
+  },
+  "messages": {
+    "loadingTitle": "Loading..",
+    "errorTitle": "Error"
+  },
+  "errors": {
+    "loadingData": "Couldn't load data",
+    "storeSecret": "Store secret error"
+  },
+  "homePage": {
+    "title": "Message",
+    "messagePlaceholder": "The data will be encrypted in the browser",
+    "secretLifetimeTitle": "Secret lifetime",
+    "lifetime": {
+      "oneHour": "One hour",
+      "twoHours": "Two hours",
+      "oneDay": "One day",
+      "oneWeek": "One week",
+      "oneTimeDownload": "One time download",
+      "oneTimeDownloadPrecautionMessage": "This link is for one-time use only, so don't try to open it or the secret will disappear."
+    },
+    "encryptMessageButton": "Encrypt message",
+    "secretUrlTitle": "Secret URL",
+    "copyButton": "Copy"
+  },
+  "secretUrlPage": {
+    "title": "Message",
+    "oneTimeDownloadPrecautionMessage": "This link is for one-time use only, so don't try to open it or the secret will disappear.",
+    "copyButton": "Copy",
+    "removeButton": "Remove",
+    "removeConfirmMessage": "Secret will be removed. Continue?"
+  },
+  "secretNotFoundPage": {
+    "title": "Secret wasn't found",
+    "possibleReasonsText": "Possible reasons",
+    "possibleReasonsItems": [
+      "Link has been expired",
+      "It was one-time link and someone opened it already"
+    ]
+  },
+  "footerLabels": {
+    "howItWorks": "FAQ"
+  }
+}

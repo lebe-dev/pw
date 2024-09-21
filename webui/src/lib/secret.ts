@@ -3,7 +3,6 @@ export class Secret {
     payload: string = '';
     ttl: SecretTTL = SecretTTL.OneHour;
     downloadPolicy: SecretDownloadPolicy = SecretDownloadPolicy.OneTime;
-
 }
 
 export enum SecretTTL {

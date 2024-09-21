@@ -2,7 +2,6 @@ export function getEncodedUrlSlug(secretId: string, encryptionKey: string, addit
     return btoa(`${secretId}|${encryptionKey}|${additionalData}`)
 }
 
-
 export class SecretUrlSlugParts {
     secretId: string = '';
     privateKey: string = '';

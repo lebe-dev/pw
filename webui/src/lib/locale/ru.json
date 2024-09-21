@@ -1,0 +1,48 @@
+{
+  "headerLabels": {
+    "backToHomeHint": "Вернуться на главную"
+  },
+  "messages": {
+    "loadingTitle": "Загрузка..",
+    "errorTitle": "Ошибка"
+  },
+  "errors": {
+    "loadingData": "Ошибка загрузки данных",
+    "storeSecret": "Ошибка сохранения"
+  },
+  "homePage": {
+    "title": "Сообщение",
+    "messagePlaceholder": "Данные будут зашифрованы в браузере.",
+    "secretLifetimeTitle": "Время жизни",
+    "lifetime": {
+      "oneHour": "Один час",
+      "twoHours": "Два часа",
+      "oneDay": "Один день",
+      "oneWeek": "Одна неделя",
+      "oneTimeDownload": "Одноразовая ссылка",
+      "oneTimeDownloadPrecautionMessage": "Создана одноразовая ссылка. Получатель сможет открыть её только один раз."
+    },
+    "encryptMessageButton": "Зашифровать сообщение",
+    "secretUrlTitle": "Ссылка",
+    "copyButton": "Скопировать"
+  },
+  "secretUrlPage": {
+    "title": "Сообщение",
+    "oneTimeDownloadPrecautionMessage": "Эта одноразовая ссылка. Не закрывайте и не обновляйте страницу, пока не сохраните информацию.",
+    "copyButton": "Скопировать",
+    "removeButton": "Удалить",
+    "removeConfirmMessage": "Секрет будет удалён. Продолжить?"
+  },
+  "secretNotFoundPage": {
+    "title": "Сообщение не найдено",
+    "possibleReasonsText": "Возможные причины",
+    "possibleReasonsItems": [
+      "Время действия ссылки истекло",
+      "Эта ссылка была одноразовая, и кто-то открыл её до вас",
+      "Неправильная ссылка"
+    ]
+  },
+  "footerLabels": {
+    "howItWorks": "FAQ"
+  }
+}
