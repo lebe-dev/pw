@@ -18,6 +18,14 @@ Then visit http://localhost:8080.
 
 Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](docs/install/KUBERNETES.md)
 
+## Features
+
+- Secure: All data is encrypted in the browser
+- BLAZING FAST (Svelte+Rust)
+- Low resources usage:
+  ![Resources usage](pw-screenshot-resources.png)
+- Themes support
+
 ## Docs
 
 - [FAQ](docs/FAQ.md)
