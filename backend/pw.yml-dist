@@ -7,7 +7,7 @@ message-max-length: 1024
 # Encrypted payload length > source message length
 encrypted-message-max-length: 6128
 
-# Look for `id` inside `locale.d` directory
+# Look for `id` inside `webui/src/lib/locale` directory
 locale-id: 'en'
 
 redis-url: 'redis://cache:6379/'
