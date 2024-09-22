@@ -1,11 +1,9 @@
 use std::env;
 use std::fmt::{Display, Formatter};
 
-use crate::locale::Locale;
 use config::{Config, File};
-use log::{error, info};
+use log::info;
 use serde::Deserialize;
-use walkdir::WalkDir;
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
@@ -22,14 +20,7 @@ pub struct AppConfig {
 
     pub locale_id: String,
 
-    #[serde(default = "get_default_locales")]
-    pub locales: Vec<Locale>,
-
     pub redis_url: String
-}
-
-fn get_default_locales() -> Vec<Locale> {
-    vec![]
 }
 
 impl Display for AppConfig {
@@ -57,8 +48,6 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
 
     let config = settings.clone().try_deserialize::<AppConfig>()?;
 
-    let locales = load_locales_from_files("locale.d")?;
-
     let listen = get_env_var("PW_LISTEN").unwrap_or(config.listen.to_string());
     let log_level = get_env_var("PW_LOG_LEVEL").unwrap_or(config.log_level);
     let message_max_length = get_env_var("PW_MESSAGE_MAX_LENGTH").unwrap_or(config.message_max_length.to_string());
@@ -72,7 +61,6 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         message_max_length: message_max_length.parse()?,
         encrypted_message_max_length: encrypted_message_max_length.parse()?,
         locale_id,
-        locales,
         redis_url
     };
 
@@ -83,78 +71,4 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
 
 fn get_env_var(name: &str) -> Option<String> {
     env::var(name).ok()
-}
-
-pub fn load_locales_from_files(path: &str) -> anyhow::Result<Vec<Locale>> {
-    info!("load locales from path '{path}'");
-
-    let mut locales: Vec<Locale> = vec![];
-
-    for entry in WalkDir::new(path) {
-        let entry = entry?;
-
-        let metadata = entry.metadata()?;
-
-        if metadata.is_file() {
-
-            if let Some(filename) = entry.file_name().to_str() {
-                if filename.ends_with("yml") {
-                    let path = entry.path();
-                    let path = format!("{}", path.display());
-
-                    match load_locale_from_file(&path) {
-                        Ok(locale) => locales.push(locale.clone()),
-                        Err(e) => error!("locale '{}' load error: {}", path, e)
-                    }
-                }
-            }
-
-        }
-    }
-
-    Ok(locales)
-}
-
-pub fn load_locale_from_file(file_path: &str) -> anyhow::Result<Locale> {
-    let config_builder = Config::builder()
-        .add_source(File::with_name(&file_path));
-
-    let settings = config_builder.build()?;
-
-    let locale = settings.try_deserialize::<Locale>()?;
-
-    info!("locale: {:?}", locale);
-
-    Ok(locale)
-}
-
-#[cfg(test)]
-mod tests {
-    use std::path::Path;
-
-    use crate::config::{load_locale_from_file, load_locales_from_files};
-    use crate::locale::Locale;
-    use crate::tests::init_logging;
-
-    #[test]
-    fn load_locales_from_path() {
-        init_logging();
-
-        let path = Path::new("test-data");
-        let path = format!("{}", path.display());
-        let locales = load_locales_from_files(&path).unwrap();
-        assert_eq!(2, locales.len());
-    }
-
-    #[test]
-    fn load_locale_from_file_test() {
-        init_logging();
-
-        let path = Path::new("test-data").join("en.yml");
-        let locale = load_locale_from_file(&path.to_str().unwrap()).unwrap();
-
-        let expected_locale = Locale::default();
-
-        assert_eq!(expected_locale, locale);
-    }
 }
