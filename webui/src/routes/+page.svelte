@@ -26,6 +26,9 @@
 
 	let secretUrl: string = '';
 
+	let checkBoxColorClass: string = 'text-accent';
+	let checkBoxAdditionalClasses: string = '';
+
 	export let data: PageData;
 
 	console.log('locale:', data.locale);
@@ -65,9 +68,13 @@
 
 	function onToggleDownloadPolicy() {
 		if (secretDownloadPolicy === SecretDownloadPolicy.OneTime) {
+			checkBoxColorClass = 'text-warning';
+			checkBoxAdditionalClasses = 'text-warning';
 			secretDownloadPolicy = SecretDownloadPolicy.Unlimited
 
 		} else {
+			checkBoxColorClass = 'text-accent';
+			checkBoxAdditionalClasses = '';
 			secretDownloadPolicy = SecretDownloadPolicy.OneTime
 		}
 	}
@@ -169,8 +176,10 @@
 
 			<div class="mb-7">
 				<CheckBox enabled={secretDownloadPolicy === SecretDownloadPolicy.OneTime}
-							 toggle={onToggleDownloadPolicy}
-							 text={data.locale.homePage.lifetime.oneTimeDownload}/>
+						  toggle={onToggleDownloadPolicy}
+						  checkBoxColorClass={checkBoxColorClass}
+						  componentAdditionalClasses={checkBoxAdditionalClasses}
+						  text={data.locale.homePage.lifetime.oneTimeDownload}/>
 			</div>
 
 			<div class="mb-9">
