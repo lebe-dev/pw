@@ -35,7 +35,7 @@
 <div class="container max-w-full max-h-full h-screen">
 	<nav data-sveltekit-reload class="bg-gray-950 text-white p-4 flex flex-row justify-between">
 		<div class="font-bold inline-block basis-1/8 me-5 text-lg">
-			<a href="/" title={data.config.locale.headerLabels.backToHomeHint}>PW</a>
+			<a href="/" title={data.locale.headerLabels.backToHomeHint}>PW</a>
 		</div>
 		<div class="me-2">
 			{#if $theme === 'day'}

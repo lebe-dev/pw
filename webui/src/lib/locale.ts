@@ -1,6 +1,4 @@
 export class Locale {
-    id: string = 'en';
-
     headerLabels: HeaderLabels = new HeaderLabels();
 
     messages: MessageLabels = new MessageLabels();

@@ -10,6 +10,7 @@
 	import RadioButton from "../components/RadioButton.svelte";
 	import CheckBox from "../components/CheckBox.svelte";
 	import CopyButton from "../components/CopyButton.svelte";
+	import type {Locale} from "$lib/locale";
 
 	let inProgress: boolean = true;
 
@@ -27,6 +28,8 @@
 
 	export let data: PageData;
 
+	console.log('locale:', data.locale);
+
 	onMount(async () => {
 
 		const response = await fetch('/api/config', {
@@ -36,6 +39,18 @@
 		if (response.status === 200) {
 			data.config = await response.json();
 			console.log('config:', data.config);
+
+			try {
+				let currentLocale = await import(`../lib/locale/${data.config.localeId}.json`);
+
+				data.locale = currentLocale.default as Locale;
+
+				console.log('current locale:', data.locale);
+
+			} catch (e) {
+				console.error(`could not load locale '${data.config.localeId}' from locale/${data.config.localeId}.json`)
+				showError(data.locale.errors.loadingData);
+			}
 
 			messageTotal = data.config.messageMaxLength;
 
@@ -117,9 +132,9 @@
 	<div class="text-center">
 		{#if !secretStored}
 
-			<div class="text-xl mb-2 text-start select-none">{data.config.locale.homePage.title}</div>
+			<div class="text-xl mb-2 text-start select-none">{data.locale.homePage.title}</div>
 			<textarea class="w-full border-2 rounded border-accent bg-secondary outline-0 p-3"
-					  placeholder={data.config.locale.homePage.messagePlaceholder}
+					  placeholder={data.locale.homePage.messagePlaceholder}
 					  rows="5"
 					  maxlength={messageTotal}
 					  bind:value={message}
@@ -131,62 +146,62 @@
 			</div>
 
 			<div class="mb-3 select-none">
-				{data.config.locale.homePage.secretLifetimeTitle}:
+				{data.locale.homePage.secretLifetimeTitle}:
 			</div>
 
 			<div class="mb-4">
 				<RadioButton enabled={secretTTL === SecretTTL.OneHour}
 							 toggle={() => secretTTL = SecretTTL.OneHour}
-							 text={data.config.locale.homePage.lifetime.oneHour}/>
+							 text={data.locale.homePage.lifetime.oneHour}/>
 
 				<RadioButton enabled={secretTTL === SecretTTL.TwoHours}
 							 toggle={() => secretTTL = SecretTTL.TwoHours}
-							 text={data.config.locale.homePage.lifetime.twoHours}/>
+							 text={data.locale.homePage.lifetime.twoHours}/>
 
 				<RadioButton enabled={secretTTL === SecretTTL.OneDay}
 							 toggle={() => secretTTL = SecretTTL.OneDay}
-							 text={data.config.locale.homePage.lifetime.oneDay}/>
+							 text={data.locale.homePage.lifetime.oneDay}/>
 
 				<RadioButton enabled={secretTTL === SecretTTL.OneWeek}
 							 toggle={() => secretTTL = SecretTTL.OneWeek}
-							 text={data.config.locale.homePage.lifetime.oneWeek}/>
+							 text={data.locale.homePage.lifetime.oneWeek}/>
 			</div>
 
 			<div class="mb-7">
 				<CheckBox enabled={secretDownloadPolicy === SecretDownloadPolicy.OneTime}
 							 toggle={onToggleDownloadPolicy}
-							 text={data.config.locale.homePage.lifetime.oneTimeDownload}/>
+							 text={data.locale.homePage.lifetime.oneTimeDownload}/>
 			</div>
 
 			<div class="mb-9">
 				<button disabled={messageLength === 0} on:click={onEncrypt}
-						class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none">{data.config.locale.homePage.encryptMessageButton}</button>
+						class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none">{data.locale.homePage.encryptMessageButton}</button>
 			</div>
 
 		{:else}
 
-			<div class="text-xl mb-2 text-start">{data.config.locale.homePage.secretUrlTitle}</div>
+			<div class="text-xl mb-2 text-start">{data.locale.homePage.secretUrlTitle}</div>
 
 			<div id="secret-url" class="text-md mb-5 border border-accent rounded p-5 select-all break-all">
 				{secretUrl}
 			</div>
 
 			{#if secretDownloadPolicy === SecretDownloadPolicy.OneTime}
-				<PrecautionMessage message={data.config.locale.homePage.lifetime.oneTimeDownloadPrecautionMessage}/>
+				<PrecautionMessage message={data.locale.homePage.lifetime.oneTimeDownloadPrecautionMessage}/>
 			{/if}
 
 			<div class="mb-9 text-center mt-4">
-				<CopyButton data={secretUrl} label={data.config.locale.homePage.copyButton}/>
+				<CopyButton data={secretUrl} label={data.locale.homePage.copyButton}/>
 			</div>
 
 		{/if}
 
 		<div class="text-gray-400 text-sm select-none">
-			v1.5.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.locale.id + '.md'}
-			   target="_blank" class="hover:text-accent">{data.config.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
+			v1.5.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.localeId + '.md'}
+			   target="_blank" class="hover:text-accent">{data.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
 		</div>
 	</div>
 
 {:else}
-	{data.config.locale.messages.loadingTitle}
+	{data.locale.messages.loadingTitle}
 {/if}
