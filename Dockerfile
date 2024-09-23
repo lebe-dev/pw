@@ -40,7 +40,6 @@ RUN apk add libressl-dev && \
     chown -R pw: /app
 
 COPY --from=app-build /build/backend/pw.yml-dist /app/pw.yml
-COPY --from=app-build /build/backend/locale.d /app/locale.d
 COPY --from=app-build /build/target/release/backend /app/pw
 
 RUN chown -R pw: /app && chmod +x /app/pw
