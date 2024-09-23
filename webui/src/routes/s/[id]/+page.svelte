@@ -20,6 +20,10 @@
 
 	onMount(async () => {
 
+		let currentLocale = await import(`../../../lib/locale/en.json`);
+
+		data.locale = currentLocale.default as Locale;
+
 		let response = await fetch('/api/config', {
 			method: 'GET'
 		});
