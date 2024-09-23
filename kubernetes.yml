@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
         - name: pw-redis
-          image: redis:7.2.1-alpine3.18
+          image: redis:7.4.0-alpine3.20
           args: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb"]
 ---
 apiVersion: v1

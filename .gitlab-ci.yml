@@ -40,7 +40,6 @@ build-linux:
     - 'cargo build --release'
     - 'cd ..'
     - 'cp backend/pw.yml-dist .'
-    - 'cp -r backend/locale.d .'
     - 'cp target/release/backend pw'
     - 'eu-elfcompress pw'
     - 'strip pw'
@@ -56,7 +55,6 @@ build-linux:
       - README.md
       - pw.yml-dist
       - docs
-      - locale.d
     expire_in: 1 week
 
 #build-windows:
@@ -80,7 +78,6 @@ build-linux:
 #      - pw.yml-dist
 #      - README.md
 #      - docs
-#      - locale.d
 #    expire_in: 1 week
 #
 #  tags:
