@@ -5,7 +5,7 @@
     export let toggle = () => {};
 </script>
 
-<div class="inline-block cursor-pointer select-none me-1" on:click={toggle}>
+<div class="inline-block cursor-pointer select-none whitespace-nowrap me-3" on:click={toggle}>
     {#if enabled}
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-record-circle text-accent inline mb-0.5 me-0.5" viewBox="0 0 16 16">

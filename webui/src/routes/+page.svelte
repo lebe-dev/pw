@@ -156,22 +156,26 @@
 				{data.locale.homePage.secretLifetimeTitle}:
 			</div>
 
-			<div class="mb-4">
-				<RadioButton enabled={secretTTL === SecretTTL.OneHour}
-							 toggle={() => secretTTL = SecretTTL.OneHour}
-							 text={data.locale.homePage.lifetime.oneHour}/>
+			<div class="flex flex-row gap-0 text-center justify-center mb-4">
+				<div>
+					<RadioButton enabled={secretTTL === SecretTTL.OneHour}
+								 toggle={() => secretTTL = SecretTTL.OneHour}
+								 text={data.locale.homePage.lifetime.oneHour}/>
 
-				<RadioButton enabled={secretTTL === SecretTTL.TwoHours}
-							 toggle={() => secretTTL = SecretTTL.TwoHours}
-							 text={data.locale.homePage.lifetime.twoHours}/>
+					<RadioButton enabled={secretTTL === SecretTTL.TwoHours}
+								 toggle={() => secretTTL = SecretTTL.TwoHours}
+								 text={data.locale.homePage.lifetime.twoHours}/>
+				</div>
 
-				<RadioButton enabled={secretTTL === SecretTTL.OneDay}
-							 toggle={() => secretTTL = SecretTTL.OneDay}
-							 text={data.locale.homePage.lifetime.oneDay}/>
+				<div class="text-left">
+					<RadioButton enabled={secretTTL === SecretTTL.OneDay}
+								 toggle={() => secretTTL = SecretTTL.OneDay}
+								 text={data.locale.homePage.lifetime.oneDay}/>
 
-				<RadioButton enabled={secretTTL === SecretTTL.OneWeek}
-							 toggle={() => secretTTL = SecretTTL.OneWeek}
-							 text={data.locale.homePage.lifetime.oneWeek}/>
+					<RadioButton enabled={secretTTL === SecretTTL.OneWeek}
+								 toggle={() => secretTTL = SecretTTL.OneWeek}
+								 text={data.locale.homePage.lifetime.oneWeek}/>
+				</div>
 			</div>
 
 			<div class="mb-7">
@@ -206,8 +210,11 @@
 		{/if}
 
 		<div class="text-gray-400 text-sm select-none">
-			v1.5.0 <span class="ms-1 me-1">|</span> <a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.localeId + '.md'}
-			   target="_blank" class="hover:text-accent">{data.locale.footerLabels.howItWorks}</a> <span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
+			v1.5.0 <span class="ms-1 me-1">|</span>
+			<a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.localeId + '.md'}
+			   target="_blank" class="hover:text-accent">{data.locale.footerLabels.howItWorks}</a>
+			<span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw"
+												target="_blank" class="hover:text-accent">GITHUB</a>
 		</div>
 	</div>
 
