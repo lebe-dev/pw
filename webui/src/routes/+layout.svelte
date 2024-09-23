@@ -57,7 +57,7 @@
 		</div>
 	</nav>
 
-	<div class="container w-full max-w-5xl bg-secondary drop-shadow-lg rounded-b p-4 lg:p-10">
+	<div class="container w-full max-w-5xl bg-secondary drop-shadow-lg rounded-b ps-4 pt-4 pe-4 pb-6 lg:p-10">
 		<slot />
 	</div>
 
