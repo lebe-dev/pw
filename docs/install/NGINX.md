@@ -17,6 +17,14 @@ server {
       proxy_pass http://localhost:8080;
     }
     
+    location ~* \.(?:jpg|jpeg|gif|png|ico|js|svg|woff|woff2|ttf|css)$ {
+      expires max;
+
+      access_log off;
+      add_header Cache-Control "public";
+      proxy_pass http://localhost:8080;
+    }
+    
     gzip            on;
     gzip_comp_level 5;
     gzip_min_length 256;
