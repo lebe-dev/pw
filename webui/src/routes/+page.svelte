@@ -113,7 +113,7 @@
 	<meta name="description" content="Secure share secrets" />
 </svelte:head>
 
-<div id="content-x" class="text-center">
+<div class="text-center">
 	{#if !secretStored}
 
 		<div class="text-xl mb-2 text-start select-none">{$t('homePage.title')}</div>
@@ -194,9 +194,3 @@
 											target="_blank" class="hover:text-accent">GITHUB</a>
 	</div>
 </div>
-
-<style>
-	#content-x {
-		min-width: 700px !important;
-	}
-</style>
