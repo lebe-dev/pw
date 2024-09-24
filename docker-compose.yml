@@ -3,18 +3,18 @@ version: '3.3'
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.5.0
+    image: tinyops/pw:1.6.0
+    #image: tinyops/pw:1.6.0-es
+    #image: tinyops/pw:1.6.0-ru
     restart: always
     environment:
       PW_LISTEN: '0.0.0.0:8080'
       PW_LOG_LEVEL: 'info'
       PW_MESSAGE_MAX_LENGTH: '3127'
       PW_ENCRYPTED_MESSAGE_MAX_LENGTH: '15000'
-      PW_LOCALE_ID: 'ru'
       PW_REDIS_URL: 'redis://redis:6379/'
     #volumes:
       #- ./pw.yml:/app/pw.yml
-      #- ./locale.d:/app/locale.d
     ports:
       - "18080:8080"
 

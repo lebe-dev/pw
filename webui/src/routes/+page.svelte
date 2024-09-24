@@ -10,7 +10,7 @@
 	import RadioButton from "../components/RadioButton.svelte";
 	import CheckBox from "../components/CheckBox.svelte";
 	import CopyButton from "../components/CopyButton.svelte";
-	import type {Locale} from "$lib/locale";
+	import {t} from 'svelte-intl-precompile'
 
 	let secretStored = false;
 
@@ -31,9 +31,9 @@
 
 	onMount(async () => {
 
-		let currentLocale = await import(`../lib/locale/en.json`);
-
-		data.locale = currentLocale.default as Locale;
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			console.log('prefer dark mode')
+		}
 
 		const response = await fetch('/api/config', {
 			method: 'GET'
@@ -42,27 +42,10 @@
 		if (response.status === 200) {
 			data.config = await response.json();
 			console.log('config:', data.config);
-
-			try {
-				let currentLocale = await import(`../lib/locale/${data.config.localeId}.json`);
-
-				data.locale = currentLocale.default as Locale;
-
-				console.log('current locale:', data.locale);
-
-			} catch (e) {
-				console.error(`could not load locale '${data.config.localeId}' from locale/${data.config.localeId}.json`)
-				showError(data.locale.errors.loadingData);
-			}
-
 			messageTotal = data.config.messageMaxLength;
-
-			inProgress = false;
 
 		} else {
 			showError('Unable to load config');
-
-			inProgress = false;
 		}
 	});
 
@@ -130,12 +113,12 @@
 	<meta name="description" content="Secure share secrets" />
 </svelte:head>
 
-<div class="text-center">
+<div id="content-x" class="text-center">
 	{#if !secretStored}
 
-		<div class="text-xl mb-2 text-start select-none">{data.locale.homePage.title}</div>
+		<div class="text-xl mb-2 text-start select-none">{$t('homePage.title')}</div>
 		<textarea class="w-full border-2 rounded border-accent bg-secondary outline-0 p-3"
-				  placeholder={data.locale.homePage.messagePlaceholder}
+				  placeholder={$t('homePage.messagePlaceholder')}
 				  rows="5"
 				  maxlength={messageTotal}
 				  bind:value={message}
@@ -147,28 +130,28 @@
 		</div>
 
 		<div class="mb-3 select-none">
-			{data.locale.homePage.secretLifetimeTitle}:
+			{$t('homePage.secretLifetimeTitle')}:
 		</div>
 
 		<div class="flex flex-row gap-0 text-center justify-center mb-4">
 			<div>
 				<RadioButton enabled={secretTTL === SecretTTL.OneHour}
 							 toggle={() => secretTTL = SecretTTL.OneHour}
-							 text={data.locale.homePage.lifetime.oneHour}/>
+							 text={$t('homePage.lifetime.oneHour')}/>
 
 				<RadioButton enabled={secretTTL === SecretTTL.TwoHours}
 							 toggle={() => secretTTL = SecretTTL.TwoHours}
-							 text={data.locale.homePage.lifetime.twoHours}/>
+							 text={$t('homePage.lifetime.twoHours')}/>
 			</div>
 
 			<div class="text-left">
 				<RadioButton enabled={secretTTL === SecretTTL.OneDay}
 							 toggle={() => secretTTL = SecretTTL.OneDay}
-							 text={data.locale.homePage.lifetime.oneDay}/>
+							 text={$t('homePage.lifetime.oneDay')}/>
 
 				<RadioButton enabled={secretTTL === SecretTTL.OneWeek}
 							 toggle={() => secretTTL = SecretTTL.OneWeek}
-							 text={data.locale.homePage.lifetime.oneWeek}/>
+							 text={$t('homePage.lifetime.oneWeek')}/>
 			</div>
 		</div>
 
@@ -177,37 +160,43 @@
 					  toggle={onToggleDownloadPolicy}
 					  checkBoxColorClass={checkBoxColorClass}
 					  componentAdditionalClasses={checkBoxAdditionalClasses}
-					  text={data.locale.homePage.lifetime.oneTimeDownload}/>
+					  text={$t('homePage.lifetime.oneTimeDownload')}/>
 		</div>
 
 		<div class="mb-9">
 			<button disabled={messageLength === 0} on:click={onEncrypt}
-					class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none">{data.locale.homePage.encryptMessageButton}</button>
+					class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none">{$t('homePage.encryptMessageButton')}</button>
 		</div>
 
 	{:else}
 
-		<div class="text-xl mb-2 text-start">{data.locale.homePage.secretUrlTitle}</div>
+		<div class="text-xl mb-2 text-start">{$t('homePage.secretUrlTitle')}</div>
 
 		<div id="secret-url" class="text-md mb-5 border border-accent rounded p-5 select-all break-all">
 			{secretUrl}
 		</div>
 
 		{#if secretDownloadPolicy === SecretDownloadPolicy.OneTime}
-			<PrecautionMessage message={data.locale.homePage.lifetime.oneTimeDownloadPrecautionMessage}/>
+			<PrecautionMessage message={$t('homePage.lifetime.oneTimeDownloadPrecautionMessage')}/>
 		{/if}
 
 		<div class="mb-9 text-center mt-4">
-			<CopyButton data={secretUrl} label={data.locale.homePage.copyButton}/>
+			<CopyButton data={secretUrl} label={$t('homePage.copyButton')}/>
 		</div>
 
 	{/if}
 
 	<div class="text-gray-400 text-sm select-none">
-		v1.5.0 <span class="ms-1 me-1">|</span>
-		<a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + data.config.localeId + '.md'}
-		   target="_blank" class="hover:text-accent">{data.locale.footerLabels.howItWorks}</a>
+		v1.6.0 <span class="ms-1 me-1">|</span>
+		<a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + $t('id') + '.md'}
+		   target="_blank" class="hover:text-accent">{$t('footerLabels.howItWorks')}</a>
 		<span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw"
 											target="_blank" class="hover:text-accent">GITHUB</a>
 	</div>
 </div>
+
+<style>
+	#content-x {
+		min-width: 700px !important;
+	}
+</style>

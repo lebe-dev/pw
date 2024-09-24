@@ -11,7 +11,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 ## Getting started
 
 ```shell
-docker-compose up -d  
+docker-compose up -d
 ```
 
 Then visit http://localhost:8080.
@@ -20,10 +20,11 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 
 ## Features
 
-- Secure: All data is encrypted in the browser
-- BLAZING FAST (Svelte+Rust)
+- Secure: All data is encrypted in the browser ([details](docs/SECURITY.md))
+- BLAZING FAST 🌝 (Svelte+Rust)
 - Low resources usage:
   ![Resources usage](pw-screenshot-resources.png)
+- Localization support ([details](docs/LOCALE.md))
 - Themes support
 
 ## Docs
@@ -42,3 +43,7 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 2. Build static release
 3. Add translations
 4. Support Windows
+
+## Thanks
+
+- [Nicco](https://github.com/cupcakearmy), author of [cryptgeon](https://github.com/cupcakearmy/cryptgeon)

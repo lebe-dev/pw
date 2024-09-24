@@ -1,15 +1,17 @@
 # Localization
 
-Locale files are located inside `locale.d` directory. 
+Locale files are located inside `webui/locales` directory.
 
-## How to switch language
+## Force specified locale
 
-Set locale with `locale-id` property in `pw.yml` or via `PW_LOCALE_ID` variable.
+App auto-detects your locale from browser. You can override it in `webui/src/routes/+layout.ts`, for example:
 
-## How to add new locale
+```typescript
+init({ initialLocale: 'ru' ?? undefined, fallbackLocale: 'ru' });
+```
 
-Use existing locale file as an example.
+## How to add a new locale
 
-Update `locale-id` value in `pw.yml`, set new id.
+Locale files stored in `webui/locales`. Use the existing as an example. For example add `de.json` for German language.
 
-Restart application.
+Update `webui/src/routes/+layout.ts` if you'd like to override defaults.

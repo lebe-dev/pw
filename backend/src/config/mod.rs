@@ -18,8 +18,6 @@ pub struct AppConfig {
     /// Encrypted message max length.
     pub encrypted_message_max_length: u16,
 
-    pub locale_id: String,
-
     pub redis_url: String
 }
 
@@ -27,9 +25,9 @@ impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f,
                "listen: '{}', log-level: {}, message-max-length: {},\
-               encrypted-message-max-length: {}, locale-id: '{}', redis-url: '{}'",
+               encrypted-message-max-length: {}, redis-url: '{}'",
                self.listen, self.log_level, self.message_max_length,
-               self.encrypted_message_max_length, self.locale_id, self.redis_url)
+               self.encrypted_message_max_length, self.redis_url)
     }
 }
 
@@ -52,7 +50,6 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     let log_level = get_env_var("PW_LOG_LEVEL").unwrap_or(config.log_level);
     let message_max_length = get_env_var("PW_MESSAGE_MAX_LENGTH").unwrap_or(config.message_max_length.to_string());
     let encrypted_message_max_length = get_env_var("PW_ENCRYPTED_MESSAGE_MAX_LENGTH").unwrap_or(config.encrypted_message_max_length.to_string());
-    let locale_id = get_env_var("PW_LOCALE_ID").unwrap_or(config.locale_id);
     let redis_url = get_env_var("PW_REDIS_URL").unwrap_or(config.redis_url);
 
     let config = AppConfig {
@@ -60,7 +57,6 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         log_level,
         message_max_length: message_max_length.parse()?,
         encrypted_message_max_length: encrypted_message_max_length.parse()?,
-        locale_id,
         redis_url
     };
 

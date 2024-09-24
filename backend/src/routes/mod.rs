@@ -10,8 +10,7 @@ pub mod secret;
 
 pub async fn get_config_route(State(state): State<Arc<AppState>>,) -> impl IntoResponse {
     let config = AppConfigDto {
-        message_max_length: state.config.message_max_length,
-        locale_id: state.config.locale_id.to_string()
+        message_max_length: state.config.message_max_length
     };
 
     (StatusCode::OK, Json(config)).into_response()

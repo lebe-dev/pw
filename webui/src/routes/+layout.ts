@@ -1,15 +1,17 @@
 import {AppConfig} from "$lib/config";
 import type {LayoutLoad} from './$types';
-import {Locale} from "$lib/locale";
+import {getLocaleFromNavigator, init} from 'svelte-intl-precompile'
+// @ts-ignore
+import {registerAll} from '$locales';
+
+registerAll()
+
+init({ initialLocale: getLocaleFromNavigator() ?? undefined, fallbackLocale: 'en' });
 
 export const ssr = false;
 
 export const load: LayoutLoad = async () => {
-    const localeFiles = import.meta.glob('../lib/locale/*.json');
-
     return {
-        config: new AppConfig(),
-        localeFiles: localeFiles,
-        locale: new Locale()
+        config: new AppConfig()
     };
 };
