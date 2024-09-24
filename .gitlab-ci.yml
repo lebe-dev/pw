@@ -6,8 +6,7 @@ stages:
 build-webui:
   stage: webui
 
-  only:
-    - main
+  when: manual
 
   script:
     - cd webui
@@ -26,8 +25,7 @@ build-webui:
 build-linux:
   stage: app
 
-  only:
-    - main
+  when: manual
 
   script:
     - 'cd backend'
