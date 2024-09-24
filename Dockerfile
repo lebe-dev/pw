@@ -1,10 +1,13 @@
 FROM node:22.9.0-alpine3.20 as webui-build
 
+ARG FALLBACK_LOCALE_ID=en
+
 WORKDIR /build
 
 COPY webui/ /build
 
-RUN npm i && \
+RUN sed -i "s/'en'/'FALLBACK_LOCALE_ID'/g" +layout.ts build/src/routes/+layout.ts && \
+    npm i && \
     npm run build
 
 FROM rust:1.81.0-alpine3.20 as app-build
