@@ -6,7 +6,7 @@ WORKDIR /build
 
 COPY webui/ /build
 
-RUN sed -i "s/'en'/'FALLBACK_LOCALE_ID'/g" +layout.ts build/src/routes/+layout.ts && \
+RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     npm i && \
     npm run build
 
