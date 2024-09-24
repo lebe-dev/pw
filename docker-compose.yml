@@ -4,8 +4,6 @@ services:
   app:
     container_name: pw
     image: tinyops/pw:1.6.0
-    #image: tinyops/pw:1.6.0-es
-    #image: tinyops/pw:1.6.0-ru
     restart: always
     environment:
       PW_LISTEN: '0.0.0.0:8080'
