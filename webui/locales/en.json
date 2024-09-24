@@ -13,7 +13,7 @@
   },
   "homePage": {
     "title": "Message",
-    "messagePlaceholder": "The data will be encrypted in the browser",
+    "messagePlaceholder": "The data will be encrypted in the browser.",
     "secretLifetimeTitle": "Secret lifetime",
     "lifetime": {
       "oneHour": "One hour",

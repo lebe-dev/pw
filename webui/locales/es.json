@@ -13,7 +13,7 @@
   },
   "homePage": {
     "title": "Mensaje",
-    "messagePlaceholder": "Los datos se cifrarán en el navegador",
+    "messagePlaceholder": "Los datos se cifrarán en el navegador.",
     "secretLifetimeTitle": "Duración del secreto",
     "lifetime": {
       "oneHour": "Una hora",
