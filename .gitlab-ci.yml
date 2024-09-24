@@ -58,7 +58,7 @@ build-linux:
     expire_in: 1 week
 
 build-image:
-  stage: build
+  stage: image
 
   when: manual
 
@@ -76,7 +76,7 @@ build-image:
     - docker push $DOCKER_IMAGE
 
 build-image-ru:
-  stage: build
+  stage: image
 
   when: manual
 
