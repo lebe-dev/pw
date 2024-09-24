@@ -23,7 +23,11 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 - Secure: All data is encrypted in the browser ([details](docs/SECURITY.md))
 - BLAZING FAST 🌝 (Svelte+Rust)
 - Low resources usage:
-  ![Resources usage](pw-screenshot-resources.png)
+  ```shell
+  CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O      PIDS
+  94d9d31ddf83   pw-cache          1.27%     7.977MiB / 1.69GiB   0.46%     16.2kB / 0B       0B / 0B        6
+  0d3c9c52165a   pw                0.00%     4.082MiB / 1.69GiB   0.24%     63.2kB / 224kB    0B / 0B        2
+  ```
 - Localization support ([details](docs/LOCALE.md))
 - Themes support
 
