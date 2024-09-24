@@ -20,24 +20,25 @@ AES 256, key length 32.
 
 **4. How many resources are needed for the application?**
 
-Docker-container consumes 20 MB of RAM.
+Docker containers consume ~12 MB of RAM.
 
 ```shell
 $ docker stats --no-stream
 
-CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT     MEM %     NET I/O      BLOCK I/O     PIDS
-4102d50dbd33   pw                 0.21%     20.33MiB / 62.43GiB   0.03%     586B / 0B    0B / 4.1kB    34
+CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O      PIDS
+94d9d31ddf83   pw-cache          1.27%     7.977MiB / 1.69GiB   0.46%     16.2kB / 0B       0B / 0B        6
+0d3c9c52165a   pw                0.00%     4.082MiB / 1.69GiB   0.24%     63.2kB / 224kB    0B / 0B        2
 ```
 
-Image size is 50 MB:
+Image size is ~30 MB:
 
 ```shell
 $ docker images
 
-REPOSITORY                                   TAG                    IMAGE ID       CREATED         SIZE
-tinyops/pw                                   1.0.0                  eaab467e40b6   6 hours ago     49.7MB
+REPOSITORY                                                TAG                IMAGE ID       CREATED          SIZE
+tinyops/pw                                                1.6.0              ee1c473b8920   30 minutes ago   29.7MB
 ```
 
-**5. I want to build my own image. What should I do?**
+**5. I'd like to build my own image. What should I do?**
 
 Visit [tutorial](../BUILD.md).

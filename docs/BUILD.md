@@ -7,7 +7,7 @@
 2. Build image:
 
 ```shell
-docker build --progress=plain -t pw:1.3.0 .
+docker build --progress=plain -t pw:1.6.0 .
 ```
 
 ## How to build standalone version
