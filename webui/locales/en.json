@@ -37,10 +37,7 @@
   "secretNotFoundPage": {
     "title": "Secret wasn't found",
     "possibleReasonsText": "Possible reasons",
-    "possibleReasonsItems": [
-      "Link has been expired",
-      "It was one-time link and someone opened it already"
-    ]
+    "possibleReasonsItems": "Link has been expired\nIt was one-time link and someone opened it already"
   },
   "footerLabels": {
     "howItWorks": "FAQ"

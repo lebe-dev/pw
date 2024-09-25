@@ -187,7 +187,7 @@
 	{/if}
 
 	<div class="text-gray-400 text-sm select-none">
-		v1.6.0 <span class="ms-1 me-1">|</span>
+		v1.6.1 <span class="ms-1 me-1">|</span>
 		<a href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + $t('id') + '.md'}
 		   target="_blank" class="hover:text-accent">{$t('footerLabels.howItWorks')}</a>
 		<span class="ms-1 me-1">|</span> <a href="https://github.com/lebe-dev/pw"

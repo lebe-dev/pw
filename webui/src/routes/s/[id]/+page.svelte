@@ -18,7 +18,11 @@
 
 	let notFound: boolean = false;
 
+	let possibleReasonsItems: string[] = [];
+
 	onMount(async () => {
+
+		possibleReasonsItems = $t('secretNotFoundPage.possibleReasonsItems').split('\n');
 
 		let response = await fetch('/api/config', {
 			method: 'GET'
@@ -127,7 +131,7 @@
 			<div class="mb-2">{$t('secretNotFoundPage.possibleReasonsText')}:</div>
 
 			<ul class="ps-6">
-				{#each $t('secretNotFoundPage.possibleReasonsItems') as reason}
+				{#each possibleReasonsItems as reason}
 					<li class="list-disc mb-1">{reason}</li>
 				{/each}
 			</ul>

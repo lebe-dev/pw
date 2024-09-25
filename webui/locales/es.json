@@ -37,11 +37,7 @@
   "secretNotFoundPage": {
     "title": "No se encontró el secreto",
     "possibleReasonsText": "Posibles razones",
-    "possibleReasonsItems": [
-      "El enlace ha expirado",
-      "Era un enlace de un solo uso y alguien ya lo abrió",
-      "El enlace es incorrecto"
-    ]
+    "possibleReasonsItems": "El enlace ha expirado\nEra un enlace de un solo uso y alguien ya lo abrió\nEl enlace es incorrecto"
   },
   "footerLabels": {
     "howItWorks": "Preguntas frecuentes"
