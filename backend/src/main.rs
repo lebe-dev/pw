@@ -10,16 +10,16 @@ use rust_embed::Embed;
 use std::path::Path;
 use std::sync::Arc;
 
-pub mod secret;
-pub mod logging;
 pub mod config;
-pub mod routes;
 pub mod dto;
+pub mod logging;
+pub mod routes;
+pub mod secret;
 
 #[cfg(test)]
 pub mod tests;
 
-pub const VERSION: &str = "1.6.1 #1";
+pub const VERSION: &str = "1.6.2 #1";
 
 static INDEX_HTML: &str = "index.html";
 
@@ -39,13 +39,16 @@ async fn main() -> anyhow::Result<()> {
 
     let app_state = AppState {
         config: app_config.clone(),
-        secret_storage
+        secret_storage,
     };
 
     let app = Router::new()
         .route("/api/config", get(get_config_route))
         .route("/api/secret", post(store_secret_route))
-        .route("/api/secret/:id", get(get_secret_route).delete(remove_secret_route))
+        .route(
+            "/api/secret/:id",
+            get(get_secret_route).delete(remove_secret_route),
+        )
         .route("/api/version", get(get_version_route))
         .fallback(static_handler)
         .with_state(Arc::new(app_state));
