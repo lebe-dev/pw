@@ -183,7 +183,10 @@
 	{:else}
 		<div class="text-xl mb-2 text-start">{$t('homePage.secretUrlTitle')}</div>
 
-		<div id="secret-url" class="text-md mb-5 border border-accent rounded p-5 select-all break-all">
+		<div
+			id="secret-url"
+			class="text-md mb-5 border border-accent rounded p-5 select-all break-all"
+		>
 			{secretUrl}
 		</div>
 
@@ -197,13 +200,14 @@
 	{/if}
 
 	<div class="text-gray-400 text-sm select-none">
-		v1.6.2 <span class="ms-1 me-1">|</span>
+		v1.6.3 <span class="ms-1 me-1">|</span>
 		<a
 			href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + $t('id') + '.md'}
 			target="_blank"
 			class="hover:text-accent">{$t('footerLabels.howItWorks')}</a
 		>
 		<span class="ms-1 me-1">|</span>
-		<a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a>
+		<a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a
+		>
 	</div>
 </div>
