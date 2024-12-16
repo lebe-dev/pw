@@ -1,10 +1,10 @@
-FROM node:22.9.0-alpine3.20 as webui-build
+FROM node:22.9.0-alpine3.20 as frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
 WORKDIR /build
 
-COPY webui/ /build
+COPY frontend/ /build
 
 RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     npm i && \
@@ -21,17 +21,17 @@ RUN mkdir -p /build/static && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
 
 COPY . /build
-COPY --from=webui-build /build/build/ /build/backend/static/
+COPY --from=frontend-build /build/build/ /build/static/
 
-COPY favicon.png /build/backend/static/
+COPY favicon.png /build/static/
 
 RUN cd backend && \
     cargo test && \
     cargo build --release && \
-    eu-elfcompress ../target/release/backend && \
-    strip ../target/release/backend && \
-    upx -9 --lzma ../target/release/backend && \
-    chmod +x ../target/release/backend
+    eu-elfcompress ../target/release/pw && \
+    strip ../target/release/pw && \
+    upx -9 --lzma ../target/release/pw && \
+    chmod +x ../target/release/pw
 
 FROM alpine:3.20.3
 
@@ -42,8 +42,8 @@ RUN apk add libressl-dev && \
     chmod 700 /app && \
     chown -R pw: /app
 
-COPY --from=app-build /build/backend/pw.yml-dist /app/pw.yml
-COPY --from=app-build /build/target/release/backend /app/pw
+COPY --from=app-build /build/pw.yml-dist /app/pw.yml
+COPY --from=app-build /build/target/release/pw /app/pw
 
 RUN chown -R pw: /app && chmod +x /app/pw
 
