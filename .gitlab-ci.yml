@@ -1,49 +1,47 @@
 stages:
-  - webui
-  - app
-  - image
+  - build
 
-build-webui:
-  stage: webui
+build-frontend:
+  stage: build
 
   when: manual
 
   script:
-    - cd webui
+    - cd frontend
     - npm i
     - npm run build
 
   artifacts:
     name: webui
     paths:
-      - webui/build
+      - frontend/build
     expire_in: 1 week
 
   tags:
     - linux
 
 build-linux:
-  stage: app
+  stage: build
 
   when: manual
 
   script:
-    - 'cd backend'
-    - 'mkdir static'
-    - 'cargo test'
-    - 'cp -r ../webui/build/. static/'
-    - 'ls -liah static/'
-    - 'cp -f ../favicon.png static/'
-    - 'cargo test'
-    - 'cargo build --release'
-    - 'cd ..'
-    - 'cp backend/pw.yml-dist .'
-    - 'cp target/release/backend pw'
-    - 'eu-elfcompress pw'
-    - 'strip pw'
-    - 'upx -9 --lzma pw || true'
+    - "cd backend"
+    - "mkdir static"
+    - "cargo test"
+    - "cp -r ../webui/build/. static/"
+    - "ls -liah static/"
+    - "cp -f ../favicon.png static/"
+    - "cargo test"
+    - "cargo build --release"
+    - "cd .."
+    - "cp backend/pw.yml-dist ."
+    - "cp target/release/backend pw"
+    - "eu-elfcompress pw"
+    - "strip pw"
+    - "upx -9 --lzma pw || true"
     - 'VERSION=$(cat backend/Cargo.toml | grep version | head -1 | cut -d "\"" -f 2)'
-    - 'echo $VERSION > build-version'
+    - "echo $VERSION > build-version"
 
   artifacts:
     name: pw-app
@@ -56,7 +54,7 @@ build-linux:
     expire_in: 1 week
 
 build-image:
-  stage: image
+  stage: build
 
   when: manual
 
@@ -67,26 +65,11 @@ build-image:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
   script:
-    - APP_VERSION=`cat backend/Cargo.toml | grep "version = " | head -1 | cut -d "=" -f2 | tr -d '"' | tr -d ' '`
+    - APP_VERSION=`cat Cargo.toml | grep "version = " | head -1 | cut -d "=" -f2 | tr -d '"' | tr -d ' '`
     - DOCKER_IMAGE=$CI_REGISTRY_IMAGE:$APP_VERSION
     - DOCKER_BUILDKIT=1
     - docker build --progress=plain -t $DOCKER_IMAGE -f Dockerfile .
     - docker push $DOCKER_IMAGE
 
-build-image-ru:
-  stage: image
-
-  when: manual
-
-  image: docker:20.10.16
-  services:
-    - docker:20.10.16-dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-  script:
-    - APP_VERSION=`cat backend/Cargo.toml | grep "version = " | head -1 | cut -d "=" -f2 | tr -d '"' | tr -d ' '`
-    - DOCKER_IMAGE=$CI_REGISTRY_IMAGE:$APP_VERSION-ru
-    - DOCKER_BUILDKIT=1
-    - docker build --build-arg FALLBACK_LOCALE_ID="ru" --progress=plain -t $DOCKER_IMAGE -f Dockerfile .
-    - docker push $DOCKER_IMAGE
+  tags:
+    - linux
