@@ -1,20 +1,20 @@
-version: '3.3'
+version: "3.3"
 
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.6.1
+    image: tinyops/pw:1.6.3
     restart: always
     environment:
-      PW_LISTEN: '0.0.0.0:8080'
-      PW_LOG_LEVEL: 'info'
-      PW_MESSAGE_MAX_LENGTH: '3127'
-      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: '15000'
-      PW_REDIS_URL: 'redis://redis:6379/'
+      PW_LISTEN: "0.0.0.0:8080"
+      PW_LOG_LEVEL: "info"
+      PW_MESSAGE_MAX_LENGTH: "3127"
+      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15000"
+      PW_REDIS_URL: "redis://redis:6379/"
     #volumes:
-      #- ./pw.yml:/app/pw.yml
+    #- ./pw.yml:/app/pw.yml
     ports:
-      - "18080:8080"
+      - "8080:8080"
 
   redis:
     container_name: pw-redis
