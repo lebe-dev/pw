@@ -7,8 +7,8 @@ WORKDIR /build
 COPY frontend/ /build
 
 RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
-    npm i && \
-    npm run build
+    yarn && \
+    yarn build
 
 FROM rust:1.83.0-alpine3.20 as app-build
 
@@ -25,13 +25,12 @@ COPY --from=frontend-build /build/build/ /build/static/
 
 COPY favicon.png /build/static/
 
-RUN cd backend && \
-    cargo test && \
+RUN cargo test && \
     cargo build --release && \
-    eu-elfcompress ../target/release/pw && \
-    strip ../target/release/pw && \
-    upx -9 --lzma ../target/release/pw && \
-    chmod +x ../target/release/pw
+    eu-elfcompress target/release/pw && \
+    strip target/release/pw && \
+    upx -9 --lzma target/release/pw && \
+    chmod +x target/release/pw
 
 FROM alpine:3.20.3
 
