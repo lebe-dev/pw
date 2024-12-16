@@ -7,19 +7,19 @@
 2. Build image:
 
 ```shell
-docker build --progress=plain -t pw:1.6.0 .
+docker build --progress=plain -t pw:1.6.3 .
 ```
 
 ## How to build standalone version
 
-**1. Install Rust 1.78 or later**
+**1. Install Rust 1.83 or later**
 
 **2. Install NodeJS and npm**
 
-**3. Build webui module**
+**3. Build frontend module**
 
 ```shell
-cd webui
+cd frontend
 npm i
 npm run build
 ```
@@ -27,15 +27,14 @@ npm run build
 **4. Build app**
 
 ```shell
-mkdir backend/static
-cp -r ../webui/build/ static/
-cd backend
+mkdir static
+cp -r frontend/build/ static/
 cargo build --release
 cd ..
 
 # Linux
-cp target/release/backend pw
+cp target/release/pw pw
 
 # Windows
-cp target/release/backend.exe pw.exe
+cp target/release/pw.exe pw.exe
 ```

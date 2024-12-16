@@ -1,10 +1,10 @@
 # Localization
 
-Locale files are located inside `webui/locales` directory.
+Locale files are located inside `frontend/locales` directory.
 
 ## Force specified locale
 
-App auto-detects your locale from browser. You can override it in `webui/src/routes/+layout.ts`, for example:
+App auto-detects your locale from browser. You can override it in `frontend/src/routes/+layout.ts`, for example:
 
 ```typescript
 init({ initialLocale: 'ru' ?? undefined, fallbackLocale: 'ru' });
@@ -12,6 +12,6 @@ init({ initialLocale: 'ru' ?? undefined, fallbackLocale: 'ru' });
 
 ## How to add a new locale
 
-Locale files stored in `webui/locales`. Use the existing as an example. For example add `de.json` for German language.
+Locale files stored in `frontend/locales`. Use the existing as an example. For example add `de.json` for German language.
 
-Update `webui/src/routes/+layout.ts` if you'd like to override defaults.
+Update `frontend/src/routes/+layout.ts` if you'd like to override defaults.

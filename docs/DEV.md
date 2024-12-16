@@ -1,6 +1,6 @@
 # Development
 
-Install Rust 1.72+.
+Install Rust 1.83+.
 
 Prepare config for backend:
 
@@ -17,7 +17,7 @@ cargo run
 Install NodeJS 20.x + npm then install dependencies:
 
 ```shell
-cd ../webui
+cd ../frontend
 npm i
 ```
 
