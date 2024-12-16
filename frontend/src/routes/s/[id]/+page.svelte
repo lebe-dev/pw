@@ -1,34 +1,35 @@
 <script lang="ts">
-	import {onMount} from "svelte";
-	import type {PageData} from "./$types";
-	import {AES, enc} from "crypto-js";
-	import {getEncodedUrlSlugParts} from "$lib/url";
-	import {SecretDownloadPolicy} from "$lib/secret";
-	import PrecautionMessage from "../../../components/PrecautionMessage.svelte";
-	import {error} from "@sveltejs/kit";
-	import CopyButton from "../../../components/CopyButton.svelte";
-	import {t} from 'svelte-intl-precompile'
-	import {notifications} from "$lib/stores/notifications";
+	import { onMount } from 'svelte';
+	import { AES, enc } from 'crypto-js';
+	import { toast } from 'svelte-sonner';
+	import { getEncodedUrlSlugParts } from '$lib/url';
+	import { SecretDownloadPolicy } from '$lib/secret';
+	import PrecautionMessage from '$lib/components/PrecautionMessage.svelte';
+	import { error } from '@sveltejs/kit';
+	import CopyButton from '$lib/components/CopyButton.svelte';
+	import { t } from 'svelte-intl-precompile';
+	import { AppConfig } from '$lib/config';
+	import { Button } from '$lib/components/ui/button';
 
-	export let data: PageData;
+	let { data } = $props();
 
-	let loading: boolean = true;
+	let loading: boolean = $state(true);
+	let config: AppConfig = $state(new AppConfig());
 
-	let message: string = '';
+	let message: string = $state('');
 
-	let notFound: boolean = false;
+	let notFound: boolean = $state(false);
 
-	let possibleReasonsItems: string[] = [];
+	let possibleReasonsItems: string[] = $state([]);
 
 	onMount(async () => {
-
 		possibleReasonsItems = $t('secretNotFoundPage.possibleReasonsItems').split('\n');
 
 		let response = await fetch('/api/config', {
 			method: 'GET'
 		});
 
-		data.config = await response.json();
+		config = await response.json();
 
 		try {
 			const slugParts = getEncodedUrlSlugParts(data.secretId);
@@ -39,25 +40,23 @@
 
 			const status = response.status;
 
-			loading = false;
-
 			if (status === 200) {
 				data.secret = await response.json();
+
 				message = AES.decrypt(data.secret.payload, slugParts.privateKey).toString(enc.Utf8);
 
+				loading = false;
 			} else if (status === 400) {
 				notFound = true;
-
+				loading = false;
 			} else {
-				error(500, 'Internal error')
-				notifications.addError({message: 'Internal error'})
+				error(500, 'Internal error');
+				toast.error('Internal error');
 			}
-
 		} catch (e) {
 			console.error(e);
 			notFound = true;
 		}
-
 	});
 
 	async function onRemoveUrl(secretId: string) {
@@ -73,15 +72,12 @@
 
 				if (status === 200) {
 					location.href = '/';
-
 				}
 				if (status === 400) {
 					notFound = true;
-
 				} else {
-					error(500, 'Internal error')
+					error(500, 'Internal error');
 				}
-
 			} catch (e) {
 				console.error(e);
 				notFound = true;
@@ -92,52 +88,83 @@
 
 <svelte:head>
 	<title>{$t('secretUrlPage.title')}</title>
-	<meta name="description" content="Secret page"/>
+	<meta name="description" content="Secret page" />
 </svelte:head>
 
 {#if !loading}
 	{#if !notFound}
-		<div class="text-xl mb-4 text-start">{$t('secretUrlPage.title')}</div>
+		<div class="mb-4 select-none text-start text-xl">{$t('secretUrlPage.title')}</div>
 
-		<div id="secret-url" class="text-md mb-5 bg-base-200 rounded p-5 break-all select-all font-mono whitespace-pre-wrap">
+		<div
+			id="secret-url"
+			class="text-md border-prim mb-5 whitespace-pre-wrap break-all rounded border p-5 font-mono dark:border-accent"
+		>
 			{message}
 		</div>
 
 		{#if data.secret.downloadPolicy === SecretDownloadPolicy.OneTime}
-			<PrecautionMessage message={$t('secretUrlPage.oneTimeDownloadPrecautionMessage')}/>
+			<PrecautionMessage message={$t('secretUrlPage.oneTimeDownloadPrecautionMessage')} />
 
+			<div class="mt-3 text-center">
+				<CopyButton data={message} label={$t('homePage.copyButton')} />
+			</div>
 		{:else}
 			<div class="columns-2">
 				<div class="column-xs ps-1">
-					<CopyButton data={message} label={$t('secretUrlPage.copyButton')}/>
+					<CopyButton
+						data={message}
+						label={$t('secretUrlPage.copyButton')}
+						onclick={() => onRemoveUrl(data.secret.id)}
+					/>
 				</div>
-				<div class="column-xs text-right pe-1">
-					<button class="px-3 py-1.5 ms-3 btn btn-sm hover:bg-red-600 hover:text-primary-content hover:border-red-600 hover:text-white uppercase rounded cursor-pointer text-md"
-					   on:click={() => onRemoveUrl(data.secret.id)}>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3 inline-block" viewBox="0 0 16 16">
-							<path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-						</svg>
+				<div class="column-xs pe-1 text-right">
+					<Button
+						variant="outline"
+						size="sm"
+						class="hover:bg-destructive hover:text-primary-foreground dark:hover:bg-destructive dark:hover:text-secondary-foreground"
+						onclick={() => onRemoveUrl(data.secret.id)}
+					>
+						<div class="flex items-center">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="lucide lucide-trash-2 me-1 inline-block"
+								><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
+									d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+								/><line x1="10" x2="10" y1="11" y2="17" /><line
+									x1="14"
+									x2="14"
+									y1="11"
+									y2="17"
+								/></svg
+							>
 
-						{$t('secretUrlPage.removeButton')}
-					</button>
+							{$t('secretUrlPage.removeButton')}
+						</div></Button
+					>
 				</div>
 			</div>
 		{/if}
-
 	{:else}
-		<div class="text-xl mb-4 text-start">{$t('secretNotFoundPage.title')}</div>
+		<div class="mb-4 text-start text-xl">{$t('secretNotFoundPage.title')}</div>
 
-		<div id="secret-url" class="text-md rounded break-all mb-5">
+		<div id="secret-url" class="text-md mb-5 break-all rounded">
 			<div class="mb-2">{$t('secretNotFoundPage.possibleReasonsText')}:</div>
 
 			<ul class="ps-6">
 				{#each possibleReasonsItems as reason}
-					<li class="list-disc mb-1">{reason}</li>
+					<li class="mb-1 list-disc">{reason}</li>
 				{/each}
 			</ul>
 		</div>
 	{/if}
-
 {:else}
 	{$t('messages.loadingTitle')}
 {/if}

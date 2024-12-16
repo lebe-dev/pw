@@ -1,60 +1,72 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
 	import { generateRandomKey, getRandomAdditionalData, getRandomKeyId } from '$lib/encrypt';
 	import { AES } from 'crypto-js';
 	import { getEncodedUrlSlug, getUrlBaseHost } from '$lib/url';
 	import { Secret, SecretDownloadPolicy, SecretTTL } from '$lib/secret';
-	import PrecautionMessage from '../components/PrecautionMessage.svelte';
-	import { showError } from '$lib/notifications';
-	import RadioButton from '../components/RadioButton.svelte';
-	import CheckBox from '../components/CheckBox.svelte';
-	import CopyButton from '../components/CopyButton.svelte';
+	import PrecautionMessage from '$lib/components/PrecautionMessage.svelte';
+	import CopyButton from '$lib/components/CopyButton.svelte';
+	import { toast } from 'svelte-sonner';
 	import { t } from 'svelte-intl-precompile';
+	import { AppConfig } from '$lib/config';
+	import { Button } from '$lib/components/ui/button';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import OneTimeDownload from '$lib/components/OneTimeDownload.svelte';
+	import SecretLifeTime from '$lib/components/SecretLifeTime.svelte';
 
-	let secretStored = false;
+	let inProgress = $state(true);
 
-	let message: string = '';
+	let config = $state(new AppConfig());
 
-	let messageLength: number = 0;
-	let messageTotal: number = 0;
+	let secretStored = $state(false);
 
-	let secretTTL: SecretTTL = SecretTTL.OneHour;
-	let secretDownloadPolicy: SecretDownloadPolicy = SecretDownloadPolicy.OneTime;
+	let message: string = $state('');
 
-	let secretUrl: string = '';
+	let messageLength: number = $state(0);
+	let messageTotal: number = $derived(config.messageMaxLength);
 
-	let checkBoxColorClass: string = 'text-accent';
-	let checkBoxAdditionalClasses: string = '';
+	let secretTTL = $state(SecretTTL.OneHour);
 
-	export let data: PageData;
+	$inspect(secretTTL, secretTTL);
+
+	let secretDownloadPolicy = $state(SecretDownloadPolicy.OneTime);
+
+	let oneTimeDownloadMode = $derived(secretDownloadPolicy === SecretDownloadPolicy.OneTime);
+
+	let secretUrl: string = $state('');
+
+	let encryptButtonDisabled = $derived(inProgress || message.length === 0);
+
+	$effect(() => {
+		console.log('secretTTL:', secretTTL);
+		console.log('oneTimeDownloadMode:', oneTimeDownloadMode);
+	});
 
 	onMount(async () => {
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			console.log('prefer dark mode');
+			console.log('user prefers a dark mode');
 		}
 
+		await loadConfig();
+	});
+
+	async function loadConfig() {
 		const response = await fetch('/api/config', {
 			method: 'GET'
 		});
 
 		if (response.status === 200) {
-			data.config = await response.json();
-			console.log('config:', data.config);
-			messageTotal = data.config.messageMaxLength;
+			config = await response.json();
+			inProgress = false;
 		} else {
-			showError('Unable to load config');
+			toast.error('Unable to load config');
 		}
-	});
+	}
 
 	function onToggleDownloadPolicy() {
 		if (secretDownloadPolicy === SecretDownloadPolicy.OneTime) {
-			checkBoxColorClass = 'text-warning';
-			checkBoxAdditionalClasses = 'text-warning';
 			secretDownloadPolicy = SecretDownloadPolicy.Unlimited;
 		} else {
-			checkBoxColorClass = 'text-accent';
-			checkBoxAdditionalClasses = '';
 			secretDownloadPolicy = SecretDownloadPolicy.OneTime;
 		}
 	}
@@ -67,6 +79,8 @@
 		const key = await generateRandomKey();
 
 		const ciphertext = AES.encrypt(message, key).toString();
+
+		console.log('TTL:', secretTTL);
 
 		const secret = new Secret();
 		secret.id = await getRandomKeyId();
@@ -99,7 +113,7 @@
 		if (status === 200) {
 			secretStored = true;
 		} else {
-			showError('Encryption error');
+			toast.error('Encryption error');
 		}
 	}
 </script>
@@ -111,19 +125,19 @@
 
 <div class="text-center">
 	{#if !secretStored}
-		<div class="text-xl mb-2 text-start select-none">{$t('homePage.title')}</div>
-		<textarea
-			class="w-full border-2 rounded border-accent bg-secondary outline-0 p-3"
+		<div class="mb-2 select-none text-start text-xl">{$t('homePage.title')}</div>
+		<Textarea
 			placeholder={$t('homePage.messagePlaceholder')}
-			rows="5"
+			rows={6}
+			class="placeholder:text-md mb-2"
 			maxlength={messageTotal}
 			bind:value={message}
-			on:keyup={onMessageUpdate}
+			onkeyup={() => onMessageUpdate(event)}
 			autofocus={true}
-		/>
+		></Textarea>
 
-		<div class="text-xs mb-5 select-none">
-			<span class={messageLength === messageTotal && messageTotal !== 0 ? 'text-red-600' : ''}
+		<div class="mb-5 select-none text-xs">
+			<span class={messageLength === messageTotal && messageTotal !== 0 ? 'text-amber-500' : ''}
 				>{messageLength} / {messageTotal}</span
 			>
 		</div>
@@ -132,61 +146,32 @@
 			{$t('homePage.secretLifetimeTitle')}:
 		</div>
 
-		<div class="flex flex-row gap-0 text-center justify-center mb-4">
+		<div class="mb-4 flex flex-row justify-center">
 			<div>
-				<RadioButton
-					enabled={secretTTL === SecretTTL.OneHour}
-					toggle={() => (secretTTL = SecretTTL.OneHour)}
-					text={$t('homePage.lifetime.oneHour')}
-				/>
-
-				<RadioButton
-					enabled={secretTTL === SecretTTL.TwoHours}
-					toggle={() => (secretTTL = SecretTTL.TwoHours)}
-					text={$t('homePage.lifetime.twoHours')}
-				/>
-			</div>
-
-			<div class="text-left">
-				<RadioButton
-					enabled={secretTTL === SecretTTL.OneDay}
-					toggle={() => (secretTTL = SecretTTL.OneDay)}
-					text={$t('homePage.lifetime.oneDay')}
-				/>
-
-				<RadioButton
-					enabled={secretTTL === SecretTTL.OneWeek}
-					toggle={() => (secretTTL = SecretTTL.OneWeek)}
-					text={$t('homePage.lifetime.oneWeek')}
-				/>
+				<SecretLifeTime bind:value={secretTTL} bind:disabled={inProgress} />
 			</div>
 		</div>
 
-		<div class="mb-7">
-			<CheckBox
-				enabled={secretDownloadPolicy === SecretDownloadPolicy.OneTime}
-				toggle={onToggleDownloadPolicy}
-				{checkBoxColorClass}
-				componentAdditionalClasses={checkBoxAdditionalClasses}
-				text={$t('homePage.lifetime.oneTimeDownload')}
+		<div class="mb-7 flex flex-row justify-center">
+			<OneTimeDownload
+				checked={true}
+				bind:disabled={inProgress}
+				click={() => onToggleDownloadPolicy()}
 			/>
 		</div>
 
 		<div class="mb-9">
-			<button
-				disabled={messageLength === 0}
-				on:click={onEncrypt}
-				class="px-3 py-2 w-64 btn btn-md btn-neutral hover:btn-accent rounded uppercase disabled:pointer-events-none"
-				>{$t('homePage.encryptMessageButton')}</button
+			<Button
+				size="lg"
+				class="uppercase dark:disabled:bg-gray-700"
+				disabled={encryptButtonDisabled}
+				onclick={() => onEncrypt()}>{$t('homePage.encryptMessageButton')}</Button
 			>
 		</div>
 	{:else}
-		<div class="text-xl mb-2 text-start">{$t('homePage.secretUrlTitle')}</div>
+		<div class="mb-2 text-start text-xl">{$t('homePage.secretUrlTitle')}</div>
 
-		<div
-			id="secret-url"
-			class="text-md mb-5 border border-accent rounded p-5 select-all break-all"
-		>
+		<div id="secret-url" class="text-md mb-5 select-all break-all rounded border border-accent p-5">
 			{secretUrl}
 		</div>
 
@@ -194,20 +179,30 @@
 			<PrecautionMessage message={$t('homePage.lifetime.oneTimeDownloadPrecautionMessage')} />
 		{/if}
 
-		<div class="mb-9 text-center mt-4">
+		<div class="mb-9 mt-4 text-center">
 			<CopyButton data={secretUrl} label={$t('homePage.copyButton')} />
 		</div>
 	{/if}
 
-	<div class="text-gray-400 text-sm select-none">
-		v1.6.3 <span class="ms-1 me-1">|</span>
+	<div class="select-none text-xs text-gray-400">
+		<a
+			href="https://github.com/lebe-dev/pw/releases"
+			target="_blank"
+			class="hover:text-secondary-foreground hover:dark:text-accent">v1.6.3</a
+		>
+
+		<span class="me-1 ms-1">|</span>
 		<a
 			href={'https://github.com/lebe-dev/pw/blob/main/docs/faq/FAQ.' + $t('id') + '.md'}
 			target="_blank"
-			class="hover:text-accent">{$t('footerLabels.howItWorks')}</a
+			class="hover:text-secondary-foreground hover:dark:text-accent"
+			>{$t('footerLabels.howItWorks')}</a
 		>
-		<span class="ms-1 me-1">|</span>
-		<a href="https://github.com/lebe-dev/pw" target="_blank" class="hover:text-accent">GITHUB</a
+		<span class="me-1 ms-1">|</span>
+		<a
+			href="https://github.com/lebe-dev/pw"
+			target="_blank"
+			class="hover:text-secondary-foreground hover:dark:text-accent">GITHUB</a
 		>
 	</div>
 </div>
