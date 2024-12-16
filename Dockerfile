@@ -10,7 +10,7 @@ RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     npm i && \
     npm run build
 
-FROM rust:1.81.0-alpine3.20 as app-build
+FROM rust:1.83.0-alpine3.20 as app-build
 
 WORKDIR /build
 
