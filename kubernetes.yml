@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: pw
-          image: tinyops/pw:1.6.3
+          image: tinyops/pw:1.7.0
           ports:
             - containerPort: 8080
           envFrom:
