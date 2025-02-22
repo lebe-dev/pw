@@ -44,7 +44,7 @@
 
 	onMount(async () => {
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			console.log('user prefers a dark mode');
+			console.log('user prefers dark mode');
 		}
 
 		await loadConfig();
