@@ -1,5 +1,5 @@
 use crate::secret::{Secret, SecretDownloadPolicy, SecretTTL};
-use anyhow::{anyhow, Context};
+use anyhow::{Context, anyhow};
 use log::{debug, error, info};
 use redis::{Commands, ExistenceCheck, SetExpiry, SetOptions};
 
@@ -7,14 +7,14 @@ pub const DEFAULT_REDIS_CNN_URL: &str = "redis://127.0.0.1";
 
 #[derive(Clone)]
 pub struct RedisSecretStorage {
-    cnn_url: String
+    cnn_url: String,
 }
 
 impl RedisSecretStorage {
     /// For example: `redis://127.0.0.1/`
     pub fn new(cnn_url: &str) -> RedisSecretStorage {
         RedisSecretStorage {
-            cnn_url: cnn_url.to_string()
+            cnn_url: cnn_url.to_string(),
         }
     }
 
@@ -22,7 +22,9 @@ impl RedisSecretStorage {
         info!("store secret: {}", secret);
         debug!("cnn url: {}", self.cnn_url);
         let client = redis::Client::open(&*self.cnn_url)?;
-        let mut cnn = client.get_connection().context("couldn't connect to redis")?;
+        let mut cnn = client
+            .get_connection()
+            .context("couldn't connect to redis")?;
 
         let ttl_seconds = match secret.ttl {
             SecretTTL::OneHour => 60 * 60,
@@ -33,13 +35,14 @@ impl RedisSecretStorage {
 
         debug!("ttl seconds: {ttl_seconds}");
 
-        let opts = SetOptions::default().conditional_set(ExistenceCheck::NX)
+        let opts = SetOptions::default()
+            .conditional_set(ExistenceCheck::NX)
             .with_expiration(SetExpiry::EX(ttl_seconds))
             .get(true);
 
         let json = serde_json::to_string(&secret).context("secret deserialization error")?;
 
-        cnn.set_options(id.to_string(), json, opts)?;
+        let _: Option<String> = cnn.set_options(id.to_string(), json, opts)?;
 
         info!("stored secret entity: {}", secret);
 
@@ -62,7 +65,7 @@ impl RedisSecretStorage {
             match res {
                 Ok(secret) => {
                     if secret.download_policy == SecretDownloadPolicy::OneTime {
-                        cnn.del(&id)?;
+                        let _: String = cnn.del(&id)?;
                     }
 
                     info!("secret has been found");
@@ -73,7 +76,6 @@ impl RedisSecretStorage {
                     Err(anyhow!("unable to get key"))
                 }
             }
-
         } else {
             info!("secret wasn't found by id '{id}'");
             Ok(None)
@@ -89,12 +91,11 @@ impl RedisSecretStorage {
         let id = id.to_string();
 
         if cnn.exists(&id)? {
-            cnn.del(&id)?;
+            let _: String = cnn.del(&id)?;
 
             info!("secret with id '{id}' has been removed");
 
             Ok(())
-
         } else {
             info!("secret wasn't found by id '{id}'");
             Ok(())
@@ -104,8 +105,8 @@ impl RedisSecretStorage {
 
 #[cfg(test)]
 mod tests {
-    use crate::secret::storage::{RedisSecretStorage, DEFAULT_REDIS_CNN_URL};
     use crate::secret::SecretDownloadPolicy;
+    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
     use crate::tests::get_random_string;
     use crate::tests::secret::get_sample_secret;
 
@@ -164,5 +165,4 @@ mod tests {
     fn get_storage() -> RedisSecretStorage {
         RedisSecretStorage::new(DEFAULT_REDIS_CNN_URL)
     }
-
 }
