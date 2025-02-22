@@ -3,6 +3,5 @@
 /frontend/dist
 /pw.yml
 /pw.log
-/static
 /frontend/.svelte-kit
 /frontend/node_modules
