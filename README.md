@@ -11,7 +11,7 @@ PW is a project for sharing secrets (any confidential information). All data is 
 ## Getting started
 
 ```shell
-docker-compose up -d
+docker compose up -d
 ```
 
 Then visit http://localhost:8080.
@@ -28,7 +28,7 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
   94d9d31ddf83   pw-cache          1.27%     7.977MiB / 1.69GiB   0.46%     16.2kB / 0B       0B / 0B        6
   0d3c9c52165a   pw                0.00%     4.082MiB / 1.69GiB   0.24%     63.2kB / 224kB    0B / 0B        2
   ```
-- Localization support ([details](docs/LOCALE.md))
+- Localization support: en, es, de, ru ([details](docs/LOCALE.md))
 - Themes support
 
 ## Docs
@@ -43,10 +43,8 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 
 ## Roadmap
 
-1. Improve translations
-2. Build static release
-3. Add translations
-4. Support Windows
+1. Build static release
+2. Support Windows
 
 ## Thanks
 

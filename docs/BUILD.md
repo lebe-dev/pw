@@ -12,7 +12,7 @@ docker build --progress=plain -t pw:1.7.0 .
 
 ## How to build standalone version
 
-**1. Install Rust 1.83 or later**
+**1. Install Rust 1.85 or later**
 
 **2. Install NodeJS and npm**
 

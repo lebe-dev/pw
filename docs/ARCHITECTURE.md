@@ -15,6 +15,7 @@
 - Frontend decodes URL slug part and extract:
   - Secret ID
   - Encryption Key
+  - If encryption key is blank, frontend asks for a password
 - Frontend sends secret ID to backend
 - Backend returns encrypted payload for given Secret ID or return `400 Bad Request`
 - Frontend decrypt data and shows to user
@@ -22,4 +23,4 @@
 ## 3. How TTL works
 
 - Backend store secrets inside [in-memory key-value storage](https://github.com/lebe-dev/pw/blob/main/backend/src/secret/storage.rs) (Redis) with limited lifetime. Max lifetime is one day.
-- User can restrict how many times URL can be used 
+- User can restrict how many times URL can be used

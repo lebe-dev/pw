@@ -12,6 +12,6 @@ init({ initialLocale: 'ru' ?? undefined, fallbackLocale: 'ru' });
 
 ## How to add a new locale
 
-Locale files stored in `frontend/locales`. Use the existing as an example. For example add `de.json` for German language.
+Locale files stored in `frontend/locales`. Use the existing as an example. For example add `ge.json` for Georgian language.
 
 Update `frontend/src/routes/+layout.ts` if you'd like to override defaults.
