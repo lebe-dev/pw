@@ -4,9 +4,9 @@
 
 Encrypted in app memory (RAM).
 
-**2. How are secrets protected??**
+**2. How are secrets protected?**
 
-Your data is encrypted on client side (browser) with AES 256, 32-key. Then you receive special URL to secret. 
+Your data is encrypted on client side (browser) with AES 256, 32-key. Then you receive special URL to secret.
 Server side knows nothing about original message it just stores encrypted data (in RAM).
 
 When you open a secret URL, client (browser) loads encrypted data from server side. Then client side will decrypt
@@ -18,7 +18,11 @@ Secret URLs have limited lifespan (one hour, two hours or one day max).
 
 AES 256, key length 32.
 
-**4. How many resources are needed for the application?**
+**4. Is it possible to send one-time links via messengers?**
+
+Yes, link won't expire.
+
+**5. How many resources are needed for the application?**
 
 Docker containers consume ~12 MB of RAM.
 
