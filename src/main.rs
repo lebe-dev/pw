@@ -19,7 +19,7 @@ pub mod secret;
 #[cfg(test)]
 pub mod tests;
 
-pub const VERSION: &str = "1.6.3 #1";
+pub const VERSION: &str = "1.7.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 
