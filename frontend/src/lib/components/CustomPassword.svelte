@@ -3,7 +3,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { t } from 'svelte-intl-precompile';
 
-	let { checked = $bindable(false), value = $bindable(''), disabled = $bindable(false) } = $props();
+	let { checked = $bindable(true), value = $bindable(''), disabled = $bindable(false) } = $props();
 
 	let customPasswordInput;
 
@@ -32,16 +32,17 @@
 				for="use-custom-password"
 				class="cursor-pointer text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 			>
-				{$t('homePage.customPassword')}
+				{$t('homePage.autoGeneratePassword')}
 			</Label>
 		</span>
 	</div>
-	{#if checked}
+	{#if !checked}
 		<div>
 			<input
 				bind:value
 				bind:this={customPasswordInput}
 				maxlength="32"
+				placeholder={$t('homePage.customPassword')}
 				class="mt-2 flex h-10 w-full rounded-md border-2 border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:border-accent focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
 			/>
 		</div>

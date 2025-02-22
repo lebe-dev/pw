@@ -23,7 +23,8 @@
 			"oneTimeDownload": "Descarga única",
 			"oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
 		},
-		"customPassword": "Usar contraseña personalizada",
+		"autoGeneratePassword": "Generar contraseña automáticamente",
+		"customPassword": "Su contraseña",
 		"encryptMessageButton": "Cifrar mensaje",
 		"secretUrlTitle": "URL del secreto",
 		"copyButton": "Copiar"

@@ -23,7 +23,8 @@
 			"oneTimeDownload": "Одноразовая ссылка",
 			"oneTimeDownloadPrecautionMessage": "Создана одноразовая ссылка. Получатель сможет открыть её только один раз."
 		},
-		"customPassword": "Использовать собственный пароль",
+		"autoGeneratePassword": "Сгенерировать пароль автоматически",
+		"customPassword": "Ваш пароль",
 		"encryptMessageButton": "Зашифровать сообщение",
 		"secretUrlTitle": "Ссылка",
 		"copyButton": "Скопировать"

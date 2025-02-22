@@ -32,17 +32,17 @@
 
 	let oneTimeDownloadMode = $derived(secretDownloadPolicy === SecretDownloadPolicy.OneTime);
 
-	let useCustomPassword: boolean = $state(false);
+	let autoGeneratePassword: boolean = $state(true);
 	let customPassword: string = $state('');
 
 	let secretUrl: string = $state('');
 
 	let encryptButtonDisabled = $derived(
-		inProgress || message.length === 0 || (useCustomPassword && customPassword === '')
+		inProgress || message.length === 0 || (!autoGeneratePassword && customPassword === '')
 	);
 
 	$inspect('secretTTL', secretTTL);
-	$inspect('useCustomPassword', useCustomPassword);
+	$inspect('autoGeneratePassword', autoGeneratePassword);
 	$inspect('customPassword', customPassword);
 	$inspect('secretTTL', secretTTL);
 	$inspect('customPassword', oneTimeDownloadMode);
@@ -83,10 +83,10 @@
 	async function onEncrypt() {
 		let key: string = '';
 
-		if (useCustomPassword) {
-			key = customPassword;
-		} else {
+		if (autoGeneratePassword) {
 			key = await generateRandomKey();
+		} else {
+			key = customPassword;
 		}
 
 		const ciphertext = AES.encrypt(message, key).toString();
@@ -101,7 +101,7 @@
 
 		const additionalData = await getRandomAdditionalData();
 
-		if (useCustomPassword) {
+		if (!autoGeneratePassword) {
 			key = '';
 		}
 
@@ -178,7 +178,7 @@
 
 			<div class="flex flex-row justify-center">
 				<CustomPassword
-					bind:checked={useCustomPassword}
+					bind:checked={autoGeneratePassword}
 					bind:value={customPassword}
 					bind:disabled={inProgress}
 				/>
