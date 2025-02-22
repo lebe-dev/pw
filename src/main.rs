@@ -1,11 +1,12 @@
-use crate::config::{load_config_from_file, AppConfig};
+use crate::config::{AppConfig, load_config_from_file};
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
 use crate::routes::{get_config_route, get_version_route};
 use crate::secret::storage::RedisSecretStorage;
-use axum::http::{header, StatusCode, Uri};
+use axum::Router;
+use axum::http::{StatusCode, Uri, header};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
-use axum::Router;
+use logging::logging::get_logging_config;
 use rust_embed::Embed;
 use std::path::Path;
 use std::sync::Arc;
@@ -35,6 +36,9 @@ async fn main() -> anyhow::Result<()> {
 
     let app_config = load_config_from_file(&config_file)?;
 
+    let logging_config = get_logging_config(&app_config.log_level);
+    log4rs::init_config(logging_config).expect("unable to init logging configuration");
+
     let secret_storage = RedisSecretStorage::new(&app_config.redis_url);
 
     let app_state = AppState {
@@ -46,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/config", get(get_config_route))
         .route("/api/secret", post(store_secret_route))
         .route(
-            "/api/secret/:id",
+            "/api/secret/{id}",
             get(get_secret_route).delete(remove_secret_route),
         )
         .route("/api/version", get(get_version_route))
