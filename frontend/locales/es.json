@@ -1,45 +1,46 @@
 {
-  "id": "es",
-  "headerLabels": {
-    "backToHomeHint": "Volver al inicio"
-  },
-  "messages": {
-    "loadingTitle": "Cargando...",
-    "errorTitle": "Error"
-  },
-  "errors": {
-    "loadingData": "No se pudieron cargar los datos",
-    "storeSecret": "Error al almacenar el secreto"
-  },
-  "homePage": {
-    "title": "Mensaje",
-    "messagePlaceholder": "Los datos se cifrarán en el navegador.",
-    "secretLifetimeTitle": "Duración del secreto",
-    "lifetime": {
-      "oneHour": "Una hora",
-      "twoHours": "Dos horas",
-      "oneDay": "Un día",
-      "oneWeek": "Una semana",
-      "oneTimeDownload": "Descarga única",
-      "oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
-    },
-    "encryptMessageButton": "Cifrar mensaje",
-    "secretUrlTitle": "URL del secreto",
-    "copyButton": "Copiar"
-  },
-  "secretUrlPage": {
-    "title": "Mensaje",
-    "oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá.",
-    "copyButton": "Copiar",
-    "removeButton": "Eliminar",
-    "removeConfirmMessage": "El secreto será eliminado. ¿Continuar?"
-  },
-  "secretNotFoundPage": {
-    "title": "No se encontró el secreto",
-    "possibleReasonsText": "Posibles razones",
-    "possibleReasonsItems": "El enlace ha expirado\nEra un enlace de un solo uso y alguien ya lo abrió\nEl enlace es incorrecto"
-  },
-  "footerLabels": {
-    "howItWorks": "Preguntas frecuentes"
-  }
+	"id": "es",
+	"headerLabels": {
+		"backToHomeHint": "Volver al inicio"
+	},
+	"messages": {
+		"loadingTitle": "Cargando...",
+		"errorTitle": "Error"
+	},
+	"errors": {
+		"loadingData": "No se pudieron cargar los datos",
+		"storeSecret": "Error al almacenar el secreto"
+	},
+	"homePage": {
+		"title": "Mensaje",
+		"messagePlaceholder": "Los datos se cifrarán en el navegador.",
+		"secretLifetimeTitle": "Duración del secreto",
+		"lifetime": {
+			"oneHour": "Una hora",
+			"twoHours": "Dos horas",
+			"oneDay": "Un día",
+			"oneWeek": "Una semana",
+			"oneTimeDownload": "Descarga única",
+			"oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá."
+		},
+		"customPassword": "Usar contraseña personalizada",
+		"encryptMessageButton": "Cifrar mensaje",
+		"secretUrlTitle": "URL del secreto",
+		"copyButton": "Copiar"
+	},
+	"secretUrlPage": {
+		"title": "Mensaje",
+		"oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá.",
+		"copyButton": "Copiar",
+		"removeButton": "Eliminar",
+		"removeConfirmMessage": "El secreto será eliminado. ¿Continuar?"
+	},
+	"secretNotFoundPage": {
+		"title": "No se encontró el secreto",
+		"possibleReasonsText": "Posibles razones",
+		"possibleReasonsItems": "El enlace ha expirado\nEra un enlace de un solo uso y alguien ya lo abrió\nEl enlace es incorrecto"
+	},
+	"footerLabels": {
+		"howItWorks": "Preguntas frecuentes"
+	}
 }

@@ -13,6 +13,7 @@
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import OneTimeDownload from '$lib/components/OneTimeDownload.svelte';
 	import SecretLifeTime from '$lib/components/SecretLifeTime.svelte';
+	import CustomPassword from '$lib/components/CustomPassword.svelte';
 
 	let inProgress = $state(true);
 
@@ -27,20 +28,24 @@
 
 	let secretTTL = $state(SecretTTL.OneHour);
 
-	$inspect(secretTTL, secretTTL);
-
 	let secretDownloadPolicy = $state(SecretDownloadPolicy.OneTime);
 
 	let oneTimeDownloadMode = $derived(secretDownloadPolicy === SecretDownloadPolicy.OneTime);
 
+	let useCustomPassword: boolean = $state(false);
+	let customPassword: string = $state('');
+
 	let secretUrl: string = $state('');
 
-	let encryptButtonDisabled = $derived(inProgress || message.length === 0);
+	let encryptButtonDisabled = $derived(
+		inProgress || message.length === 0 || (useCustomPassword && customPassword === '')
+	);
 
-	$effect(() => {
-		console.log('secretTTL:', secretTTL);
-		console.log('oneTimeDownloadMode:', oneTimeDownloadMode);
-	});
+	$inspect('secretTTL', secretTTL);
+	$inspect('useCustomPassword', useCustomPassword);
+	$inspect('customPassword', customPassword);
+	$inspect('secretTTL', secretTTL);
+	$inspect('customPassword', oneTimeDownloadMode);
 
 	onMount(async () => {
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -76,7 +81,13 @@
 	}
 
 	async function onEncrypt() {
-		const key = await generateRandomKey();
+		let key: string = '';
+
+		if (useCustomPassword) {
+			key = customPassword;
+		} else {
+			key = await generateRandomKey();
+		}
 
 		const ciphertext = AES.encrypt(message, key).toString();
 
@@ -89,6 +100,10 @@
 		secret.downloadPolicy = secretDownloadPolicy;
 
 		const additionalData = await getRandomAdditionalData();
+
+		if (useCustomPassword) {
+			key = '';
+		}
 
 		const slug = getEncodedUrlSlug(secret.id, key, additionalData);
 
@@ -152,12 +167,22 @@
 			</div>
 		</div>
 
-		<div class="mb-7 flex flex-row justify-center">
-			<OneTimeDownload
-				checked={true}
-				bind:disabled={inProgress}
-				click={() => onToggleDownloadPolicy()}
-			/>
+		<div class="justify-start">
+			<div class="mb-4 flex flex-row justify-center">
+				<OneTimeDownload
+					checked={true}
+					bind:disabled={inProgress}
+					click={() => onToggleDownloadPolicy()}
+				/>
+			</div>
+
+			<div class="flex flex-row justify-center">
+				<CustomPassword
+					bind:checked={useCustomPassword}
+					bind:value={customPassword}
+					bind:disabled={inProgress}
+				/>
+			</div>
 		</div>
 
 		<div class="mb-9">
