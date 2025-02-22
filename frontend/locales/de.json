@@ -1,0 +1,50 @@
+{
+	"id": "de",
+	"headerLabels": {
+		"backToHomeHint": "Zurück zur Startseite"
+	},
+	"messages": {
+		"loadingTitle": "Laden..",
+		"errorTitle": "Fehler"
+	},
+	"errors": {
+		"loadingData": "Daten konnten nicht geladen werden",
+		"storeSecret": "Fehler beim Speichern des Geheimnisses"
+	},
+	"homePage": {
+		"title": "Nachricht",
+		"messagePlaceholder": "Die Daten werden im Browser verschlüsselt.",
+		"secretLifetimeTitle": "Lebensdauer des Geheimnisses",
+		"lifetime": {
+			"oneHour": "Eine Stunde",
+			"twoHours": "Zwei Stunden",
+			"oneDay": "Ein Tag",
+			"oneWeek": "Eine Woche",
+			"oneTimeDownload": "Einmaliger Download",
+			"oneTimeDownloadPrecautionMessage": "Dieser Link ist nur einmal verwendbar. Öffnen Sie ihn nicht selbst, sonst wird das Geheimnis gelöscht."
+		},
+		"autoGeneratePassword": "Passwort automatisch generieren",
+		"customPassword": "Ihr Passwort",
+		"encryptMessageButton": "Nachricht verschlüsseln",
+		"secretUrlTitle": "Geheimer Link",
+		"copyButton": "Kopieren"
+	},
+	"secretUrlPage": {
+		"title": "Nachricht",
+		"customPasswordTitle": "Passwort eingeben:",
+		"customPasswordButton": "Eingeben",
+		"invalidPasswordMessage": "Ungültiges Passwort",
+		"oneTimeDownloadPrecautionMessage": "Dieser Link ist nur einmal verwendbar. Öffnen Sie ihn nicht selbst, sonst wird das Geheimnis gelöscht.",
+		"copyButton": "Kopieren",
+		"removeButton": "Entfernen",
+		"removeConfirmMessage": "Das Geheimnis wird entfernt. Fortfahren?"
+	},
+	"secretNotFoundPage": {
+		"title": "Geheimnis nicht gefunden",
+		"possibleReasonsText": "Mögliche Gründe",
+		"possibleReasonsItems": "Der Link ist abgelaufen\nEs war ein einmaliger Link und wurde bereits geöffnet"
+	},
+	"footerLabels": {
+		"howItWorks": "FAQ"
+	}
+}
