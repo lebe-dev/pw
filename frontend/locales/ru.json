@@ -30,6 +30,9 @@
 	},
 	"secretUrlPage": {
 		"title": "Сообщение",
+		"customPasswordTitle": "Введите пароль:",
+		"customPasswordButton": "Отправить",
+		"invalidPasswordMessage": "Неверный пароль",
 		"oneTimeDownloadPrecautionMessage": "Эта одноразовая ссылка. Не закрывайте и не обновляйте страницу, пока не сохраните информацию.",
 		"copyButton": "Скопировать",
 		"removeButton": "Удалить",

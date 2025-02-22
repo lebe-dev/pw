@@ -30,6 +30,9 @@
 	},
 	"secretUrlPage": {
 		"title": "Mensaje",
+		"customPasswordTitle": "Ingrese la contraseña:",
+		"customPasswordButton": "Ingresar",
+		"invalidPasswordMessage": "Contraseña incorrecta",
 		"oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá.",
 		"copyButton": "Copiar",
 		"removeButton": "Eliminar",
