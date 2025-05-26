@@ -1,6 +1,6 @@
 use fake::{Fake, Faker};
 
-use crate::secret::{Secret, SecretDownloadPolicy, SecretTTL};
+use crate::secret::model::{Secret, SecretDownloadPolicy, SecretTTL};
 
 use super::string::get_random_string;
 
