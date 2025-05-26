@@ -107,8 +107,8 @@ impl RedisSecretStorage {
 mod tests {
     use crate::secret::SecretDownloadPolicy;
     use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
-    use crate::tests::get_random_string;
     use crate::tests::secret::get_sample_secret;
+    use crate::tests::string::get_random_string;
 
     #[ignore]
     #[test]

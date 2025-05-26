@@ -1,11 +1,14 @@
+use fake::{Fake, Faker};
+
 use crate::secret::{Secret, SecretDownloadPolicy, SecretTTL};
-use crate::tests::get_random_string;
+
+use super::string::get_random_string;
 
 pub fn get_sample_secret() -> Secret {
     Secret {
         id: get_random_string(),
-        payload: get_random_string(),
+        payload: Faker.fake::<String>(),
         ttl: SecretTTL::OneHour,
-        download_policy: SecretDownloadPolicy::Unlimited
+        download_policy: SecretDownloadPolicy::Unlimited,
     }
 }
