@@ -1,5 +1,5 @@
 use crate::AppState;
-use crate::dto::AppConfigDto;
+use crate::dto::model::AppConfigDto;
 use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
