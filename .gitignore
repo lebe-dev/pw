@@ -5,3 +5,6 @@
 /pw.log
 /frontend/.svelte-kit
 /frontend/node_modules
+CONVENTIONS.md
+/.a*
+.DS_Store
