@@ -1,10 +1,11 @@
-use crate::config::{AppConfig, load_config_from_file};
+use crate::config::model::AppConfig;
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
 use crate::secret::storage::RedisSecretStorage;
 use axum::Router;
 use axum::http::{StatusCode, Uri, header};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
+use config::file::load_config_from_file;
 use logging::logging::get_logging_config;
 use routes::config::get_config_route;
 use routes::version::get_version_route;
