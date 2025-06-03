@@ -21,7 +21,7 @@
 	import SecretLifeTime from '$lib/components/SecretLifeTime.svelte';
 	import CustomPassword from '$lib/components/CustomPassword.svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import { fileToBase64, formatFileSize } from '$lib/file';
+	import { fileToBase64 } from '$lib/file';
 	import { Input } from '$lib/components/ui/input';
 	import { getPrettySize } from '$lib/size';
 
@@ -113,21 +113,32 @@
 	}
 
 	function handleFileSelect(event: Event) {
-		console.log('handleFileSelect', event);
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
 
 		if (!file) return;
 
 		if (file.size > config.fileMaxSize) {
-			// TODO: apply locale
-			toast.error(`File size exceeds ${formatFileSize(config.fileMaxSize)} limit`);
+			toast.error(
+				`${$t('errors.fileSizeLimit')}: ${getPrettySize(
+					config.fileMaxSize.toString(),
+					$t('sizes.kb'),
+					$t('sizes.mb'),
+					$t('sizes.gb')
+				)}`
+			);
 			input.value = '';
 			selectedFile = null;
 			return;
 		}
 
 		selectedFile = file;
+	}
+
+	function getEncryptButtonLabel() {
+		return secretContentType === SecretContentType.File
+			? $t('homePage.encryptFileButton')
+			: $t('homePage.encryptMessageButton');
 	}
 
 	async function onEncrypt() {
@@ -206,11 +217,18 @@
 	{#if !secretStored}
 		<Tabs.Root value="message">
 			<Tabs.List class="mb-3 grid grid-cols-2">
-				<Tabs.Trigger value="message" onclick={() => (secretContentType = SecretContentType.Text)}
-					>{$t('homePage.title')}</Tabs.Trigger
+				<Tabs.Trigger
+					value="message"
+					class="select-none"
+					onclick={() => (secretContentType = SecretContentType.Text)}
+					>{$t('homePage.textTitle')}</Tabs.Trigger
 				>
-				<Tabs.Trigger value="file" onclick={() => (secretContentType = SecretContentType.File)}
-					>File</Tabs.Trigger
+				<Tabs.Trigger
+					value="file"
+					class="select-none"
+					disabled={!config.fileUploadEnabled}
+					onclick={() => (secretContentType = SecretContentType.File)}
+					>{$t('homePage.fileTitle')}</Tabs.Trigger
 				>
 			</Tabs.List>
 			<Tabs.Content value="message">
@@ -233,7 +251,11 @@
 			</Tabs.Content>
 			<Tabs.Content value="file">
 				<div class="mb-10 mt-5 w-2/3 text-start">
-					<div class="mb-1 ms-1 text-sm">Select file:</div>
+					<div class="mb-4 ps-1 text-sm text-muted-foreground">
+						{$t('homePage.fileEncryptionHint')}
+					</div>
+
+					<div class="mb-1 ms-1 text-sm">{$t('homePage.selectFileTitle')}:</div>
 					<Input
 						type="file"
 						class="mb-2"
@@ -245,16 +267,22 @@
 					{#if configLoaded}
 						{#if selectedFile}
 							<div class="ms-1 mt-2 text-sm text-muted-foreground">
-								Selected: {formatFileSize(selectedFile.size)} (Max: {getPrettySize(
+								{$t('homePage.fileSizeTitle')}: {getPrettySize(
+									selectedFile.size.toString(),
+									$t('sizes.kb'),
+									$t('sizes.mb'),
+									$t('sizes.gb')
+								)} (Max: {getPrettySize(
 									config.fileMaxSize.toString(),
-									'KB',
-									'MB',
-									'GB'
+									$t('sizes.kb'),
+									$t('sizes.mb'),
+									$t('sizes.gb')
 								)})
 							</div>
 						{:else}
 							<div class="ms-1 text-sm text-muted-foreground">
-								Max file size: <span title="Max file size"
+								{$t('homePage.maxFileSizeTitle')}:
+								<span title={$t('homePage.maxFileSizeTitle')}
 									>{getPrettySize(config.fileMaxSize.toString(), 'KB', 'MB', 'GB')}</span
 								>
 							</div>
@@ -264,7 +292,7 @@
 			</Tabs.Content>
 		</Tabs.Root>
 
-		<div class="mb-3 select-none">
+		<div class="mb-3 select-none text-sm">
 			{$t('homePage.secretLifetimeTitle')}:
 		</div>
 
@@ -297,7 +325,7 @@
 				size="lg"
 				class="uppercase dark:disabled:bg-gray-700"
 				disabled={encryptButtonDisabled}
-				onclick={() => onEncrypt()}>{$t('homePage.encryptMessageButton')}</Button
+				onclick={() => onEncrypt()}>{getEncryptButtonLabel()}</Button
 			>
 		</div>
 	{:else}

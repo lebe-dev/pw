@@ -24,6 +24,8 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     let log_level = get_env_var("PW_LOG_LEVEL").unwrap_or(config.log_level);
     let message_max_length =
         get_env_var("PW_MESSAGE_MAX_LENGTH").unwrap_or(config.message_max_length.to_string());
+    let file_upload_enabled =
+        get_env_var("PW_FILE_UPLOAD_ENABLED").unwrap_or(config.file_upload_enabled.to_string());
     let file_max_size = get_env_var("PW_FILE_MAX_SIZE").unwrap_or(config.file_max_size.to_string());
     let encrypted_message_max_length = get_env_var("PW_ENCRYPTED_MESSAGE_MAX_LENGTH")
         .unwrap_or(config.encrypted_message_max_length.to_string());
@@ -34,6 +36,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         log_level,
         message_max_length: message_max_length.parse()?,
         encrypted_message_max_length: encrypted_message_max_length.parse()?,
+        file_upload_enabled: file_upload_enabled.parse()?,
         file_max_size: file_max_size.parse()?,
         redis_url,
     };

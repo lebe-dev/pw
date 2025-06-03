@@ -3,17 +3,28 @@
 	"headerLabels": {
 		"backToHomeHint": "Volver al inicio"
 	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
 	"messages": {
 		"loadingTitle": "Cargando...",
 		"errorTitle": "Error"
 	},
 	"errors": {
 		"loadingData": "No se pudieron cargar los datos",
-		"storeSecret": "Error al almacenar el secreto"
+		"storeSecret": "Error al almacenar el secreto",
+		"fileSizeLimit": "El tamaño del archivo excede el límite"
 	},
 	"homePage": {
-		"title": "Mensaje",
+		"textTitle": "Mensaje",
+		"fileTitle": "Archivo",
+		"selectFileTitle": "Seleccionar archivo",
+		"fileSizeTitle": "Tamaño",
+		"maxFileSizeTitle": "Tamaño máximo del archivo",
 		"messagePlaceholder": "Los datos se cifrarán en el navegador.",
+		"fileEncryptionHint": "El archivo se cifrará en el navegador.",
 		"secretLifetimeTitle": "Duración del secreto",
 		"lifetime": {
 			"oneHour": "Una hora",
@@ -26,23 +37,28 @@
 		"autoGeneratePassword": "Generar contraseña automáticamente",
 		"customPassword": "Su contraseña",
 		"encryptMessageButton": "Cifrar mensaje",
+		"encryptFileButton": "Cifrar archivo",
 		"secretUrlTitle": "URL del secreto",
 		"copyButton": "Copiar"
 	},
 	"secretUrlPage": {
-		"title": "Mensaje",
+		"textTitle": "Mensaje",
+		"fileTitle": "Archivo",
+		"fileNameTitle": "Nombre",
+		"fileSizeTitle": "Tamaño",
 		"customPasswordTitle": "Ingrese la contraseña:",
 		"customPasswordButton": "Ingresar",
 		"invalidPasswordMessage": "Contraseña incorrecta",
 		"oneTimeDownloadPrecautionMessage": "Este enlace es de un solo uso, así que no intentes abrirlo o el secreto desaparecerá.",
 		"copyButton": "Copiar",
+		"downloadButton": "Descargar",
 		"removeButton": "Eliminar",
 		"removeConfirmMessage": "El secreto será eliminado. ¿Continuar?"
 	},
 	"secretNotFoundPage": {
 		"title": "No se encontró el secreto",
 		"possibleReasonsText": "Posibles razones",
-		"possibleReasonsItems": "El enlace ha expirado\nEra un enlace de un solo uso y alguien ya lo abrió\nEl enlace es incorrecto"
+		"possibleReasonsItems": "El enlace ha expirado\nEra un enlace de un solo uso y alguien ya lo abrió"
 	},
 	"footerLabels": {
 		"howItWorks": "Preguntas frecuentes"

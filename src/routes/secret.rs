@@ -1,17 +1,22 @@
 use crate::AppState;
-use crate::secret::model::Secret;
+use crate::secret::model::{Secret, SecretContentType};
 use crate::secret::usecase::store_secret;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use log::error;
+use log::{error, info};
 use std::sync::Arc;
 
 pub async fn store_secret_route(
     State(state): State<Arc<AppState>>,
     secret: Json<Secret>,
 ) -> StatusCode {
+    if secret.content_type == SecretContentType::File && !state.config.file_upload_enabled {
+        info!("file upload is disabled");
+        return StatusCode::BAD_REQUEST;
+    }
+
     match store_secret(
         &state.secret_storage,
         &secret,

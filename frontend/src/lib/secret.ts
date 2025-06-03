@@ -4,7 +4,7 @@ export class Secret {
 	contentType: SecretContentType = SecretContentType.Text;
 	ttl: SecretTTL = SecretTTL.OneHour;
 	downloadPolicy: SecretDownloadPolicy = SecretDownloadPolicy.OneTime;
-	metadata?: FileMetadata;
+	metadata: FileMetadata = new FileMetadata();
 }
 
 export enum SecretContentType {

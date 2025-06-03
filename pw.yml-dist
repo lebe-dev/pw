@@ -4,6 +4,8 @@ log-level: info
 
 message-max-length: 1024
 
+file-upload-enabled: true
+
 # Maximum file size in bytes
 # Default: 10MB
 file-max-size: 10485760
