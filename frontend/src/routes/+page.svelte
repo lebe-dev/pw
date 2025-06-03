@@ -3,7 +3,13 @@
 	import { generateRandomKey, getRandomAdditionalData, getRandomKeyId } from '$lib/encrypt';
 	import { AES } from 'crypto-js';
 	import { getEncodedUrlSlug, getUrlBaseHost } from '$lib/url';
-	import { Secret, SecretDownloadPolicy, SecretTTL } from '$lib/secret';
+	import {
+		Secret,
+		SecretContentType,
+		SecretDownloadPolicy,
+		SecretTTL,
+		FileMetadata
+	} from '$lib/secret';
 	import PrecautionMessage from '$lib/components/PrecautionMessage.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import { toast } from 'svelte-sonner';
@@ -14,8 +20,13 @@
 	import OneTimeDownload from '$lib/components/OneTimeDownload.svelte';
 	import SecretLifeTime from '$lib/components/SecretLifeTime.svelte';
 	import CustomPassword from '$lib/components/CustomPassword.svelte';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import { fileToBase64, formatFileSize } from '$lib/file';
+	import { Input } from '$lib/components/ui/input';
+	import { getPrettySize } from '$lib/size';
 
 	let inProgress = $state(true);
+	let configLoaded = $state(false);
 
 	let config = $state(new AppConfig());
 
@@ -26,9 +37,13 @@
 	let messageLength: number = $state(0);
 	let messageTotal: number = $derived(config.messageMaxLength);
 
+	let secretContentType: SecretContentType = $state(SecretContentType.Text);
+
 	let secretTTL = $state(SecretTTL.OneHour);
 
 	let secretDownloadPolicy = $state(SecretDownloadPolicy.OneTime);
+
+	let selectedFile: File | null = $state(null);
 
 	let oneTimeDownloadMode = $derived(secretDownloadPolicy === SecretDownloadPolicy.OneTime);
 
@@ -37,10 +52,25 @@
 
 	let secretUrl: string = $state('');
 
-	let encryptButtonDisabled = $derived(
-		inProgress || message.length === 0 || (!autoGeneratePassword && customPassword === '')
-	);
+	let encryptButtonDisabled = $derived.by(() => {
+		if (secretContentType === SecretContentType.Text) {
+			return (
+				inProgress ||
+				!configLoaded ||
+				message.length === 0 ||
+				(!autoGeneratePassword && customPassword === '')
+			);
+		} else {
+			return (
+				inProgress ||
+				!configLoaded ||
+				selectedFile === null ||
+				(!autoGeneratePassword && customPassword === '')
+			);
+		}
+	});
 
+	$inspect('secretContentType', secretContentType);
 	$inspect('secretTTL', secretTTL);
 	$inspect('autoGeneratePassword', autoGeneratePassword);
 	$inspect('customPassword', customPassword);
@@ -63,6 +93,8 @@
 		if (response.status === 200) {
 			config = await response.json();
 			inProgress = false;
+			configLoaded = true;
+			console.log('config', config);
 		} else {
 			toast.error('Unable to load config');
 		}
@@ -80,24 +112,56 @@
 		messageLength = message.length;
 	}
 
-	async function onEncrypt() {
-		let key: string = '';
+	function handleFileSelect(event: Event) {
+		console.log('handleFileSelect', event);
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
 
-		if (autoGeneratePassword) {
-			key = await generateRandomKey();
-		} else {
-			key = customPassword;
+		if (!file) return;
+
+		if (file.size > config.fileMaxSize) {
+			// TODO: apply locale
+			toast.error(`File size exceeds ${formatFileSize(config.fileMaxSize)} limit`);
+			input.value = '';
+			selectedFile = null;
+			return;
 		}
 
-		const ciphertext = AES.encrypt(message, key).toString();
+		selectedFile = file;
+	}
 
-		console.log('TTL:', secretTTL);
+	async function onEncrypt() {
+		let payload: string;
+		const metadata: FileMetadata = new FileMetadata();
+
+		if (secretContentType === SecretContentType.File && selectedFile) {
+			try {
+				const base64Content = await fileToBase64(selectedFile);
+
+				payload = base64Content;
+				metadata.name = selectedFile.name;
+				metadata.type = selectedFile.type;
+				metadata.size = selectedFile.size;
+			} catch (e) {
+				console.error(e);
+				toast.error('Failed to process file');
+				return;
+			}
+		} else {
+			payload = message;
+		}
+
+		let key: string = autoGeneratePassword ? await generateRandomKey() : customPassword;
+
+		const ciphertext = AES.encrypt(payload, key).toString();
 
 		const secret = new Secret();
 		secret.id = await getRandomKeyId();
+		secret.contentType = secretContentType;
 		secret.payload = ciphertext;
 		secret.ttl = secretTTL;
 		secret.downloadPolicy = secretDownloadPolicy;
+		secret.metadata = metadata;
 
 		const additionalData = await getRandomAdditionalData();
 
@@ -105,7 +169,7 @@
 			key = '';
 		}
 
-		const slug = getEncodedUrlSlug(secret.id, key, additionalData);
+		const slug = getEncodedUrlSlug(secret.id, secretContentType, key, additionalData);
 
 		const baseUrl = getUrlBaseHost();
 
@@ -140,22 +204,65 @@
 
 <div class="text-center">
 	{#if !secretStored}
-		<div class="mb-2 select-none text-start text-xl">{$t('homePage.title')}</div>
-		<Textarea
-			placeholder={$t('homePage.messagePlaceholder')}
-			rows={6}
-			class="placeholder:text-md mb-2"
-			maxlength={messageTotal}
-			bind:value={message}
-			onkeyup={() => onMessageUpdate(event)}
-			autofocus={true}
-		></Textarea>
+		<Tabs.Root value="message">
+			<Tabs.List class="mb-3 grid grid-cols-2">
+				<Tabs.Trigger value="message" onclick={() => (secretContentType = SecretContentType.Text)}
+					>{$t('homePage.title')}</Tabs.Trigger
+				>
+				<Tabs.Trigger value="file" onclick={() => (secretContentType = SecretContentType.File)}
+					>File</Tabs.Trigger
+				>
+			</Tabs.List>
+			<Tabs.Content value="message">
+				<Textarea
+					placeholder={$t('homePage.messagePlaceholder')}
+					rows={6}
+					class="placeholder:text-md mb-2"
+					maxlength={messageTotal}
+					bind:value={message}
+					onkeyup={() => onMessageUpdate(event)}
+					disabled={inProgress || !configLoaded}
+					autofocus={true}
+				></Textarea>
 
-		<div class="mb-5 select-none text-xs">
-			<span class={messageLength === messageTotal && messageTotal !== 0 ? 'text-amber-500' : ''}
-				>{messageLength} / {messageTotal}</span
-			>
-		</div>
+				<div class="mb-5 select-none text-xs">
+					<span class={messageLength === messageTotal && messageTotal !== 0 ? 'text-amber-500' : ''}
+						>{messageLength} / {messageTotal}</span
+					>
+				</div>
+			</Tabs.Content>
+			<Tabs.Content value="file">
+				<div class="mb-10 mt-5 w-2/3 text-start">
+					<div class="mb-1 ms-1 text-sm">Select file:</div>
+					<Input
+						type="file"
+						class="mb-2"
+						multiple={false}
+						onchange={handleFileSelect}
+						disabled={inProgress || !configLoaded}
+					/>
+
+					{#if configLoaded}
+						{#if selectedFile}
+							<div class="ms-1 mt-2 text-sm text-muted-foreground">
+								Selected: {formatFileSize(selectedFile.size)} (Max: {getPrettySize(
+									config.fileMaxSize.toString(),
+									'KB',
+									'MB',
+									'GB'
+								)})
+							</div>
+						{:else}
+							<div class="ms-1 text-sm text-muted-foreground">
+								Max file size: <span title="Max file size"
+									>{getPrettySize(config.fileMaxSize.toString(), 'KB', 'MB', 'GB')}</span
+								>
+							</div>
+						{/if}
+					{/if}
+				</div>
+			</Tabs.Content>
+		</Tabs.Root>
 
 		<div class="mb-3 select-none">
 			{$t('homePage.secretLifetimeTitle')}:

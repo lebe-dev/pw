@@ -15,9 +15,11 @@ pub fn store_secret(
 
         let new_secret = Secret {
             id: secret.id.to_string(),
+            metadata: secret.metadata.clone(),
             payload: payload.to_string(),
             ttl: secret.ttl.clone(),
             download_policy: secret.download_policy.clone(),
+            content_type: secret.content_type.clone(),
         };
 
         match secret_storage.store(&secret.id, &new_secret) {

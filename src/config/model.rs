@@ -12,6 +12,9 @@ pub struct AppConfig {
     /// Message max length, all above will be truncated
     pub message_max_length: u16,
 
+    /// File max size
+    pub file_max_size: u64,
+
     /// Encrypted message max length.
     pub encrypted_message_max_length: u16,
 
@@ -23,10 +26,11 @@ impl Display for AppConfig {
         write!(
             f,
             "listen: '{}', log-level: {}, message-max-length: {},\
-               encrypted-message-max-length: {}, redis-url: '{}'",
+            file-max-size: {}, encrypted-message-max-length: {}, redis-url: '{}'",
             self.listen,
             self.log_level,
             self.message_max_length,
+            self.file_max_size,
             self.encrypted_message_max_length,
             self.redis_url
         )

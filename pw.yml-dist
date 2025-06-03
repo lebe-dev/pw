@@ -4,6 +4,10 @@ log-level: info
 
 message-max-length: 1024
 
+# Maximum file size in bytes
+# Default: 10MB
+file-max-size: 10485760
+
 # Encrypted payload length > source message length
 encrypted-message-max-length: 6128
 

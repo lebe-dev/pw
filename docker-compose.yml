@@ -1,23 +1,24 @@
 services:
-  app:
-    container_name: pw
-    image: tinyops/pw:1.8.0
-    restart: always
-    environment:
-      PW_LISTEN: "0.0.0.0:8080"
-      PW_LOG_LEVEL: "info"
-      PW_MESSAGE_MAX_LENGTH: "3127"
-      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15000"
-      PW_REDIS_URL: "redis://redis:6379/"
-    #volumes:
-    #- ./pw.yml:/app/pw.yml
-    ports:
-      - "8080:8080"
+  # app:
+  #   container_name: pw
+  #   image: tinyops/pw:1.8.0
+  #   restart: always
+  #   environment:
+  #     PW_LISTEN: "0.0.0.0:8080"
+  #     PW_LOG_LEVEL: "info"
+  #     PW_MESSAGE_MAX_LENGTH: "3127"
+  #     PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15000"
+  #     PW_FILE_MAX_SIZE: "1048576"
+  #     PW_REDIS_URL: "redis://redis:6379/"
+  #   #volumes:
+  #   #- ./pw.yml:/app/pw.yml
+  #   ports:
+  #     - "8080:8080"
 
   redis:
     container_name: pw-redis
     image: redis:8.0.1-alpine3.21
     restart: always
     command: 'redis-server --save "" --appendonly no --maxmemory 128mb'
-#    ports:
-#      - "6379:6379"
+    ports:
+      - "6379:6379"

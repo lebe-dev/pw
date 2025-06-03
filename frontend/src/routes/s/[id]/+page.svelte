@@ -3,12 +3,13 @@
 	import { AES, enc } from 'crypto-js';
 	import { toast } from 'svelte-sonner';
 	import { getEncodedUrlSlugParts } from '$lib/url';
-	import { Secret, SecretDownloadPolicy } from '$lib/secret';
+	import { Secret, SecretContentType, SecretDownloadPolicy } from '$lib/secret';
 	import PrecautionMessage from '$lib/components/PrecautionMessage.svelte';
 	import { error } from '@sveltejs/kit';
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import { t } from 'svelte-intl-precompile';
 	import { Button } from '$lib/components/ui/button';
+	import { base64ToBlob } from '$lib/file.js';
 
 	let { data } = $props();
 
@@ -80,7 +81,22 @@
 				secret = await response.json();
 
 				if (!askForPassword) {
-					message = AES.decrypt(secret.payload, slugParts.privateKey).toString(enc.Utf8);
+					if (secret.contentType === SecretContentType.Text) {
+						message = AES.decrypt(secret.payload, slugParts.privateKey).toString(enc.Utf8);
+					} else {
+						message = AES.decrypt(secret.payload, slugParts.privateKey).toString(enc.Utf8);
+						console.log('message decrypted');
+
+						const blob = base64ToBlob(message, secret.metadata!.type);
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = secret.metadata!.name;
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
+						URL.revokeObjectURL(url);
+					}
 				}
 
 				inProgress = false;

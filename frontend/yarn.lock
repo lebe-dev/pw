@@ -1045,14 +1045,15 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bits-ui@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.3.2.tgz#4f3d08fd6c989a055cc2d0f30db07bbdaaa239a5"
-  integrity sha512-27fg/O71yqYmDaDf/opInylQYJjBNlFw3Ari0mXKLA6UrQpRvY62EsAid8s+ci/wYrGZMvHpzNJ69t15ycBHTw==
+bits-ui@^1.4.7:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/bits-ui/-/bits-ui-1.8.0.tgz#1047eab2e90e901d9a913e6db516e1c9f435fcf6"
+  integrity sha512-CXD6Orp7l8QevNDcRPLXc/b8iMVgxDWT2LyTwsdLzJKh9CxesOmPuNePSPqAxKoT59FIdU4aFPS1k7eBdbaCxg==
   dependencies:
     "@floating-ui/core" "^1.6.4"
     "@floating-ui/dom" "^1.6.7"
     "@internationalized/date" "^3.5.6"
+    css.escape "^1.5.1"
     esm-env "^1.1.2"
     runed "^0.23.2"
     svelte-toolbelt "^0.7.1"
@@ -1106,9 +1107,9 @@ camelcase-css@^2.0.1:
   integrity sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==
 
 caniuse-lite@^1.0.30001646, caniuse-lite@^1.0.30001688:
-  version "1.0.30001688"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001688.tgz#f9d3ede749f083ce0db4c13db9d828adaf2e8d0a"
-  integrity sha512-Nmqpru91cuABu/DTCXbM2NSRHzM2uVHfPnhJ/1zEAJx/ILBRVmz3pzH4N7DZqbdG0gWClsCC05Oj0mJ/1AWMbA==
+  version "1.0.30001720"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001720.tgz"
+  integrity sha512-Ec/2yV2nNPwb4DnTANEV99ZWwm3ZWfdlfkQbWSDDt+PsXEVYwlhPH8tdMaPunYTKKmz7AnHi2oNEi1GcmKCD8g==
 
 chai@^5.1.2:
   version "5.1.2"
@@ -1206,6 +1207,11 @@ crypto-js@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
   integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
+
+css.escape@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/css.escape/-/css.escape-1.5.1.tgz#42e27d4fa04ae32f931a4b4d4191fa9cddee97cb"
+  integrity sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==
 
 cssesc@^3.0.0:
   version "3.0.0"

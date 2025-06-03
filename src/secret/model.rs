@@ -6,6 +6,9 @@ use std::fmt::{Display, Formatter};
 pub struct Secret {
     pub id: String,
 
+    pub content_type: SecretContentType,
+    pub metadata: SecretFileMetadata,
+
     /// Data encrypted on frontend side
     pub payload: String,
 
@@ -18,10 +21,17 @@ impl Display for Secret {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "[Secret] id: '{}', payload: '<encrypted>', ttl: {:?}, download-policy: {:?} [/Secret]",
-            self.id, self.ttl, self.download_policy
+            "[Secret] id: '{}', content_type: {:?}, payload: '<encrypted>', ttl: {:?}, download-policy: {:?}, metadata: {:?}, [/Secret]",
+            self.id, self.content_type, self.ttl, self.download_policy, self.metadata,
         )
     }
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub enum SecretContentType {
+    Text,
+    File,
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
@@ -38,4 +48,12 @@ pub enum SecretTTL {
 pub enum SecretDownloadPolicy {
     OneTime,
     Unlimited,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SecretFileMetadata {
+    pub name: String,
+    pub r#type: String,
+    pub size: u64,
 }
