@@ -8,7 +8,7 @@ message-max-length: 1024
 # Default: 10MB
 file-max-size: 10485760
 
-# Encrypted payload length > source message length
-encrypted-message-max-length: 6128
+# Encrypted payload length > source message/file length
+encrypted-message-max-length: 15485760
 
 redis-url: 'redis://cache:6379/'

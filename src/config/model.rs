@@ -16,7 +16,7 @@ pub struct AppConfig {
     pub file_max_size: u64,
 
     /// Encrypted message max length.
-    pub encrypted_message_max_length: u16,
+    pub encrypted_message_max_length: u64,
 
     pub redis_url: String,
 }

@@ -6,7 +6,7 @@ use log::error;
 pub fn store_secret(
     secret_storage: &RedisSecretStorage,
     secret: &Secret,
-    payload_max_length: u16,
+    payload_max_length: u64,
 ) -> anyhow::Result<()> {
     let mut payload = secret.payload.to_string();
 
