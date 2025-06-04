@@ -42,6 +42,7 @@
 		"copyButton": "Kopieren"
 	},
 	"secretUrlPage": {
+		"title": "Geheimnis",
 		"textTitle": "Nachricht",
 		"fileTitle": "Datei",
 		"fileNameTitle": "Name",

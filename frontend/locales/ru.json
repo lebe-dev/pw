@@ -42,6 +42,7 @@
 		"copyButton": "Скопировать"
 	},
 	"secretUrlPage": {
+		"title": "Секрет",
 		"textTitle": "Сообщение",
 		"fileTitle": "Файл",
 		"fileNameTitle": "Имя",
