@@ -16,18 +16,18 @@ cargo run
 
 Install NodeJS 20.x + npm then install dependencies:
 
-```shell
+```bash
 cd ../frontend
 npm i
 ```
 
 Start dev server:
 
-```shell
+```bash
 npm run dev -- --port 4200
 ```
 
-http://localhost:4200
+Open http://localhost:4200.
 
 ## Nginx config
 

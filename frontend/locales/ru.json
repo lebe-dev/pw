@@ -3,17 +3,28 @@
 	"headerLabels": {
 		"backToHomeHint": "Вернуться на главную"
 	},
+	"sizes": {
+		"kb": "КБ",
+		"mb": "МБ",
+		"gb": "ГБ"
+	},
 	"messages": {
 		"loadingTitle": "Загрузка..",
 		"errorTitle": "Ошибка"
 	},
 	"errors": {
 		"loadingData": "Ошибка загрузки данных",
-		"storeSecret": "Ошибка сохранения"
+		"storeSecret": "Ошибка сохранения",
+		"fileSizeLimit": "Размер файла превышает лимит"
 	},
 	"homePage": {
-		"title": "Сообщение",
+		"textTitle": "Сообщение",
+		"fileTitle": "Файл",
+		"selectFileTitle": "Выберите файл",
+		"fileSizeTitle": "Размер",
+		"maxFileSizeTitle": "Макс. размер файла",
 		"messagePlaceholder": "Данные будут зашифрованы в браузере.",
+		"fileEncryptionHint": "Файл будет зашифрован в браузере.",
 		"secretLifetimeTitle": "Время жизни",
 		"lifetime": {
 			"oneHour": "Один час",
@@ -26,16 +37,21 @@
 		"autoGeneratePassword": "Сгенерировать пароль автоматически",
 		"customPassword": "Ваш пароль",
 		"encryptMessageButton": "Зашифровать сообщение",
+		"encryptFileButton": "Зашифровать файл",
 		"secretUrlTitle": "Ссылка",
 		"copyButton": "Скопировать"
 	},
 	"secretUrlPage": {
-		"title": "Сообщение",
+		"textTitle": "Сообщение",
+		"fileTitle": "Файл",
+		"fileNameTitle": "Имя",
+		"fileSizeTitle": "Размер",
 		"customPasswordTitle": "Введите пароль:",
 		"customPasswordButton": "Отправить",
 		"invalidPasswordMessage": "Неверный пароль",
 		"oneTimeDownloadPrecautionMessage": "Эта одноразовая ссылка. Не закрывайте и не обновляйте страницу, пока не сохраните информацию.",
 		"copyButton": "Скопировать",
+		"downloadButton": "Скачать",
 		"removeButton": "Удалить",
 		"removeConfirmMessage": "Секрет будет удалён. Продолжить?"
 	},

@@ -1,22 +1,25 @@
+use crate::secret::model::Secret;
 use crate::secret::storage::RedisSecretStorage;
-use crate::secret::Secret;
 use anyhow::anyhow;
 use log::error;
 
-pub fn store_secret(secret_storage: &RedisSecretStorage,
-                    secret: &Secret, payload_max_length: u16) -> anyhow::Result<()> {
-
+pub fn store_secret(
+    secret_storage: &RedisSecretStorage,
+    secret: &Secret,
+    payload_max_length: u64,
+) -> anyhow::Result<()> {
     let mut payload = secret.payload.to_string();
 
     if payload.len() <= payload_max_length as usize {
-
         payload.truncate(payload_max_length as usize);
 
         let new_secret = Secret {
             id: secret.id.to_string(),
+            metadata: secret.metadata.clone(),
             payload: payload.to_string(),
             ttl: secret.ttl.clone(),
             download_policy: secret.download_policy.clone(),
+            content_type: secret.content_type.clone(),
         };
 
         match secret_storage.store(&secret.id, &new_secret) {
@@ -26,20 +29,23 @@ pub fn store_secret(secret_storage: &RedisSecretStorage,
                 Err(anyhow!("unable to store secret"))
             }
         }
-
     } else {
-        error!("payload length ({}) is bigger than allowed {}", payload.len(), payload_max_length);
+        error!(
+            "payload length ({}) is bigger than allowed {}",
+            payload.len(),
+            payload_max_length
+        );
         Err(anyhow!("payload length is bigger than allowed"))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::secret::storage::{RedisSecretStorage, DEFAULT_REDIS_CNN_URL};
+    use crate::secret::model::{SecretDownloadPolicy, SecretTTL};
+    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
     use crate::secret::usecase::store_secret;
-    use crate::secret::{SecretDownloadPolicy, SecretTTL};
-    use crate::tests::get_random_string;
     use crate::tests::secret::get_sample_secret;
+    use crate::tests::string::get_random_string;
 
     #[ignore]
     #[test]
