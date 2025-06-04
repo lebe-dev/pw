@@ -21,6 +21,7 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 ## Features
 
 - Secure: All data is encrypted in the browser ([details](docs/SECURITY.md))
+- Supported media types: text, file
 - BLAZING FAST 🌝 (Svelte+Rust)
 - Low resources usage:
   ```shell
@@ -29,7 +30,7 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
   0d3c9c52165a   pw                0.00%     4.082MiB / 1.69GiB   0.24%     63.2kB / 224kB    0B / 0B        2
   ```
 - Localization support: en, es, de, ru ([details](docs/LOCALE.md))
-- Themes support
+- Dark theme support
 
 ## Docs
 
@@ -43,8 +44,7 @@ Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](doc
 
 ## Roadmap
 
-1. Build static release
-2. Support Windows
+- Backend: improve return codes
 
 ## Thanks
 

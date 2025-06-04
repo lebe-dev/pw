@@ -1,12 +1,14 @@
-use crate::config::{AppConfig, load_config_from_file};
+use crate::config::model::AppConfig;
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
-use crate::routes::{get_config_route, get_version_route};
 use crate::secret::storage::RedisSecretStorage;
 use axum::Router;
 use axum::http::{StatusCode, Uri, header};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
-use logging::logging::get_logging_config;
+use config::file::load_config_from_file;
+use logging::get_logging_config;
+use routes::config::get_config_route;
+use routes::version::get_version_route;
 use rust_embed::Embed;
 use std::path::Path;
 use std::sync::Arc;
@@ -20,7 +22,7 @@ pub mod secret;
 #[cfg(test)]
 pub mod tests;
 
-pub const VERSION: &str = "1.7.0 #1";
+pub const VERSION: &str = "1.8.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 

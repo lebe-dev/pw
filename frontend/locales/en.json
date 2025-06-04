@@ -3,17 +3,28 @@
 	"headerLabels": {
 		"backToHomeHint": "Back to home"
 	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
 	"messages": {
 		"loadingTitle": "Loading..",
 		"errorTitle": "Error"
 	},
 	"errors": {
 		"loadingData": "Couldn't load data",
-		"storeSecret": "Store secret error"
+		"storeSecret": "Store secret error",
+		"fileSizeLimit": "File size exceeds limit"
 	},
 	"homePage": {
-		"title": "Message",
+		"textTitle": "Message",
+		"fileTitle": "File",
+		"selectFileTitle": "Select file",
+		"fileSizeTitle": "Size",
+		"maxFileSizeTitle": "Max file size",
 		"messagePlaceholder": "The data will be encrypted in the browser.",
+		"fileEncryptionHint": "The file will be encrypted in the browser.",
 		"secretLifetimeTitle": "Secret lifetime",
 		"lifetime": {
 			"oneHour": "One hour",
@@ -26,16 +37,21 @@
 		"autoGeneratePassword": "Auto-generate password",
 		"customPassword": "Your password",
 		"encryptMessageButton": "Encrypt message",
+		"encryptFileButton": "Encrypt file",
 		"secretUrlTitle": "Secret URL",
 		"copyButton": "Copy"
 	},
 	"secretUrlPage": {
-		"title": "Message",
+		"textTitle": "Message",
+		"fileTitle": "File",
+		"fileNameTitle": "Name",
+		"fileSizeTitle": "Size",
 		"customPasswordTitle": "Enter the password:",
 		"customPasswordButton": "Enter",
 		"invalidPasswordMessage": "Invalid password",
 		"oneTimeDownloadPrecautionMessage": "This link is for one-time use only, so don't try to open it or the secret will disappear.",
 		"copyButton": "Copy",
+		"downloadButton": "Download",
 		"removeButton": "Remove",
 		"removeConfirmMessage": "Secret will be removed. Continue?"
 	},

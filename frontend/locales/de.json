@@ -3,17 +3,28 @@
 	"headerLabels": {
 		"backToHomeHint": "Zurück zur Startseite"
 	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
 	"messages": {
 		"loadingTitle": "Laden..",
 		"errorTitle": "Fehler"
 	},
 	"errors": {
 		"loadingData": "Daten konnten nicht geladen werden",
-		"storeSecret": "Fehler beim Speichern des Geheimnisses"
+		"storeSecret": "Fehler beim Speichern des Geheimnisses",
+		"fileSizeLimit": "Dateigröße überschreitet das Limit"
 	},
 	"homePage": {
-		"title": "Nachricht",
+		"textTitle": "Nachricht",
+		"fileTitle": "Datei",
+		"selectFileTitle": "Datei auswählen",
+		"fileSizeTitle": "Größe",
+		"maxFileSizeTitle": "Maximale Dateigröße",
 		"messagePlaceholder": "Die Daten werden im Browser verschlüsselt.",
+		"fileEncryptionHint": "Die Datei wird im Browser verschlüsselt.",
 		"secretLifetimeTitle": "Lebensdauer des Geheimnisses",
 		"lifetime": {
 			"oneHour": "Eine Stunde",
@@ -26,16 +37,21 @@
 		"autoGeneratePassword": "Passwort automatisch generieren",
 		"customPassword": "Ihr Passwort",
 		"encryptMessageButton": "Nachricht verschlüsseln",
+		"encryptFileButton": "Datei verschlüsseln",
 		"secretUrlTitle": "Geheimer Link",
 		"copyButton": "Kopieren"
 	},
 	"secretUrlPage": {
-		"title": "Nachricht",
+		"textTitle": "Nachricht",
+		"fileTitle": "Datei",
+		"fileNameTitle": "Name",
+		"fileSizeTitle": "Größe",
 		"customPasswordTitle": "Passwort eingeben:",
 		"customPasswordButton": "Eingeben",
 		"invalidPasswordMessage": "Ungültiges Passwort",
 		"oneTimeDownloadPrecautionMessage": "Dieser Link ist nur einmal verwendbar. Öffnen Sie ihn nicht selbst, sonst wird das Geheimnis gelöscht.",
 		"copyButton": "Kopieren",
+		"downloadButton": "Herunterladen",
 		"removeButton": "Entfernen",
 		"removeConfirmMessage": "Das Geheimnis wird entfernt. Fortfahren?"
 	},
