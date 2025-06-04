@@ -6,9 +6,10 @@ metadata:
 data:
   PW_PORT: "8080"
   PW_LOG_LEVEL: "info"
-  PW_MESSAGE_MAX_LENGTH: "4096"
+  PW_MESSAGE_MAX_LENGTH: "3127"
   PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15000"
-  PW_LOCALE_ID: "en"
+  PW_FILE_UPLOAD_ENABLED: "true"
+  PW_FILE_MAX_SIZE: "1048576"
   PW_REDIS_URL: "redis://pw-redis-svc:6379/"
 ---
 apiVersion: apps/v1
@@ -28,7 +29,7 @@ spec:
     spec:
       containers:
         - name: pw
-          image: tinyops/pw:1.8.0
+          image: tinyops/pw:1.8.1
           ports:
             - containerPort: 8080
           envFrom:
@@ -92,7 +93,7 @@ spec:
     spec:
       containers:
         - name: pw-redis
-          image: redis:7.4.0-alpine3.20
+          image: redis:8.0.2-alpine3.21
           args:
             [
               "redis-server",
