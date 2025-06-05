@@ -8,3 +8,5 @@
 CONVENTIONS.md
 /.a*
 .DS_Store
+/helm-chart/*.tgz
+/*.tgz
