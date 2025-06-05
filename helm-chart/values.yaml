@@ -1,0 +1,125 @@
+global:
+  imagePullSecrets: []
+
+# PW application configuration
+pw:
+  image:
+    repository: tinyops/pw
+    tag: "dev"
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  config:
+    listen: "0.0.0.0:8080"
+    logTarget: "console"
+    logLevel: "info"
+    messageMaxLength: "4096"
+    encryptedMessageMaxLength: "1548576"
+    fileUploadEnabled: "true"
+    fileMaxSize: "1048576"
+
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Redis configuration
+redis:
+  image:
+    repository: redis
+    tag: "8.0.2-alpine3.21"
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  # Redis authentication
+  auth:
+    enabled: true
+    # If not provided, a random password will be generated
+    password: ""
+
+  config:
+    maxMemory: "128mb"
+    save: ""
+    appendOnly: "no"
+
+  service:
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: pw.company.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: pw-tls
+  #    hosts:
+  #      - pw.company.com
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+podAnnotations: {}
+
+labels: {}
+
+# Additional environment variables
+extraEnvVars: []
+# - name: CUSTOM_VAR
+#   value: "custom_value"
+
+# Extra volumes and volume mounts
+extraVolumes: []
+extraVolumeMounts: []

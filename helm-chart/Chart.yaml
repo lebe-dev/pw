@@ -1,0 +1,16 @@
+apiVersion: v2
+name: pw
+description: A Helm chart for PW - Secure Secret Share Service
+type: application
+version: 0.1.0
+appVersion: "1.8.2"
+keywords:
+  - secret-sharing
+  - security
+  - encrypted
+home: https://github.com/lebe-dev/pw
+sources:
+  - https://github.com/lebe-dev/pw
+maintainers:
+  - name: Eugene Lebedev
+    email: eugene.0x90@gmail.com

@@ -1,0 +1,46 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.pw.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "pw.fullname" . }}-pw)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.pw.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "pw.fullname" . }}-pw'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "pw.fullname" . }}-pw --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.pw.service.port }}
+{{- else if contains "ClusterIP" .Values.pw.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "{{ include "pw.pwSelectorLabels" . | replace ":" "=" | replace " " "," }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+2. PW - Secure Secret Share Service has been deployed!
+
+{{- if .Values.redis.auth.enabled }}
+3. Redis authentication is enabled. The password has been automatically generated and stored in:
+   Secret: {{ include "pw.redisSecretName" . }}
+   Key: redis-password
+
+   To get the Redis password:
+   kubectl get secret --namespace {{ .Release.Namespace }} {{ include "pw.redisSecretName" . }} -o jsonpath="{.data.redis-password}" | base64 --decode
+{{- end }}
+
+4. Application Configuration:
+   - Message Max Length: {{ .Values.pw.config.messageMaxLength }}
+   - File Upload Enabled: {{ .Values.pw.config.fileUploadEnabled }}
+   - File Max Size: {{ .Values.pw.config.fileMaxSize }} bytes
+
+5. Security Notes:
+   - All secrets are encrypted client-side before storage
+   - Data is stored in Redis with TTL (time-to-live)
+   - No persistent storage - all data is in memory only
+   - TLS is required for production use (webcrypto requirement)
+
+For more information, visit: https://github.com/lebe-dev/pw

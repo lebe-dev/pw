@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pw.fullname" . }}-pw
+  labels:
+    {{- include "pw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pw
+spec:
+  type: {{ .Values.pw.service.type }}
+  ports:
+    - port: {{ .Values.pw.service.port }}
+      targetPort: {{ .Values.pw.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "pw.pwSelectorLabels" . | nindent 4 }}
