@@ -22,11 +22,6 @@ pub fn get_logging_config(logging_level: &str, log_target: &str) -> Config {
             .logger(get_default_logger(level))
             .build(Root::builder().appender(FILE_APPENDER_NAME).build(level))
             .expect(&format!("unable to create log file '{}'", LOG_FILE_PATH)),
-        "console" => Config::builder()
-            .appender(get_console_appender(level))
-            .logger(get_default_logger(level))
-            .build(Root::builder().appender(CONSOLE_APPENDER_NAME).build(level))
-            .expect("unable to create console logging configuration"),
         _ => Config::builder()
             .appender(get_console_appender(level))
             .logger(get_default_logger(level))
