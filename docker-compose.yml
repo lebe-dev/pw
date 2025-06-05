@@ -7,10 +7,11 @@ services:
       PW_LISTEN: "0.0.0.0:8080"
       PW_LOG_LEVEL: "info"
       PW_MESSAGE_MAX_LENGTH: "3127"
-      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15000"
+      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15485760"
       PW_FILE_UPLOAD_ENABLED: "true"
       PW_FILE_MAX_SIZE: "1048576"
       PW_REDIS_URL: "redis://redis:6379/"
+      PW_LOG_TARGET: "console"
     #volumes:
     #- ./pw.yml:/app/pw.yml
     ports:
