@@ -1,18 +1,24 @@
 # Development
 
-Install Rust 1.83+.
+Start redis:
+
+```shell
+docker-compose -f docker-compose-dev.yml up -d
+```
+
+Install Rust 1.87+.
 
 Prepare config for backend:
 
-```shell
+```bash
 cp pw.yml-dev pw.yml
 ```
 
 Start backend:
 
-```shell
+```bash
 cargo run
-````
+```
 
 Install NodeJS 20.x + npm then install dependencies:
 
@@ -39,7 +45,7 @@ Use config for nginx:
 server {
     listen 80;
 
-    server_name localhost;
+    server_name pw.test;
 
     location /api {
         proxy_set_header Host $host;
