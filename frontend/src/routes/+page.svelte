@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { generateRandomKey, getRandomAdditionalData, getRandomKeyId } from '$lib/encrypt';
 	import { AES } from 'crypto-js';
 	import { getEncodedUrlSlug, getUrlBaseHost } from '$lib/url';
@@ -52,6 +52,8 @@
 
 	let secretUrl: string = $state('');
 
+	let textareaRef: HTMLTextAreaElement | null = $state(null);
+
 	let encryptButtonDisabled = $derived.by(() => {
 		if (secretContentType === SecretContentType.Text) {
 			return (
@@ -95,6 +97,11 @@
 			inProgress = false;
 			configLoaded = true;
 			console.log('config', config);
+
+			await tick();
+			if (textareaRef && secretContentType === SecretContentType.Text) {
+				textareaRef.focus();
+			}
 		} else {
 			toast.error('Unable to load config');
 		}
@@ -110,6 +117,17 @@
 
 	function onMessageUpdate() {
 		messageLength = message.length;
+	}
+
+	async function onTabChange(contentType: SecretContentType) {
+		secretContentType = contentType;
+
+		if (contentType === SecretContentType.Text) {
+			await tick();
+			if (textareaRef) {
+				textareaRef.focus();
+			}
+		}
 	}
 
 	function handleFileSelect(event: Event) {
@@ -220,19 +238,20 @@
 				<Tabs.Trigger
 					value="message"
 					class="select-none"
-					onclick={() => (secretContentType = SecretContentType.Text)}
+					onclick={() => onTabChange(SecretContentType.Text)}
 					>{$t('homePage.textTitle')}</Tabs.Trigger
 				>
 				<Tabs.Trigger
 					value="file"
 					class="select-none"
 					disabled={!config.fileUploadEnabled}
-					onclick={() => (secretContentType = SecretContentType.File)}
+					onclick={() => onTabChange(SecretContentType.File)}
 					>{$t('homePage.fileTitle')}</Tabs.Trigger
 				>
 			</Tabs.List>
 			<Tabs.Content value="message">
 				<Textarea
+					bind:ref={textareaRef}
 					placeholder={$t('homePage.messagePlaceholder')}
 					rows={6}
 					class="placeholder:text-md mb-2"
@@ -240,7 +259,6 @@
 					bind:value={message}
 					onkeyup={() => onMessageUpdate(event)}
 					disabled={inProgress || !configLoaded}
-					autofocus={true}
 				></Textarea>
 
 				<div class="mb-5 select-none text-xs">
