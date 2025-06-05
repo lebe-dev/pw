@@ -22,6 +22,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
 
     let listen = get_env_var("PW_LISTEN").unwrap_or(config.listen.to_string());
     let log_level = get_env_var("PW_LOG_LEVEL").unwrap_or(config.log_level);
+    let log_target = get_env_var("PW_LOG_TARGET").unwrap_or(config.log_target);
     let message_max_length =
         get_env_var("PW_MESSAGE_MAX_LENGTH").unwrap_or(config.message_max_length.to_string());
     let file_upload_enabled =
@@ -34,6 +35,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
     let config = AppConfig {
         listen: listen.parse()?,
         log_level,
+        log_target,
         message_max_length: message_max_length.parse()?,
         encrypted_message_max_length: encrypted_message_max_length.parse()?,
         file_upload_enabled: file_upload_enabled.parse()?,

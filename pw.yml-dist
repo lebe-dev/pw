@@ -2,6 +2,9 @@ listen: '0.0.0.0:8080'
 
 log-level: info
 
+# possible values: console, file
+log-target: console
+
 message-max-length: 1024
 
 file-upload-enabled: true

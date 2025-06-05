@@ -9,6 +9,8 @@ pub struct AppConfig {
 
     pub log_level: String,
 
+    pub log_target: String,
+
     /// Message max length, all above will be truncated
     pub message_max_length: u16,
 
@@ -27,10 +29,11 @@ impl Display for AppConfig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "listen: '{}', log-level: {}, message-max-length: {},\
+            "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
             file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {}, redis-url: '{}'",
             self.listen,
             self.log_level,
+            self.log_target,
             self.message_max_length,
             self.file_upload_enabled,
             self.file_max_size,

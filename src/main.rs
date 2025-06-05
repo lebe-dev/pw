@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app_config = load_config_from_file(&config_file)?;
 
-    let logging_config = get_logging_config(&app_config.log_level);
+    let logging_config = get_logging_config(&app_config.log_level, &app_config.log_target);
     log4rs::init_config(logging_config).expect("unable to init logging configuration");
 
     let secret_storage = RedisSecretStorage::new(&app_config.redis_url);

@@ -1,4 +1,5 @@
 use log::LevelFilter;
+use log4rs::append::console::ConsoleAppender;
 use log4rs::append::rolling_file::RollingFileAppender;
 use log4rs::append::rolling_file::policy::compound::CompoundPolicy;
 use log4rs::append::rolling_file::policy::compound::roll::fixed_window::FixedWindowRoller;
@@ -8,17 +9,30 @@ use log4rs::encode::pattern::PatternEncoder;
 use log4rs::filter::threshold::ThresholdFilter;
 
 const FILE_APPENDER_NAME: &str = "file";
+const CONSOLE_APPENDER_NAME: &str = "console";
 
 const LOG_FILE_PATH: &str = "pw.log";
 
-pub fn get_logging_config(logging_level: &str) -> Config {
+pub fn get_logging_config(logging_level: &str, log_target: &str) -> Config {
     let level = get_logging_level_from_string(logging_level);
 
-    Config::builder()
-        .appender(get_rolling_appender(level))
-        .logger(get_default_logger(level))
-        .build(Root::builder().appender(FILE_APPENDER_NAME).build(level))
-        .expect(&format!("unable to create log file '{}'", LOG_FILE_PATH))
+    match log_target {
+        "file" => Config::builder()
+            .appender(get_rolling_appender(level))
+            .logger(get_default_logger(level))
+            .build(Root::builder().appender(FILE_APPENDER_NAME).build(level))
+            .expect(&format!("unable to create log file '{}'", LOG_FILE_PATH)),
+        "console" => Config::builder()
+            .appender(get_console_appender(level))
+            .logger(get_default_logger(level))
+            .build(Root::builder().appender(CONSOLE_APPENDER_NAME).build(level))
+            .expect("unable to create console logging configuration"),
+        _ => Config::builder()
+            .appender(get_console_appender(level))
+            .logger(get_default_logger(level))
+            .build(Root::builder().appender(CONSOLE_APPENDER_NAME).build(level))
+            .expect("unable to create console logging configuration"),
+    }
 }
 
 fn get_logging_level_from_string(level: &str) -> LevelFilter {
@@ -55,6 +69,14 @@ fn get_encoder() -> Box<PatternEncoder> {
     Box::new(PatternEncoder::new(
         "{d(%Y-%m-%d %H:%M:%S)} - {l} - [{M}] - {m}{n}",
     ))
+}
+
+fn get_console_appender(level: LevelFilter) -> Appender {
+    let console_appender = ConsoleAppender::builder().encoder(get_encoder()).build();
+
+    Appender::builder()
+        .filter(Box::new(ThresholdFilter::new(level)))
+        .build(CONSOLE_APPENDER_NAME, Box::new(console_appender))
 }
 
 fn get_default_logger(level: LevelFilter) -> Logger {
