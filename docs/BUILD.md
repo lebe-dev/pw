@@ -7,7 +7,7 @@
 2. Build image:
 
 ```shell
-docker build --progress=plain -t pw:1.7.0 .
+docker build --progress=plain --platform=linux/amd64 -t tinyops/pw:1.9.0 .
 ```
 
 ## How to build standalone version

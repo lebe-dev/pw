@@ -1,5 +1,5 @@
 # How to install PW to Kubernetes
 
-```shell
-kubectl apply -f kubernetes.yaml
+```bash
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 0.1.0 --values values.yaml
 ```

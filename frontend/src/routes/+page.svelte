@@ -366,7 +366,7 @@
 		<a
 			href="https://github.com/lebe-dev/pw/releases"
 			target="_blank"
-			class="hover:text-secondary-foreground hover:dark:text-accent">v1.8.1</a
+			class="hover:text-secondary-foreground hover:dark:text-accent">v1.9.0</a
 		>
 
 		<span class="me-1 ms-1">|</span>
