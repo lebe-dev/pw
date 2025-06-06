@@ -20,20 +20,22 @@ This Helm chart deploys PW (Secure Secret Share Service) on a Kubernetes cluster
 
 ## Installing the Chart
 
-To install the chart with the release name `my-pw`:
+To install the chart with the release name `pw`:
 
 ```bash
-helm upgrade --install --create-namespace -n pw my-pw oci://registry-1.docker.io/tinyops/pw --version 0.1.0
+helm repo add tinyops https://tinyops.ru/helm-charts/
+helm repo update
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 0.1.0
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-pw` deployment:
+To uninstall/delete the `pw` deployment:
 
 ```bash
-helm delete my-pw
+helm delete pw
 ```
 
 ## Parameters
