@@ -16,7 +16,7 @@ docker compose up -d
 
 Then visit http://localhost:8080.
 
-Other options: [install with docker](docs/install/DOCKER.md) or [Kubernetes](docs/install/KUBERNETES.md)
+Other options: [Kubernetes](docs/install/KUBERNETES.md)
 
 ## Features
 
