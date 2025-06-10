@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
 		"@sveltejs/adapter-static": "^3.0.6",
-		"@sveltejs/kit": "^2.9.0",
+		"@sveltejs/kit": "^2.20.6",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@types/crypto-js": "^4.2.2",
 		"autoprefixer": "^10.4.20",
