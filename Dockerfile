@@ -32,20 +32,13 @@ RUN cargo test && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.21.3
+FROM gcr.io/distroless/cc-debian12:nonroot
 
 WORKDIR /app
-
-RUN apk add libressl-dev && \
-    adduser -h /app -D pw && \
-    chmod 700 /app && \
-    chown -R pw: /app
 
 COPY --from=app-build /build/pw.yml-dist /app/pw.yml
 COPY --from=app-build /build/target/release/pw /app/pw
 
-RUN chown -R pw: /app && chmod +x /app/pw
-
-USER pw
+RUN chmod +x /app/pw
 
 CMD ["/app/pw"]
