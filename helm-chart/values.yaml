@@ -5,7 +5,7 @@ global:
 pw:
   image:
     repository: tinyops/pw
-    tag: "1.9.0"
+    tag: "1.9.1"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
