@@ -29,6 +29,7 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
   94d9d31ddf83   pw-cache          1.27%     7.977MiB / 1.69GiB   0.46%     16.2kB / 0B       0B / 0B        6
   0d3c9c52165a   pw                0.00%     4.082MiB / 1.69GiB   0.24%     63.2kB / 224kB    0B / 0B        2
   ```
+- [Distroless non-root image](https://github.com/GoogleContainerTools/distroless)
 - Localization support: en, es, de, ru ([details](docs/LOCALE.md))
 - Dark theme support
 
