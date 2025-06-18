@@ -221,38 +221,40 @@
 							{$t('secretUrlPage.downloadButton')}
 						</Button>
 					</div>
-					<div class="column-xs pe-1 text-end">
-						<Button
-							variant="outline"
-							class="hover:bg-destructive hover:text-primary-foreground dark:hover:bg-destructive dark:hover:text-secondary-foreground"
-							onclick={() => onRemoveUrl(secret.id)}
-						>
-							<div class="flex items-center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.5"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									class="lucide lucide-trash-2 me-1 inline-block"
-									><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
-										d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
-									/><line x1="10" x2="10" y1="11" y2="17" /><line
-										x1="14"
-										x2="14"
-										y1="11"
-										y2="17"
-									/></svg
-								>
+					{#if secret.downloadPolicy !== SecretDownloadPolicy.OneTime}
+						<div class="column-xs pe-1 text-end">
+							<Button
+								variant="outline"
+								class="hover:bg-destructive hover:text-primary-foreground dark:hover:bg-destructive dark:hover:text-secondary-foreground"
+								onclick={() => onRemoveUrl(secret.id)}
+							>
+								<div class="flex items-center">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										class="lucide lucide-trash-2 me-1 inline-block"
+										><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
+											d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+										/><line x1="10" x2="10" y1="11" y2="17" /><line
+											x1="14"
+											x2="14"
+											y1="11"
+											y2="17"
+										/></svg
+									>
 
-								{$t('secretUrlPage.removeButton')}
-							</div></Button
-						>
-					</div>
+									{$t('secretUrlPage.removeButton')}
+								</div></Button
+							>
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/if}
