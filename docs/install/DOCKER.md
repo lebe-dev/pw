@@ -15,7 +15,7 @@ mkdir -p /opt/pw
 **4. Run**
 
 ```shell
-docker-compose up -d
+docker compose up -d
 ```
 
 Application will be available on http://localhost:8080.
