@@ -39,6 +39,4 @@ WORKDIR /app
 COPY --from=app-build /build/pw.yml-dist /app/pw.yml
 COPY --from=app-build /build/target/release/pw /app/pw
 
-RUN chmod +x /app/pw
-
 CMD ["/app/pw"]
