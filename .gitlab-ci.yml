@@ -1,58 +1,6 @@
 stages:
   - build
 
-build-frontend:
-  stage: build
-
-  when: manual
-
-  script:
-    - cd frontend
-    - npm i
-    - npm run build
-
-  artifacts:
-    name: webui
-    paths:
-      - frontend/build
-    expire_in: 1 week
-
-  tags:
-    - linux
-
-build-linux:
-  stage: build
-
-  when: manual
-
-  script:
-    - "cd backend"
-    - "mkdir static"
-    - "cargo test"
-    - "cp -r ../webui/build/. static/"
-    - "ls -liah static/"
-    - "cp -f ../favicon.png static/"
-    - "cargo test"
-    - "cargo build --release"
-    - "cd .."
-    - "cp backend/pw.yml-dist ."
-    - "cp target/release/backend pw"
-    - "eu-elfcompress pw"
-    - "strip pw"
-    - "upx -9 --lzma pw || true"
-    - 'VERSION=$(cat backend/Cargo.toml | grep version | head -1 | cut -d "\"" -f 2)'
-    - "echo $VERSION > build-version"
-
-  artifacts:
-    name: pw-app
-    paths:
-      - build-version
-      - pw
-      - README.md
-      - pw.yml-dist
-      - docs
-    expire_in: 1 week
-
 build-image:
   stage: build
 
