@@ -2,6 +2,7 @@ use crate::config::model::AppConfig;
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
 use crate::secret::storage::RedisSecretStorage;
 use axum::Router;
+use axum::extract::DefaultBodyLimit;
 use axum::http::{StatusCode, Uri, header};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
@@ -50,7 +51,10 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/api/config", get(get_config_route))
-        .route("/api/secret", post(store_secret_route))
+        .route(
+            "/api/secret",
+            post(store_secret_route).layer(DefaultBodyLimit::disable()),
+        )
         .route(
             "/api/secret/{id}",
             get(get_secret_route).delete(remove_secret_route),
