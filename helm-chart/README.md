@@ -47,7 +47,7 @@ helm delete pw
 | Name                                        | Description                           | Value                |
 | ------------------------------------------- | ------------------------------------- | -------------------- |
 | `pw.image.repository`                       | PW image repository                   | `tinyops/pw`         |
-| `pw.image.tag`                             | PW image tag                          | `1.9.1`              |
+| `pw.image.tag`                             | PW image tag                          | `1.9.2`              |
 | `pw.image.pullPolicy`                      | PW image pull policy                  | `IfNotPresent`       |
 | `pw.replicaCount`                          | Number of PW replicas                 | `1`                  |
 | `pw.config.listen`                         | PW listen address                     | `0.0.0.0:8080`       |
