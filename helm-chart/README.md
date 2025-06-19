@@ -8,10 +8,6 @@ This Helm chart deploys PW (Secure Secret Share Service) on a Kubernetes cluster
 - Redis backend with authentication
 - Configurable TTL and download policies
 - File upload support
-- Kubernetes-native deployment with proper security contexts
-- Service accounts and RBAC ready
-- Ingress support with TLS
-- Health checks and resource management
 
 ## Prerequisites
 
@@ -25,7 +21,7 @@ To install the chart with the release name `pw`:
 ```bash
 helm repo add tinyops https://tinyops.ru/helm-charts/
 helm repo update
-helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.0.0
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.0.1
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -51,7 +47,7 @@ helm delete pw
 | Name                                        | Description                           | Value                |
 | ------------------------------------------- | ------------------------------------- | -------------------- |
 | `pw.image.repository`                       | PW image repository                   | `tinyops/pw`         |
-| `pw.image.tag`                             | PW image tag                          | `1.9.0`              |
+| `pw.image.tag`                             | PW image tag                          | `1.9.1`              |
 | `pw.image.pullPolicy`                      | PW image pull policy                  | `IfNotPresent`       |
 | `pw.replicaCount`                          | Number of PW replicas                 | `1`                  |
 | `pw.config.listen`                         | PW listen address                     | `0.0.0.0:8080`       |
