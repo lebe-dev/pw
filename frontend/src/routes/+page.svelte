@@ -55,6 +55,8 @@
 
 	let textareaRef: HTMLTextAreaElement | null = $state(null);
 
+	let inputsDisabled = $derived(inProgress || encryptInProgress);
+
 	let encryptButtonDisabled = $derived.by(() => {
 		if (secretContentType === SecretContentType.Text) {
 			return (
@@ -245,13 +247,14 @@
 				<Tabs.Trigger
 					value="message"
 					class="select-none"
+					disabled={encryptInProgress}
 					onclick={() => onTabChange(SecretContentType.Text)}
 					>{$t('homePage.textTitle')}</Tabs.Trigger
 				>
 				<Tabs.Trigger
 					value="file"
 					class="select-none"
-					disabled={!config.fileUploadEnabled}
+					disabled={!config.fileUploadEnabled || encryptInProgress}
 					onclick={() => onTabChange(SecretContentType.File)}
 					>{$t('homePage.fileTitle')}</Tabs.Trigger
 				>
@@ -265,7 +268,7 @@
 					maxlength={messageTotal}
 					bind:value={message}
 					onkeyup={() => onMessageUpdate(event)}
-					disabled={inProgress || !configLoaded}
+					disabled={inProgress || !configLoaded || encryptInProgress}
 				></Textarea>
 
 				<div class="mb-5 select-none text-xs">
@@ -286,7 +289,7 @@
 						class="mb-2"
 						multiple={false}
 						onchange={handleFileSelect}
-						disabled={inProgress || !configLoaded}
+						disabled={inProgress || !configLoaded || encryptInProgress}
 					/>
 
 					{#if configLoaded}
@@ -323,7 +326,7 @@
 
 		<div class="mb-4 flex flex-row justify-center">
 			<div>
-				<SecretLifeTime bind:value={secretTTL} bind:disabled={inProgress} />
+				<SecretLifeTime bind:value={secretTTL} disabled={inputsDisabled} />
 			</div>
 		</div>
 
@@ -331,7 +334,7 @@
 			<div class="mb-4 flex flex-row justify-center">
 				<OneTimeDownload
 					checked={true}
-					bind:disabled={inProgress}
+					disabled={inputsDisabled}
 					click={() => onToggleDownloadPolicy()}
 				/>
 			</div>
@@ -340,7 +343,7 @@
 				<CustomPassword
 					bind:checked={autoGeneratePassword}
 					bind:value={customPassword}
-					bind:disabled={inProgress}
+					disabled={inputsDisabled}
 				/>
 			</div>
 		</div>
