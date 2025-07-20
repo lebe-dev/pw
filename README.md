@@ -23,6 +23,7 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 - Secure: All data is encrypted in the browser ([details](docs/SECURITY.md))
 - Supported media types: text, file
 - BLAZING FAST 🌝 (Svelte+Rust)
+- Dynamic configuration limits based on ip whitelist
 - Low resources usage:
   ```shell
   CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O      PIDS
