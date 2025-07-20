@@ -12,7 +12,7 @@ This Helm chart deploys PW (Secure Secret Share Service) on a Kubernetes cluster
 ## Prerequisites
 
 - Kubernetes 1.19+
-- Helm 3.2.0+
+- Helm 3.18.4+
 
 ## Installing the Chart
 
@@ -56,6 +56,8 @@ helm delete pw
 | `pw.config.encryptedMessageMaxLength`      | Maximum encrypted message length      | `15000`              |
 | `pw.config.fileUploadEnabled`              | Enable file upload                    | `true`               |
 | `pw.config.fileMaxSize`                    | Maximum file size in bytes            | `1048576`            |
+| `pw.config.ipLimits.enabled`               | Enable IP whitelist limits            | `false`              |
+| `pw.config.ipLimits.whitelist`             | Array of IP whitelist entries         | `[]`                 |
 | `pw.service.type`                          | PW service type                       | `ClusterIP`          |
 | `pw.service.port`                          | PW service port                       | `8080`               |
 | `pw.resources.limits.cpu`                  | PW CPU limit                          | `500m`               |
@@ -98,6 +100,46 @@ helm delete pw
 | `securityContext.runAsNonRoot` | Run containers as non-root user   | `true`  |
 | `securityContext.runAsUser`    | Run containers as specific user   | `1000`  |
 
+## IP Whitelist Configuration
+
+PW supports IP-based access restrictions with custom payload limits. When enabled, only IPs in the whitelist can access the service, and each IP can have individual limits for message and file sizes.
+
+### Example Configuration
+
+```yaml
+pw:
+  config:
+    ipLimits:
+      enabled: true
+      whitelist:
+        - ip: "192.168.1.100"
+          messageMaxLength: 8192
+          fileMaxSize: 104857600
+        - ip: "10.0.0.0/8"
+          messageMaxLength: 4096
+        - ip: "172.16.1.5"
+          fileMaxSize: 209715200
+        - ip: "2001:db8::1"
+          messageMaxLength: 16384
+          fileMaxSize: 52428800
+```
+
+### Whitelist Entry Fields
+
+| Field               | Type   | Required | Description                           |
+| ------------------- | ------ | -------- | ------------------------------------- |
+| `ip`                | string | Yes      | IP address or CIDR block (IPv4/IPv6) |
+| `messageMaxLength`  | number | No       | Custom message size limit in bytes    |
+| `fileMaxSize`       | number | No       | Custom file size limit in bytes      |
+
+### Notes
+
+- Environment variables `PW_IP_LIMITS_ENABLED` and `PW_IP_LIMITS_WHITELIST` override YAML configuration
+- IP addresses support both IPv4 and IPv6 formats
+- CIDR notation is supported (e.g., `10.0.0.0/8`, `2001:db8::/32`)
+- If limits are not specified for an IP, global defaults are used
+- Duplicate IP entries are not allowed and will cause validation errors
+
 ## Security Considerations
 
 1. **TLS Required**: PW requires HTTPS in production due to WebCrypto API requirements
@@ -105,6 +147,7 @@ helm delete pw
 3. **No Persistent Storage**: All data is stored in Redis memory with TTL
 4. **Client-side Encryption**: All secrets are encrypted in the browser before transmission
 5. **Service Account**: Dedicated service account with minimal permissions
+6. **IP Whitelist**: Optional IP-based access control with custom payload limits
 
 ## Accessing the Application
 
