@@ -15,6 +15,12 @@ server {
     
     location / {
       proxy_pass http://localhost:8080;
+      
+      # Client IP headers for IP-based limits feature
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Host $host;
     }
     
     location ~* \.(?:jpg|jpeg|gif|png|ico|js|svg|woff|woff2|ttf|css)$ {
@@ -76,3 +82,30 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 systemctl reload nginx
 ```
+
+## Client IP Configuration for IP-based Limits
+
+When using the IP-based limits feature, nginx must be configured to properly forward client IP addresses. The configuration above includes the necessary headers:
+
+- `X-Real-IP` - Direct client IP address
+- `X-Forwarded-For` - Complete IP chain including intermediary proxies
+- `X-Forwarded-Proto` - Original protocol (http/https)
+- `Host` - Original host header
+
+### Behind Load Balancer or CDN
+
+If nginx is behind another proxy/load balancer, configure real IP detection:
+
+```nginx
+# Trust IP headers from these sources
+set_real_ip_from 10.0.0.0/8;
+set_real_ip_from 172.16.0.0/12;
+set_real_ip_from 192.168.0.0/16;
+set_real_ip_from 127.0.0.1;
+
+# Use X-Forwarded-For header to determine real IP
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+```
+
+Add this configuration in the `server` block before the `location` directives.
