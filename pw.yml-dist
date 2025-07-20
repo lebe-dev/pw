@@ -17,3 +17,27 @@ file-max-size: 10485760
 encrypted-message-max-length: 15485760
 
 redis-url: 'redis://cache:6379/'
+
+# IP-based dynamic limits (new feature)
+ip-limits:
+  enabled: false                      # Default: disabled for backward compatibility
+  whitelist:
+    # Development environment example
+    - ip: '192.168.1.0/24'           # Development office network
+      message-max-length: 8192       # 8KB for testing
+      file-max-size: 104857600       # 100MB for large test files
+    
+    # VPN users
+    - ip: '10.0.0.0/8'               # VPN users
+      message-max-length: 4096       # 4KB
+      file-max-size: 52428800        # 50MB
+    
+    # Partner integration example
+    - ip: '203.0.113.100'            # Partner A
+      message-max-length: 16384      # 16KB for API payloads
+      file-max-size: 524288000       # 500MB for document exchange
+    
+    # Internal tools & automation
+    - ip: '172.16.10.5'              # Monitoring server
+      message-max-length: 32768      # 32KB for detailed reports
+      file-max-size: 1073741824      # 1GB for log bundles
