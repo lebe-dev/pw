@@ -13,8 +13,9 @@ file-upload-enabled: true
 # Default: 10MB
 file-max-size: 10485760
 
-# Encrypted payload length > source message/file length
-encrypted-message-max-length: 15485760
+# Encrypted payload length is calculated dynamically based on message/file limits with 35% overhead
+# You can optionally override this with a static value if needed
+# encrypted-message-max-length: 15485760
 
 redis-url: 'redis://cache:6379/'
 
