@@ -53,9 +53,10 @@ helm delete pw
 | `pw.config.listen`                         | PW listen address                     | `0.0.0.0:8080`       |
 | `pw.config.logLevel`                       | PW log level                          | `info`               |
 | `pw.config.messageMaxLength`               | Maximum message length                | `3127`               |
-| `pw.config.encryptedMessageMaxLength`      | Maximum encrypted message length      | `15000`              |
 | `pw.config.fileUploadEnabled`              | Enable file upload                    | `true`               |
 | `pw.config.fileMaxSize`                    | Maximum file size in bytes            | `1048576`            |
+
+**Note**: The encrypted message max length is calculated dynamically as `max(messageMaxLength, fileMaxSize) * 1.35` to account for encryption overhead. You can optionally override this by setting the `PW_ENCRYPTED_MESSAGE_MAX_LENGTH` environment variable.
 | `pw.config.ipLimits.enabled`               | Enable IP whitelist limits            | `false`              |
 | `pw.config.ipLimits.whitelist`             | Array of IP whitelist entries         | `[]`                 |
 | `pw.service.type`                          | PW service type                       | `ClusterIP`          |
@@ -165,11 +166,13 @@ echo "http://localhost:8080"
 ## Troubleshooting
 
 ### Check pod status:
+
 ```bash
 kubectl get pods -l app.kubernetes.io/name=pw
 ```
 
 ### View logs:
+
 ```bash
 kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=pw
 kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=redis

@@ -10,7 +10,6 @@ data:
   PW_LOG_TARGET: {{ .Values.pw.config.logTarget | quote }}
   PW_LOG_LEVEL: {{ .Values.pw.config.logLevel | quote }}
   PW_MESSAGE_MAX_LENGTH: {{ .Values.pw.config.messageMaxLength | quote }}
-  PW_ENCRYPTED_MESSAGE_MAX_LENGTH: {{ .Values.pw.config.encryptedMessageMaxLength | quote }}
   PW_FILE_UPLOAD_ENABLED: {{ .Values.pw.config.fileUploadEnabled | quote }}
   PW_FILE_MAX_SIZE: {{ .Values.pw.config.fileMaxSize | quote }}
   {{- if .Values.pw.config.ipLimits }}

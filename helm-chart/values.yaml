@@ -15,7 +15,6 @@ pw:
     logTarget: "console"
     logLevel: "info"
     messageMaxLength: "4096"
-    encryptedMessageMaxLength: "1548576"
     fileUploadEnabled: "true"
     fileMaxSize: "1048576"
     
