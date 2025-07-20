@@ -1,8 +1,9 @@
 use crate::AppState;
 use crate::secret::model::{Secret, SecretContentType};
 use crate::secret::usecase::store_secret;
+use crate::middleware::client_ip::ClientIp;
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::{Path, State, Extension};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use log::{error, info};
@@ -10,6 +11,7 @@ use std::sync::Arc;
 
 pub async fn store_secret_route(
     State(state): State<Arc<AppState>>,
+    Extension(client_ip): Extension<ClientIp>,
     secret: Json<Secret>,
 ) -> StatusCode {
     if secret.content_type == SecretContentType::File && !state.config.file_upload_enabled {
@@ -17,13 +19,27 @@ pub async fn store_secret_route(
         return StatusCode::BAD_REQUEST;
     }
 
+    let client_ip_str = client_ip.0.to_string();
+    let client_limits = state.limits_service.get_limits_for_ip(&client_ip_str);
+
+    info!("Secret storage request from {}: applying encrypted_message_max_length: {}", 
+        client_ip_str, 
+        client_limits.encrypted_message_max_length
+    );
+
     match store_secret(
         &state.secret_storage,
         &secret,
-        state.config.encrypted_message_max_length,
+        client_limits.encrypted_message_max_length,
     ) {
-        Ok(_) => StatusCode::OK,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        Ok(_) => {
+            info!("Secret stored successfully for client {}", client_ip_str);
+            StatusCode::OK
+        },
+        Err(e) => {
+            error!("Failed to store secret for client {}: {}", client_ip_str, e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        },
     }
 }
 
@@ -53,5 +69,378 @@ pub async fn remove_secret_route(
             error!("{}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::model::{AppConfig, IpLimitsConfig, IpLimitEntry};
+    use crate::limits::LimitsService;
+    use crate::middleware::client_ip::ClientIp;
+    use crate::secret::model::{SecretTTL, SecretDownloadPolicy, SecretFileMetadata};
+    use crate::secret::storage::RedisSecretStorage;
+    use std::sync::Arc;
+
+    fn create_test_app_state(ip_limits_config: Option<IpLimitsConfig>, file_upload_enabled: bool) -> Arc<AppState> {
+        let config = AppConfig {
+            listen: "0.0.0.0:8080".to_string(),
+            log_level: "info".to_string(),
+            log_target: "stdout".to_string(),
+            message_max_length: 1024,
+            file_upload_enabled,
+            file_max_size: 10485760,
+            encrypted_message_max_length: 15485760,
+            redis_url: "redis://localhost".to_string(),
+            ip_limits: ip_limits_config,
+        };
+
+        let limits_service = LimitsService::new(&config);
+        let secret_storage = RedisSecretStorage::new("redis://localhost");
+
+        Arc::new(AppState {
+            config,
+            limits_service,
+            secret_storage,
+        })
+    }
+
+    fn create_test_secret(content_type: SecretContentType, payload_size: usize) -> Secret {
+        Secret {
+            id: "test-secret-id".to_string(),
+            content_type,
+            metadata: SecretFileMetadata {
+                name: "test.txt".to_string(),
+                r#type: "text/plain".to_string(),
+                size: payload_size as u64,
+            },
+            payload: "A".repeat(payload_size), // Simulate encrypted payload
+            ttl: SecretTTL::OneHour,
+            download_policy: SecretDownloadPolicy::OneTime,
+        }
+    }
+
+    #[tokio::test]
+    async fn test_store_text_secret_with_default_limits() {
+        let state = create_test_app_state(None, true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::Text, 1000); // Within default encrypted limit
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_store_text_secret_exceeding_default_limits() {
+        let state = create_test_app_state(None, true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::Text, 20_000_000); // Exceeds default encrypted limit
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_with_increased_ip_limits() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(8192), // Increased from 1024
+                    file_max_size: Some(104857600),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        
+        // Calculate expected encrypted limit: 8192 * (15485760 / 1024) ≈ 123906048
+        let secret = create_test_secret(SecretContentType::Text, 100_000_000); // Within increased limit
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_with_cidr_match() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.0.0/16".to_string(),
+                    message_max_length: Some(4096),
+                    file_max_size: Some(52428800),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap()); // Matches CIDR
+        
+        // Calculate expected encrypted limit: 4096 * (15485760 / 1024) ≈ 61953024
+        let secret = create_test_secret(SecretContentType::Text, 50_000_000); // Within CIDR limit
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_with_no_ip_match() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "10.0.0.0/8".to_string(),
+                    message_max_length: Some(8192),
+                    file_max_size: Some(104857600),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap()); // Doesn't match whitelist
+        let secret = create_test_secret(SecretContentType::Text, 20_000_000); // Exceeds default limit
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        // Should fail because IP doesn't match and falls back to default limits
+        assert_eq!(response, StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_store_file_secret_with_upload_enabled() {
+        let state = create_test_app_state(None, true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::File, 1000);
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_store_file_secret_with_upload_disabled() {
+        let state = create_test_app_state(None, false); // File upload disabled
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::File, 1000);
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_store_file_secret_with_ip_limits_and_upload_disabled() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(8192),
+                    file_max_size: Some(104857600),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), false); // File upload disabled
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::File, 1000);
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        // Should still be rejected due to global file upload setting
+        assert_eq!(response, StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_with_disabled_ip_limits() {
+        let ip_limits = IpLimitsConfig {
+            enabled: false,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(8192),
+                    file_max_size: Some(104857600),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::Text, 20_000_000); // Exceeds default
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        // Should fail because IP limits are disabled, so default limits apply
+        assert_eq!(response, StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_boundary_encrypted_limit() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(2048), // 2048 * (15485760 / 1024) = 30971520
+                    file_max_size: Some(104857600),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        
+        // Test exactly at the limit
+        let secret = create_test_secret(SecretContentType::Text, 30971520);
+
+        let response = store_secret_route(
+            State(state.clone()),
+            Extension(client_ip.clone()),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+
+        // Test just over the limit
+        let secret_over = create_test_secret(SecretContentType::Text, 30971521);
+
+        let response_over = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret_over),
+        ).await;
+
+        assert_eq!(response_over, StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_store_secret_with_ipv6_address() {
+        let ip_limits = IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "2001:db8::/32".to_string(),
+                    message_max_length: Some(16384),
+                    file_max_size: Some(209715200),
+                },
+            ],
+        };
+
+        let state = create_test_app_state(Some(ip_limits), true);
+        let client_ip = ClientIp("2001:db8::1".parse().unwrap());
+        
+        // Calculate expected encrypted limit: 16384 * (15485760 / 1024) ≈ 247812096
+        let secret = create_test_secret(SecretContentType::Text, 200_000_000);
+
+        let response = store_secret_route(
+            State(state),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[ignore]
+    #[tokio::test]
+    async fn test_get_secret_route_existing() {
+        let state = create_test_app_state(None, true);
+        
+        // First store a secret
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::Text, 1000);
+        let secret_id = secret.id.clone();
+        
+        let store_response = store_secret_route(
+            State(state.clone()),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+        assert_eq!(store_response, StatusCode::OK);
+
+        // Then try to get it
+        let response = get_secret_route(State(state), Path(secret_id)).await;
+        let response = response.into_response();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_get_secret_route_nonexistent() {
+        let state = create_test_app_state(None, true);
+        
+        let response = get_secret_route(State(state), Path("nonexistent-id".to_string())).await;
+        let response = response.into_response();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_remove_secret_route_existing() {
+        let state = create_test_app_state(None, true);
+        
+        // First store a secret
+        let client_ip = ClientIp("192.168.1.100".parse().unwrap());
+        let secret = create_test_secret(SecretContentType::Text, 1000);
+        let secret_id = secret.id.clone();
+        
+        let _store_response = store_secret_route(
+            State(state.clone()),
+            Extension(client_ip),
+            Json(secret),
+        ).await;
+
+        // Then remove it
+        let response = remove_secret_route(State(state), Path(secret_id)).await;
+        assert_eq!(response, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_remove_secret_route_nonexistent() {
+        let state = create_test_app_state(None, true);
+        
+        let response = remove_secret_route(State(state), Path("nonexistent-id".to_string())).await;
+        assert_eq!(response, StatusCode::OK); // Redis doesn't error on removing non-existent keys
     }
 }

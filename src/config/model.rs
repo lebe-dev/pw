@@ -4,6 +4,21 @@ use serde::Deserialize;
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
+pub struct IpLimitEntry {
+    pub ip: String,
+    pub message_max_length: Option<u16>,
+    pub file_max_size: Option<u64>,
+}
+
+#[derive(PartialEq, Deserialize, Clone, Debug)]
+#[serde(rename_all = "kebab-case")]
+pub struct IpLimitsConfig {
+    pub enabled: bool,
+    pub whitelist: Vec<IpLimitEntry>,
+}
+
+#[derive(PartialEq, Deserialize, Clone, Debug)]
+#[serde(rename_all = "kebab-case")]
 pub struct AppConfig {
     pub listen: String,
 
@@ -23,6 +38,8 @@ pub struct AppConfig {
     pub encrypted_message_max_length: u64,
 
     pub redis_url: String,
+
+    pub ip_limits: Option<IpLimitsConfig>,
 }
 
 impl Display for AppConfig {
@@ -30,7 +47,8 @@ impl Display for AppConfig {
         write!(
             f,
             "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
-            file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {}, redis-url: '{}'",
+            file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {}, redis-url: '{}', \
+            ip-limits: {:?}",
             self.listen,
             self.log_level,
             self.log_target,
@@ -38,7 +56,8 @@ impl Display for AppConfig {
             self.file_upload_enabled,
             self.file_max_size,
             self.encrypted_message_max_length,
-            self.redis_url
+            self.redis_url,
+            self.ip_limits
         )
     }
 }

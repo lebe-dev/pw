@@ -16,14 +16,22 @@ use std::sync::Arc;
 
 pub mod config;
 pub mod dto;
+pub mod limits;
 pub mod logging;
+pub mod middleware;
 pub mod routes;
 pub mod secret;
 
 #[cfg(test)]
 pub mod tests;
 
-pub const VERSION: &str = "1.9.2 #1";
+#[cfg(test)]
+pub mod integration_tests;
+
+#[cfg(test)]
+pub mod security_tests;
+
+pub const VERSION: &str = "1.10.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 
@@ -31,6 +39,7 @@ static INDEX_HTML: &str = "index.html";
 pub struct AppState {
     pub config: AppConfig,
     pub secret_storage: RedisSecretStorage,
+    pub limits_service: limits::LimitsService,
 }
 
 #[tokio::main]
@@ -43,10 +52,12 @@ async fn main() -> anyhow::Result<()> {
     log4rs::init_config(logging_config).expect("unable to init logging configuration");
 
     let secret_storage = RedisSecretStorage::new(&app_config.redis_url);
+    let limits_service = limits::LimitsService::new(&app_config);
 
     let app_state = AppState {
         config: app_config.clone(),
         secret_storage,
+        limits_service,
     };
 
     let app = Router::new()
@@ -61,6 +72,9 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/api/version", get(get_version_route))
         .fallback(static_handler)
+        .layer(axum::middleware::from_fn(
+            middleware::ClientIpExtractor::middleware,
+        ))
         .with_state(Arc::new(app_state));
 
     let bind = format!("{}", app_config.listen);
