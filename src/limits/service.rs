@@ -22,10 +22,16 @@ pub struct LimitsService {
 
 impl LimitsService {
     pub fn new(config: &AppConfig) -> Self {
+        let encrypted_message_max_length = config.encrypted_message_max_length
+            .unwrap_or_else(|| Self::calculate_encrypted_max_length(
+                config.message_max_length,
+                config.file_max_size,
+            ));
+
         let default_limits = ClientLimits {
             message_max_length: config.message_max_length,
             file_max_size: config.file_max_size,
-            encrypted_message_max_length: config.encrypted_message_max_length,
+            encrypted_message_max_length,
         };
 
         let (ip_limits_enabled, ip_whitelist) = match &config.ip_limits {
@@ -102,10 +108,9 @@ impl LimitsService {
             .file_max_size
             .unwrap_or(self.default_limits.file_max_size);
 
-        let encrypted_message_max_length = self.calculate_encrypted_message_limit(
+        let encrypted_message_max_length = Self::calculate_encrypted_max_length(
             message_max_length,
-            self.default_limits.message_max_length,
-            self.default_limits.encrypted_message_max_length,
+            file_max_size,
         );
 
         ClientLimits {
@@ -115,18 +120,10 @@ impl LimitsService {
         }
     }
 
-    fn calculate_encrypted_message_limit(
-        &self,
-        message_length: u16,
-        default_message_length: u16,
-        default_encrypted_length: u64,
-    ) -> u64 {
-        if default_message_length == 0 {
-            return default_encrypted_length;
-        }
-
-        let ratio = default_encrypted_length as f64 / default_message_length as f64;
-        (message_length as f64 * ratio) as u64
+    fn calculate_encrypted_max_length(message_limit: u16, file_limit: u64) -> u64 {
+        let overhead_factor = 1.35; // 35% overhead for encryption
+        let max_content_size = std::cmp::max(message_limit as u64, file_limit);
+        (max_content_size as f64 * overhead_factor) as u64
     }
 }
 
@@ -143,7 +140,7 @@ mod tests {
             message_max_length: 1024,
             file_upload_enabled: true,
             file_max_size: 10485760,
-            encrypted_message_max_length: 15485760,
+            encrypted_message_max_length: None, // Will be calculated dynamically
             redis_url: "redis://localhost".to_string(),
             ip_limits: None,
         }
@@ -182,7 +179,8 @@ mod tests {
         let limits = service.get_limits_for_ip("192.168.1.100");
         assert_eq!(limits.message_max_length, 1024);
         assert_eq!(limits.file_max_size, 10485760);
-        assert_eq!(limits.encrypted_message_max_length, 15485760);
+        // Dynamic calculation: max(1024, 10485760) * 1.35 = 14155776
+        assert_eq!(limits.encrypted_message_max_length, 14155776);
     }
 
     #[test]
@@ -194,7 +192,8 @@ mod tests {
         assert_eq!(limits.message_max_length, 8192);
         assert_eq!(limits.file_max_size, 104857600);
 
-        let expected_encrypted = (8192.0 * (15485760.0 / 1024.0)) as u64;
+        // Dynamic calculation: max(8192, 104857600) * 1.35 = 141557760
+        let expected_encrypted = (104857600.0 * 1.35) as u64;
         assert_eq!(limits.encrypted_message_max_length, expected_encrypted);
     }
 
@@ -207,7 +206,8 @@ mod tests {
         assert_eq!(limits.message_max_length, 4096);
         assert_eq!(limits.file_max_size, 10485760); // default
 
-        let expected_encrypted = (4096.0 * (15485760.0 / 1024.0)) as u64;
+        // Dynamic calculation: max(4096, 10485760) * 1.35 = 14155776
+        let expected_encrypted = (10485760.0 * 1.35) as u64;
         assert_eq!(limits.encrypted_message_max_length, expected_encrypted);
     }
 
@@ -219,7 +219,9 @@ mod tests {
         let limits = service.get_limits_for_ip("172.16.1.5");
         assert_eq!(limits.message_max_length, 1024); // default
         assert_eq!(limits.file_max_size, 209715200);
-        assert_eq!(limits.encrypted_message_max_length, 15485760); // default ratio
+        // Dynamic calculation: max(1024, 209715200) * 1.35 = 283115520
+        let expected_encrypted = (209715200.0 * 1.35) as u64;
+        assert_eq!(limits.encrypted_message_max_length, expected_encrypted);
     }
 
     #[test]
@@ -230,7 +232,8 @@ mod tests {
         let limits = service.get_limits_for_ip("203.0.113.1");
         assert_eq!(limits.message_max_length, 1024);
         assert_eq!(limits.file_max_size, 10485760);
-        assert_eq!(limits.encrypted_message_max_length, 15485760);
+        // Dynamic calculation: max(1024, 10485760) * 1.35 = 14155776
+        assert_eq!(limits.encrypted_message_max_length, 14155776);
     }
 
     #[test]
@@ -241,7 +244,8 @@ mod tests {
         let limits = service.get_limits_for_ip("invalid-ip");
         assert_eq!(limits.message_max_length, 1024);
         assert_eq!(limits.file_max_size, 10485760);
-        assert_eq!(limits.encrypted_message_max_length, 15485760);
+        // Dynamic calculation: max(1024, 10485760) * 1.35 = 14155776
+        assert_eq!(limits.encrypted_message_max_length, 14155776);
     }
 
     #[test]
@@ -263,17 +267,20 @@ mod tests {
 
     #[test]
     fn test_encrypted_message_calculation() {
-        let config = create_test_config();
-        let service = LimitsService::new(&config);
-
-        // Normal case
-        let result = service.calculate_encrypted_message_limit(2048, 1024, 15485760);
-        let expected = (2048.0 * (15485760.0 / 1024.0)) as u64;
+        // Test the new dynamic calculation method
+        let result = LimitsService::calculate_encrypted_max_length(2048, 104857600);
+        let expected = (104857600.0 * 1.35) as u64; // Uses the larger value (file size)
         assert_eq!(result, expected);
 
-        // Zero default message length edge case
-        let result = service.calculate_encrypted_message_limit(2048, 0, 15485760);
-        assert_eq!(result, 15485760);
+        // Test when message limit is larger
+        let result = LimitsService::calculate_encrypted_max_length(65535, 1000);
+        let expected = (65535.0 * 1.35) as u64; // Uses the larger value (message length)
+        assert_eq!(result, expected);
+
+        // Test equal values
+        let result = LimitsService::calculate_encrypted_max_length(1000, 1000);
+        let expected = (1000.0 * 1.35) as u64;
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -364,8 +371,9 @@ mod tests {
                 "Failed for IP: {}",
                 invalid_ip
             );
+            // Dynamic calculation: max(1024, 10485760) * 1.35 = 14155776
             assert_eq!(
-                limits.encrypted_message_max_length, 15485760,
+                limits.encrypted_message_max_length, 14155776,
                 "Failed for IP: {}",
                 invalid_ip
             );
@@ -477,22 +485,20 @@ mod tests {
 
     #[test]
     fn test_encrypted_message_calculation_edge_cases() {
-        let config = create_test_config();
-        let service = LimitsService::new(&config);
-
         // Maximum u16 message length
-        let result = service.calculate_encrypted_message_limit(u16::MAX, 1024, 15485760);
-        let expected = (u16::MAX as f64 * (15485760.0 / 1024.0)) as u64;
+        let result = LimitsService::calculate_encrypted_max_length(u16::MAX, 1024);
+        let expected = (u16::MAX as f64 * 1.35) as u64;
         assert_eq!(result, expected);
 
         // Minimum message length
-        let result = service.calculate_encrypted_message_limit(1, 1024, 15485760);
-        let expected = (1.0 * (15485760.0 / 1024.0)) as u64;
+        let result = LimitsService::calculate_encrypted_max_length(1, 1024);
+        let expected = (1024.0 * 1.35) as u64; // Uses larger value (file_limit)
         assert_eq!(result, expected);
 
-        // When message length equals default
-        let result = service.calculate_encrypted_message_limit(1024, 1024, 15485760);
-        assert_eq!(result, 15485760);
+        // Zero values
+        let result = LimitsService::calculate_encrypted_max_length(0, 0);
+        let expected = (0.0 * 1.35) as u64;
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -526,7 +532,8 @@ mod tests {
         let limits = service.get_limits_for_ip("192.168.1.100");
         assert_eq!(limits.message_max_length, 1024);
         assert_eq!(limits.file_max_size, 10485760);
-        assert_eq!(limits.encrypted_message_max_length, 15485760);
+        // Dynamic calculation: max(1024, 10485760) * 1.35 = 14155776
+        assert_eq!(limits.encrypted_message_max_length, 14155776);
     }
 
     #[test]

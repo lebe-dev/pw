@@ -34,8 +34,8 @@ pub struct AppConfig {
     /// File max size
     pub file_max_size: u64,
 
-    /// Encrypted message max length.
-    pub encrypted_message_max_length: u64,
+    /// Encrypted message max length. If not provided, calculated dynamically.
+    pub encrypted_message_max_length: Option<u64>,
 
     pub redis_url: String,
 
@@ -47,7 +47,7 @@ impl Display for AppConfig {
         write!(
             f,
             "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
-            file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {}, redis-url: '{}', \
+            file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {:?}, redis-url: '{}', \
             ip-limits: {:?}",
             self.listen,
             self.log_level,

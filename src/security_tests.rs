@@ -49,7 +49,7 @@ mod tests {
             message_max_length: 1024,
             file_upload_enabled: true,
             file_max_size: 10485760,
-            encrypted_message_max_length: 15485760,
+            encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: Some(ip_limits),
         };
@@ -356,7 +356,7 @@ mod tests {
             message_max_length: 1024,
             file_upload_enabled: true,
             file_max_size: 10485760,
-            encrypted_message_max_length: 15485760,
+            encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: Some(IpLimitsConfig {
                 enabled: true,
@@ -375,7 +375,7 @@ mod tests {
             message_max_length: 2048,
             file_upload_enabled: true,
             file_max_size: 20971520,
-            encrypted_message_max_length: 31457280,
+            encrypted_message_max_length: Some(31457280),
             redis_url: "redis://localhost".to_string(),
             ip_limits: Some(IpLimitsConfig {
                 enabled: true,

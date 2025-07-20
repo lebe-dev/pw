@@ -28,7 +28,7 @@ mod tests {
             message_max_length: 1024,
             file_upload_enabled: true,
             file_max_size: 10485760,
-            encrypted_message_max_length: 15485760,
+            encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: ip_limits_config,
         };
@@ -215,7 +215,7 @@ mod tests {
         let app_state = create_test_app_state(Some(ip_limits));
         let app = create_test_router(app_state);
 
-        // Calculate expected encrypted limit: 8192 * (15485760 / 1024) ≈ 123906048
+        // Dynamic calculation: max(8192, 104857600) * 1.35 = 141557760
         let secret = create_test_secret(SecretContentType::Text, 100_000_000); // Within increased limit
 
         let request = Request::builder()

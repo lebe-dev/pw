@@ -90,7 +90,7 @@ mod tests {
             message_max_length: 1024,
             file_upload_enabled,
             file_max_size: 10485760,
-            encrypted_message_max_length: 15485760,
+            encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: ip_limits_config,
         };
@@ -324,7 +324,7 @@ mod tests {
             whitelist: vec![
                 IpLimitEntry {
                     ip: "192.168.1.100".to_string(),
-                    message_max_length: Some(2048), // 2048 * (15485760 / 1024) = 30971520
+                    message_max_length: Some(2048),
                     file_max_size: Some(104857600),
                 },
             ],
@@ -333,8 +333,11 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("192.168.1.100".parse().unwrap());
         
+        // Dynamic calculation: max(2048, 104857600) * 1.35 = 141557760
+        let encrypted_limit = (104857600.0 * 1.35) as usize;
+        
         // Test exactly at the limit
-        let secret = create_test_secret(SecretContentType::Text, 30971520);
+        let secret = create_test_secret(SecretContentType::Text, encrypted_limit);
 
         let response = store_secret_route(
             State(state.clone()),
@@ -345,7 +348,7 @@ mod tests {
         assert_eq!(response, StatusCode::OK);
 
         // Test just over the limit
-        let secret_over = create_test_secret(SecretContentType::Text, 30971521);
+        let secret_over = create_test_secret(SecretContentType::Text, encrypted_limit + 1);
 
         let response_over = store_secret_route(
             State(state),
@@ -372,7 +375,7 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("2001:db8::1".parse().unwrap());
         
-        // Calculate expected encrypted limit: 16384 * (15485760 / 1024) ≈ 247812096
+        // Dynamic calculation: max(16384, 209715200) * 1.35 = 283115520
         let secret = create_test_secret(SecretContentType::Text, 200_000_000);
 
         let response = store_secret_route(
