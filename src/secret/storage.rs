@@ -2,8 +2,16 @@ use crate::secret::model::{Secret, SecretDownloadPolicy, SecretTTL};
 use anyhow::{Context, anyhow};
 use log::{debug, error, info};
 use redis::{Commands, ExistenceCheck, SetExpiry, SetOptions};
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 pub const DEFAULT_REDIS_CNN_URL: &str = "redis://127.0.0.1";
+
+pub trait SecretStorage: Send + Sync {
+    fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()>;
+    fn load(&self, id: &str) -> anyhow::Result<Option<Secret>>;
+    fn remove(&self, id: &str) -> anyhow::Result<()>;
+}
 
 #[derive(Clone)]
 pub struct RedisSecretStorage {
@@ -17,8 +25,10 @@ impl RedisSecretStorage {
             cnn_url: cnn_url.to_string(),
         }
     }
+}
 
-    pub fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()> {
+impl SecretStorage for RedisSecretStorage {
+    fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()> {
         info!("store secret: {}", secret);
         debug!("cnn url: {}", self.cnn_url);
         let client = redis::Client::open(&*self.cnn_url)?;
@@ -49,7 +59,7 @@ impl RedisSecretStorage {
         Ok(())
     }
 
-    pub fn load(&self, id: &str) -> anyhow::Result<Option<Secret>> {
+    fn load(&self, id: &str) -> anyhow::Result<Option<Secret>> {
         info!("load secret by id '{id}'..");
 
         let client = redis::Client::open(&*self.cnn_url)?;
@@ -82,7 +92,7 @@ impl RedisSecretStorage {
         }
     }
 
-    pub fn remove(&self, id: &str) -> anyhow::Result<()> {
+    fn remove(&self, id: &str) -> anyhow::Result<()> {
         info!("remove secret by id '{id}'..");
 
         let client = redis::Client::open(&*self.cnn_url)?;
@@ -103,10 +113,50 @@ impl RedisSecretStorage {
     }
 }
 
+#[derive(Clone)]
+pub struct MockSecretStorage {
+    store: Arc<Mutex<HashMap<String, Secret>>>,
+}
+
+impl MockSecretStorage {
+    pub fn new() -> Self {
+        Self {
+            store: Arc::new(Mutex::new(HashMap::new())),
+        }
+    }
+}
+
+impl SecretStorage for MockSecretStorage {
+    fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()> {
+        let mut store = self.store.lock().unwrap();
+        store.insert(id.to_string(), secret.clone());
+        Ok(())
+    }
+
+    fn load(&self, id: &str) -> anyhow::Result<Option<Secret>> {
+        let mut store = self.store.lock().unwrap();
+        if let Some(secret) = store.get(id) {
+            let secret = secret.clone();
+            if secret.download_policy == SecretDownloadPolicy::OneTime {
+                store.remove(id);
+            }
+            Ok(Some(secret))
+        } else {
+            Ok(None)
+        }
+    }
+
+    fn remove(&self, id: &str) -> anyhow::Result<()> {
+        let mut store = self.store.lock().unwrap();
+        store.remove(id);
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::secret::model::SecretDownloadPolicy;
-    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
+    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage, SecretStorage};
     use crate::tests::secret::get_sample_secret;
     use crate::tests::string::get_random_string;
 

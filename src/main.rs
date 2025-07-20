@@ -1,6 +1,6 @@
 use crate::config::model::AppConfig;
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
-use crate::secret::storage::RedisSecretStorage;
+use crate::secret::storage::{RedisSecretStorage, SecretStorage};
 use axum::Router;
 use axum::extract::DefaultBodyLimit;
 use axum::http::{StatusCode, Uri, header};
@@ -35,10 +35,9 @@ pub const VERSION: &str = "1.10.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 
-#[derive(Clone)]
 pub struct AppState {
     pub config: AppConfig,
-    pub secret_storage: RedisSecretStorage,
+    pub secret_storage: Box<dyn SecretStorage + Send + Sync>,
     pub limits_service: limits::LimitsService,
 }
 
@@ -56,7 +55,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app_state = AppState {
         config: app_config.clone(),
-        secret_storage,
+        secret_storage: Box::new(secret_storage),
         limits_service,
     };
 

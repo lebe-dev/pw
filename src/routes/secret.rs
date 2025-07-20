@@ -28,7 +28,7 @@ pub async fn store_secret_route(
     );
 
     match store_secret(
-        &state.secret_storage,
+        state.secret_storage.as_ref(),
         &secret,
         client_limits.encrypted_message_max_length,
     ) {
@@ -79,7 +79,7 @@ mod tests {
     use crate::limits::LimitsService;
     use crate::middleware::client_ip::ClientIp;
     use crate::secret::model::{SecretTTL, SecretDownloadPolicy, SecretFileMetadata};
-    use crate::secret::storage::RedisSecretStorage;
+    use crate::secret::storage::MockSecretStorage;
     use std::sync::Arc;
 
     fn create_test_app_state(ip_limits_config: Option<IpLimitsConfig>, file_upload_enabled: bool) -> Arc<AppState> {
@@ -96,12 +96,12 @@ mod tests {
         };
 
         let limits_service = LimitsService::new(&config);
-        let secret_storage = RedisSecretStorage::new("redis://localhost");
+        let secret_storage = MockSecretStorage::new();
 
         Arc::new(AppState {
             config,
             limits_service,
-            secret_storage,
+            secret_storage: Box::new(secret_storage),
         })
     }
 

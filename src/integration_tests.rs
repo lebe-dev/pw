@@ -5,7 +5,7 @@ mod tests {
     use crate::middleware::client_ip::ClientIpExtractor;
     use crate::routes::{config::get_config_route, secret::{store_secret_route, get_secret_route}};
     use crate::secret::model::{Secret, SecretContentType, SecretTTL, SecretDownloadPolicy, SecretFileMetadata};
-    use crate::secret::storage::RedisSecretStorage;
+    use crate::secret::storage::MockSecretStorage;
     use crate::dto::model::AppConfigDto;
     use crate::AppState;
     use axum::{
@@ -34,12 +34,12 @@ mod tests {
         };
 
         let limits_service = LimitsService::new(&config);
-        let secret_storage = RedisSecretStorage::new("redis://localhost");
+        let secret_storage = MockSecretStorage::new();
 
         Arc::new(AppState {
             config,
             limits_service,
-            secret_storage,
+            secret_storage: Box::new(secret_storage),
         })
     }
 

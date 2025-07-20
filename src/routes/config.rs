@@ -40,7 +40,7 @@ mod tests {
     use crate::config::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
     use crate::limits::LimitsService;
     use crate::middleware::client_ip::ClientIp;
-    use crate::secret::storage::RedisSecretStorage;
+    use crate::secret::storage::MockSecretStorage;
     use axum::http::Request as HttpRequest;
     use std::net::IpAddr;
     use std::sync::Arc;
@@ -59,12 +59,12 @@ mod tests {
         };
 
         let limits_service = LimitsService::new(&config);
-        let secret_storage = RedisSecretStorage::new("redis://localhost");
+        let secret_storage = MockSecretStorage::new();
 
         Arc::new(AppState {
             config,
             limits_service,
-            secret_storage,
+            secret_storage: Box::new(secret_storage),
         })
     }
 
@@ -279,12 +279,12 @@ mod tests {
         };
 
         let limits_service = LimitsService::new(&base_config);
-        let secret_storage = RedisSecretStorage::new("redis://localhost");
+        let secret_storage = MockSecretStorage::new();
 
         let state = Arc::new(AppState {
             config: base_config,
             limits_service,
-            secret_storage,
+            secret_storage: Box::new(secret_storage),
         });
 
         let request = create_request_with_ip("192.168.1.100".parse().unwrap());
