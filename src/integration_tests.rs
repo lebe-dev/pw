@@ -207,7 +207,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "192.168.1.100".to_string(),
                     message_max_length: Some(8192), // 8x default
-                    file_max_size: Some(104857600),
+                    file_max_size: Some(4096000), // 4MB instead of 100MB
                 },
             ],
         };
@@ -215,8 +215,8 @@ mod tests {
         let app_state = create_test_app_state(Some(ip_limits));
         let app = create_test_router(app_state);
 
-        // Dynamic calculation: max(8192, 104857600) * 1.35 = 141557760
-        let secret = create_test_secret(SecretContentType::Text, 100_000_000); // Within increased limit
+        // Dynamic calculation: max(8192, 4096000) * 1.35 = 5529600
+        let secret = create_test_secret(SecretContentType::Text, 3_000_000); // Within increased limit (3MB)
 
         let request = Request::builder()
             .uri("/api/secret")
@@ -373,7 +373,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "192.168.1.100".to_string(),
                     message_max_length: Some(8192),
-                    file_max_size: Some(104857600),
+                    file_max_size: Some(4096000), // 4MB instead of 100MB
                 },
             ],
         };
@@ -397,7 +397,7 @@ mod tests {
 
         // Step 2: Store secret
         let app = create_test_router(app_state.clone());
-        let secret = create_test_secret(SecretContentType::Text, 50_000_000); // Within increased limit
+        let secret = create_test_secret(SecretContentType::Text, 3_000_000); // Within increased limit (3MB)
         let secret_id = secret.id.clone();
 
         let store_request = Request::builder()

@@ -158,7 +158,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "192.168.1.100".to_string(),
                     message_max_length: Some(8192), // Increased from 1024
-                    file_max_size: Some(104857600),
+                    file_max_size: Some(4096000), // 4MB instead of 100MB
                 },
             ],
         };
@@ -166,8 +166,8 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("192.168.1.100".parse().unwrap());
         
-        // Calculate expected encrypted limit: 8192 * (15485760 / 1024) ≈ 123906048
-        let secret = create_test_secret(SecretContentType::Text, 100_000_000); // Within increased limit
+        // Expected: max(8192, 4096000) * 1.35 = 4096000 * 1.35 = 5529600
+        let secret = create_test_secret(SecretContentType::Text, 3_000_000); // Within increased limit (3MB)
 
         let response = store_secret_route(
             State(state),
@@ -186,7 +186,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "192.168.0.0/16".to_string(),
                     message_max_length: Some(4096),
-                    file_max_size: Some(52428800),
+                    file_max_size: Some(2048000), // 2MB instead of 50MB
                 },
             ],
         };
@@ -194,8 +194,8 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("192.168.1.100".parse().unwrap()); // Matches CIDR
         
-        // Calculate expected encrypted limit: 4096 * (15485760 / 1024) ≈ 61953024
-        let secret = create_test_secret(SecretContentType::Text, 50_000_000); // Within CIDR limit
+        // Expected: max(4096, 2048000) * 1.35 = 2048000 * 1.35 = 2764800
+        let secret = create_test_secret(SecretContentType::Text, 1_500_000); // Within CIDR limit (1.5MB)
 
         let response = store_secret_route(
             State(state),
@@ -325,7 +325,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "192.168.1.100".to_string(),
                     message_max_length: Some(2048),
-                    file_max_size: Some(104857600),
+                    file_max_size: Some(1024000), // 1MB instead of 100MB
                 },
             ],
         };
@@ -333,8 +333,8 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("192.168.1.100".parse().unwrap());
         
-        // Dynamic calculation: max(2048, 104857600) * 1.35 = 141557760
-        let encrypted_limit = (104857600.0 * 1.35) as usize;
+        // Dynamic calculation: max(2048, 1024000) * 1.35 = 1382400
+        let encrypted_limit = (1024000.0 * 1.35) as usize;
         
         // Test exactly at the limit
         let secret = create_test_secret(SecretContentType::Text, encrypted_limit);
@@ -367,7 +367,7 @@ mod tests {
                 IpLimitEntry {
                     ip: "2001:db8::/32".to_string(),
                     message_max_length: Some(16384),
-                    file_max_size: Some(209715200),
+                    file_max_size: Some(2048000), // 2MB instead of 200MB
                 },
             ],
         };
@@ -375,8 +375,8 @@ mod tests {
         let state = create_test_app_state(Some(ip_limits), true);
         let client_ip = ClientIp("2001:db8::1".parse().unwrap());
         
-        // Dynamic calculation: max(16384, 209715200) * 1.35 = 283115520
-        let secret = create_test_secret(SecretContentType::Text, 200_000_000);
+        // Dynamic calculation: max(16384, 2048000) * 1.35 = 2764800
+        let secret = create_test_secret(SecretContentType::Text, 1_500_000); // 1.5MB
 
         let response = store_secret_route(
             State(state),
