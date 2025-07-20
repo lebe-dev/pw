@@ -3,6 +3,6 @@ services:
     container_name: pw-redis
     image: redis:8.0.2-alpine3.21
     restart: always
-    command: 'redis-server --save "" --appendonly no'
+    command: 'redis-server --save "" --appendonly no --maxmemory 64mb'
     ports:
       - "6379:6379"
