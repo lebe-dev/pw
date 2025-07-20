@@ -13,3 +13,9 @@ data:
   PW_ENCRYPTED_MESSAGE_MAX_LENGTH: {{ .Values.pw.config.encryptedMessageMaxLength | quote }}
   PW_FILE_UPLOAD_ENABLED: {{ .Values.pw.config.fileUploadEnabled | quote }}
   PW_FILE_MAX_SIZE: {{ .Values.pw.config.fileMaxSize | quote }}
+  {{- if .Values.pw.config.ipLimits }}
+  PW_IP_LIMITS_ENABLED: {{ .Values.pw.config.ipLimits.enabled | quote }}
+  {{- if .Values.pw.config.ipLimits.whitelist }}
+  PW_IP_LIMITS_WHITELIST: {{ .Values.pw.config.ipLimits.whitelist | toJson | quote }}
+  {{- end }}
+  {{- end }}

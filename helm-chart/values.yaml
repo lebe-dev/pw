@@ -18,6 +18,21 @@ pw:
     encryptedMessageMaxLength: "1548576"
     fileUploadEnabled: "true"
     fileMaxSize: "1048576"
+    
+    # IP whitelist configuration
+    ipLimits:
+      enabled: false
+      whitelist: []
+      # Example configuration:
+      # enabled: true
+      # whitelist:
+      #   - ip: "192.168.1.100"
+      #     messageMaxLength: 8192
+      #     fileMaxSize: 104857600
+      #   - ip: "10.0.0.0/8"
+      #     messageMaxLength: 4096
+      #   - ip: "172.16.1.5"
+      #     fileMaxSize: 209715200
 
   service:
     type: ClusterIP
@@ -85,7 +100,11 @@ serviceAccount:
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Client-IP $remote_addr;
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
