@@ -1,4 +1,4 @@
-FROM node:22.16.0-alpine3.22 AS frontend-build
+FROM node:22.17.1-alpine3.22 AS frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
@@ -10,7 +10,7 @@ RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
     yarn build
 
-FROM rust:1.87.0-alpine3.21 AS app-build
+FROM rust:1.88.0-alpine3.22 AS app-build
 
 WORKDIR /build
 
@@ -32,7 +32,7 @@ RUN cargo test && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.22.0
+FROM alpine:3.22.1
 
 WORKDIR /app
 
