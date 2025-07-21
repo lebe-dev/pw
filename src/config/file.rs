@@ -325,7 +325,16 @@ mod tests {
             env::remove_var("PW_IP_LIMITS_ENABLED");
             env::remove_var("PW_IP_LIMITS_WHITELIST");
             env::set_var("PW_IP_LIMITS_ENABLED", "false");
-            env::set_var("PW_IP_LIMITS_WHITELIST", r#"[{"ip": "203.0.113.1"}]"#);
+            env::set_var(
+                "PW_IP_LIMITS_WHITELIST",
+                r#"[
+                    {
+                        "ip": "203.0.113.1",
+                        "message-max-length": 4096,
+                        "file-max-size": 104857600
+                    }
+                ]"#,
+            );
         }
 
         let yaml_config = Some(IpLimitsConfig {
@@ -340,11 +349,11 @@ mod tests {
         let result = get_ip_limits_config(yaml_config).unwrap().unwrap();
 
         // Environment variables should override YAML
-        assert_eq!(result.enabled, false);
+        assert_eq!(result.enabled, false); // env overrides yaml (true -> false)
         assert_eq!(result.whitelist.len(), 1);
-        assert_eq!(result.whitelist[0].ip, "203.0.113.1");
-        assert_eq!(result.whitelist[0].message_max_length, None);
-        assert_eq!(result.whitelist[0].file_max_size, None);
+        assert_eq!(result.whitelist[0].ip, "203.0.113.1"); // env overrides yaml IP
+        assert_eq!(result.whitelist[0].message_max_length, Some(4096)); // env overrides yaml (2048 -> 4096)
+        assert_eq!(result.whitelist[0].file_max_size, Some(104857600)); // env overrides yaml (52428800 -> 104857600)
 
         unsafe {
             env::remove_var("PW_IP_LIMITS_ENABLED");
@@ -596,6 +605,104 @@ mod tests {
 
         unsafe {
             env::remove_var("TEST_VAR");
+        }
+    }
+
+    #[test]
+    #[serial]
+    fn test_different_message_and_file_limits() {
+        unsafe {
+            env::remove_var("PW_IP_LIMITS_ENABLED");
+            env::remove_var("PW_IP_LIMITS_WHITELIST");
+            env::set_var(
+                "PW_IP_LIMITS_WHITELIST",
+                r#"[
+                {
+                    "ip": "192.168.1.100",
+                    "message-max-length": 1024,
+                    "file-max-size": 10485760
+                },
+                {
+                    "ip": "10.0.0.1",
+                    "message-max-length": 4096,
+                    "file-max-size": 52428800
+                },
+                {
+                    "ip": "172.16.0.1",
+                    "message-max-length": 8192,
+                    "file-max-size": 104857600
+                }
+            ]"#,
+            );
+        }
+
+        let result = get_ip_limits_config(None).unwrap().unwrap();
+        assert_eq!(result.whitelist.len(), 3);
+
+        // Verify different message and file size combinations
+        assert_eq!(result.whitelist[0].ip, "192.168.1.100");
+        assert_eq!(result.whitelist[0].message_max_length, Some(1024));
+        assert_eq!(result.whitelist[0].file_max_size, Some(10485760)); // 10 MB
+
+        assert_eq!(result.whitelist[1].ip, "10.0.0.1");
+        assert_eq!(result.whitelist[1].message_max_length, Some(4096));
+        assert_eq!(result.whitelist[1].file_max_size, Some(52428800)); // 50 MB
+
+        assert_eq!(result.whitelist[2].ip, "172.16.0.1");
+        assert_eq!(result.whitelist[2].message_max_length, Some(8192));
+        assert_eq!(result.whitelist[2].file_max_size, Some(104857600)); // 100 MB
+
+        unsafe {
+            env::remove_var("PW_IP_LIMITS_WHITELIST");
+        }
+    }
+
+    #[test]
+    #[serial]
+    fn test_mixed_limit_configurations() {
+        unsafe {
+            env::remove_var("PW_IP_LIMITS_ENABLED");
+            env::remove_var("PW_IP_LIMITS_WHITELIST");
+            env::set_var(
+                "PW_IP_LIMITS_WHITELIST",
+                r#"[
+                {
+                    "ip": "192.168.1.50",
+                    "message-max-length": 2048
+                },
+                {
+                    "ip": "192.168.1.51",
+                    "file-max-size": 26214400
+                },
+                {
+                    "ip": "192.168.1.52",
+                    "message-max-length": 16384,
+                    "file-max-size": 209715200
+                }
+            ]"#,
+            );
+        }
+
+        let result = get_ip_limits_config(None).unwrap().unwrap();
+        assert_eq!(result.whitelist.len(), 3);
+
+        // Entry with only message limit
+        assert_eq!(result.whitelist[0].ip, "192.168.1.50");
+        assert_eq!(result.whitelist[0].message_max_length, Some(2048));
+        assert_eq!(result.whitelist[0].file_max_size, None);
+
+        // Entry with only file limit
+        assert_eq!(result.whitelist[1].ip, "192.168.1.51");
+        assert_eq!(result.whitelist[1].message_max_length, None);
+        assert_eq!(result.whitelist[1].file_max_size, Some(26214400)); // 25 MB
+
+        // Entry with both limits
+        assert_eq!(result.whitelist[2].ip, "192.168.1.52");
+        assert_eq!(result.whitelist[2].message_max_length, Some(16384));
+        assert_eq!(result.whitelist[2].file_max_size, Some(209715200)); // 200 MB
+
+        unsafe {
+            env::remove_var("PW_IP_LIMITS_WHITELIST");
         }
     }
 }
