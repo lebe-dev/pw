@@ -3,10 +3,11 @@ use std::fmt::{Display, Formatter};
 use serde::Deserialize;
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]
-#[serde(rename_all = "kebab-case")]
 pub struct IpLimitEntry {
     pub ip: String,
+    #[serde(alias = "message-max-length", alias = "messageMaxLength")]
     pub message_max_length: Option<u16>,
+    #[serde(alias = "file-max-size", alias = "fileMaxSize")]
     pub file_max_size: Option<u64>,
 }
 
