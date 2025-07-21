@@ -42,7 +42,7 @@ pub fn store_secret(
 #[cfg(test)]
 mod tests {
     use crate::secret::model::{SecretDownloadPolicy, SecretTTL};
-    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage, SecretStorage};
+    use crate::secret::storage::{DEFAULT_REDIS_CNN_URL, RedisSecretStorage};
     use crate::secret::usecase::store_secret;
     use crate::tests::secret::get_sample_secret;
     use crate::tests::string::get_random_string;
