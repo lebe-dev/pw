@@ -5,7 +5,7 @@ global:
 pw:
   image:
     repository: tinyops/pw
-    tag: "1.9.2"
+    tag: "1.10.0"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
@@ -17,7 +17,7 @@ pw:
     messageMaxLength: "4096"
     fileUploadEnabled: "true"
     fileMaxSize: "1048576"
-    
+
     # IP whitelist configuration
     ipLimits:
       enabled: false
