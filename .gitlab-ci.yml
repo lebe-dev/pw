@@ -6,9 +6,9 @@ build-image:
 
   when: manual
 
-  image: docker:28.1.1
+  image: docker:28.3.3
   services:
-    - docker:28.1.1-dind-alpine3.21
+    - docker:28.3.3-dind-alpine3.22
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
