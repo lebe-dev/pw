@@ -1,4 +1,4 @@
-FROM node:22.17.1-alpine3.22 AS frontend-build
+FROM node:22.19.0-alpine3.22 AS frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
@@ -10,12 +10,12 @@ RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
     yarn build
 
-FROM rust:1.88.0-alpine3.22 AS app-build
+FROM rust:1.89.0-alpine3.22 AS app-build
 
 WORKDIR /build
 
 RUN mkdir -p /build/static && \
-    apk add nodejs npm musl-dev elfutils xz wget pkgconfig libressl-dev perl make && \
+    apk add nodejs npm musl-dev elfutils xz wget pkgconfig libressl-dev perl make mold && \
     wget https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz && \
     unxz upx-4.0.2-amd64_linux.tar.xz && tar xvf upx-4.0.2-amd64_linux.tar && \
     cp upx-4.0.2-amd64_linux/upx /usr/bin/upx && chmod +x /usr/bin/upx
