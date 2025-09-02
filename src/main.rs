@@ -31,7 +31,7 @@ pub mod integration_tests;
 #[cfg(test)]
 pub mod security_tests;
 
-pub const VERSION: &str = "1.10.0 #1";
+pub const VERSION: &str = "1.10.2 #1";
 
 static INDEX_HTML: &str = "index.html";
 
@@ -83,7 +83,12 @@ async fn main() -> anyhow::Result<()> {
     println!("PW v{VERSION}");
     println!("URL: http://{bind}");
 
-    axum::serve(listener, app.into_make_service_with_connect_info::<std::net::SocketAddr>()).await.unwrap();
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<std::net::SocketAddr>(),
+    )
+    .await
+    .unwrap();
 
     Ok(())
 }
