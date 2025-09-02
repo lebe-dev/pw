@@ -2,8 +2,8 @@ apiVersion: v2
 name: pw
 description: A Helm chart for PW - Secure Secret Share Service
 type: application
-version: 1.0.5
-appVersion: "1.10.1"
+version: 1.0.6
+appVersion: "1.10.2"
 keywords:
   - secret-sharing
   - security
