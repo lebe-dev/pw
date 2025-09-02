@@ -1,7 +1,5 @@
-#[target.x86_64-unknown-linux-gnu]
-#rustflags = [
-#    "-C", "link-arg=-fuse-ld=mold",
-#]
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]
 
 [target.stable-aarch64-apple-darwin]
 rustflags = ["-C", "link-arg=-fuse-ld=mold"]
