@@ -99,13 +99,14 @@ serviceAccount:
 ingress:
   enabled: true
   className: "nginx"
-  annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Client-IP $remote_addr;
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations: {}
+  # annotations:
+  #   nginx.ingress.kubernetes.io/configuration-snippet: |
+  #     proxy_set_header X-Real-IP $remote_addr;
+  #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  #     proxy_set_header X-Client-IP $remote_addr;
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
   hosts:
     - host: pw.company.com
       paths:
