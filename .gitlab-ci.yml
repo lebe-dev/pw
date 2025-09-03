@@ -36,8 +36,10 @@ publish-image:
   script:
     - APP_VERSION=`cat Cargo.toml | grep "version = " | head -1 | cut -d "=" -f2 | tr -d '"' | tr -d ' '`
     - DOCKER_IMAGE=$CI_REGISTRY_IMAGE:$APP_VERSION
+    - docker pull $DOCKER_IMAGE
     - docker tag $DOCKER_IMAGE tinyops/pw:$APP_VERSION
     - docker push tinyops/pw:$APP_VERSION
+    - docker rmi $DOCKER_IMAGE || true
 
   tags:
     - tinybull
