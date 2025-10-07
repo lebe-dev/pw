@@ -54,7 +54,7 @@ pw:
 redis:
   image:
     repository: redis
-    tag: "8.2.1-alpine3.22"
+    tag: "8.2.2-alpine3.22"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
