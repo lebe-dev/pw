@@ -49,8 +49,6 @@ pub enum ValidationError {
 /// Configuration validation limits
 const MAX_MESSAGE_LENGTH: u16 = 65535; // Maximum u16 value
 const MAX_FILE_SIZE: u64 = 10_737_418_240; // 10GB
-const MIN_MESSAGE_LENGTH: u16 = 1;
-const MIN_FILE_SIZE: u64 = 1;
 
 /// Validates IP limits configuration
 pub fn validate_ip_limits_config(config: &IpLimitsConfig) -> Result<(), Vec<ValidationError>> {
@@ -253,6 +251,9 @@ pub fn format_validation_errors(errors: &[ValidationError]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const MIN_MESSAGE_LENGTH: u16 = 1;
+    const MIN_FILE_SIZE: u64 = 1;
 
     fn create_test_entry(ip: &str) -> IpLimitEntry {
         IpLimitEntry {
