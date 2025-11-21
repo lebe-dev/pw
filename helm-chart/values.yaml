@@ -5,7 +5,7 @@ global:
 pw:
   image:
     repository: tinyops/pw
-    tag: "1.10.2"
+    tag: "1.10.3"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
@@ -54,7 +54,7 @@ pw:
 redis:
   image:
     repository: redis
-    tag: "8.2.1-alpine3.22"
+    tag: "8.4.0-alpine3.22"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
