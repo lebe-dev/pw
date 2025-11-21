@@ -36,7 +36,7 @@ FROM alpine:3.22.2
 
 WORKDIR /app
 
-RUN apk add libressl-dev && \
+RUN apk update && \
     adduser -h /app -D pw && \
     chmod 700 /app && \
     chown -R pw: /app
