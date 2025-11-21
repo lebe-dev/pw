@@ -6,7 +6,7 @@
 
 **2. Create app directory**
 
-```shell
+```bash
 mkdir -p /opt/pw
 ```
 
@@ -14,7 +14,7 @@ mkdir -p /opt/pw
 
 **4. Run**
 
-```shell
+```bash
 docker compose up -d
 ```
 

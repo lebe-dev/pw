@@ -15,12 +15,10 @@
 - Backend returns encrypted data to client side (browser)
 - Browser decrypt data and shows to end user
 
-## Why not distroless?
-
-Because it has [issue with libc6](https://github.com/GoogleContainerTools/distroless/issues/1808).
+## Image scan report
 
 ```bash
-$ trivy image tinyops/pw:1.10.2
+$ trivy image tinyops/pw:1.10.3
 
 2025-09-03T10:24:40+03:00       INFO    [vulndb] Need to update DB
 2025-09-03T10:24:40+03:00       INFO    [vulndb] Downloading vulnerability DB...

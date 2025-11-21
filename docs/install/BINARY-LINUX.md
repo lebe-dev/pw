@@ -6,7 +6,7 @@
 
 Create unprivileged user `pw`:
 
-```shell
+```bash
 useradd pw -d /opt/pw
 
 # Set strong password
@@ -17,7 +17,7 @@ Copy `pw` to `/opt/pw`.
 
 Prepare config:
 
-```shell
+```bash
 cp pw.yml-dist /opt/pw/pw.yml
 ```
 
@@ -25,7 +25,7 @@ Edit `/opt/pw/pw.yml` for your needs.
 
 Update permissions:
 
-```shell
+```bash
 chmod -R 500 /opt/pw
 ```
 
@@ -54,7 +54,7 @@ WantedBy=multi-user.target
 
 Then start:
 
-```shell
+```bash
 systemcl daemon-reload
 systemctl enable --now pw
 ```
