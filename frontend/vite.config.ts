@@ -5,6 +5,10 @@ import precompileIntl from 'svelte-intl-precompile/sveltekit-plugin';
 export default defineConfig({
 	plugins: [sveltekit(), precompileIntl('locales')],
 
+	server: {
+		allowedHosts: ['test.home']
+	},
+
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	}

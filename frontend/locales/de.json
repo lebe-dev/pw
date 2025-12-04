@@ -1,7 +1,14 @@
 {
 	"id": "de",
 	"headerLabels": {
-		"backToHomeHint": "Zurück zur Startseite"
+		"backToHomeHint": "Zurück zur Startseite",
+		"selectLanguage": "Sprache auswählen"
+	},
+	"languages": {
+		"en": "English",
+		"de": "Deutsch",
+		"es": "Español",
+		"ru": "Русский"
 	},
 	"sizes": {
 		"kb": "KB",

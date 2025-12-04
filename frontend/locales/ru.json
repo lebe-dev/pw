@@ -1,7 +1,14 @@
 {
 	"id": "ru",
 	"headerLabels": {
-		"backToHomeHint": "Вернуться на главную"
+		"backToHomeHint": "Вернуться на главную",
+		"selectLanguage": "Выбрать язык"
+	},
+	"languages": {
+		"en": "English",
+		"de": "Deutsch",
+		"es": "Español",
+		"ru": "Русский"
 	},
 	"sizes": {
 		"kb": "КБ",
@@ -30,7 +37,7 @@
 			"oneHour": "Один час",
 			"twoHours": "Два часа",
 			"oneDay": "Один день",
-			"oneWeek": "Одна неделя",
+			"oneWeek": "Неделя",
 			"oneTimeDownload": "Одноразовая ссылка",
 			"oneTimeDownloadPrecautionMessage": "Создана одноразовая ссылка. Получатель сможет открыть её только один раз."
 		},

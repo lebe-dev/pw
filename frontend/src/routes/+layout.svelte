@@ -1,5 +1,6 @@
 <script lang="ts">
 	import LightSwitch from '$lib/components/LightSwitch.svelte';
+	import LocaleSelector from '$lib/components/LocaleSelector.svelte';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
 	import { t, waitLocale } from 'svelte-intl-precompile';
@@ -23,7 +24,8 @@
 			>
 				<a href="/" title={$t('headerLabels.backToHomeHint')}>PW</a>
 			</div>
-			<div>
+			<div class="flex items-center gap-2">
+				<LocaleSelector />
 				<LightSwitch />
 			</div>
 		</nav>
