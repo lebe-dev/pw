@@ -75,8 +75,9 @@ server {
 
 test config and reload if ok:
 
-```shell
+```bash
 $ nginx -t
+
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 
