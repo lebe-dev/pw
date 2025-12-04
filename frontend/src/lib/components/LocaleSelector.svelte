@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Globe from 'lucide-svelte/icons/globe';
 	import Check from 'lucide-svelte/icons/check';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { locale, locales, t } from 'svelte-intl-precompile';
@@ -46,13 +45,12 @@
 	<Button
 		onclick={toggleDropdown}
 		variant="outline"
-		size="icon"
-		class="border-0 bg-transparent align-middle dark:bg-transparent"
+		class="border-0 bg-transparent align-middle dark:bg-transparent px-3 min-w-[3rem]"
 		title={$t('headerLabels.selectLanguage')}
 	>
-		<Globe
-			class="h-[1.2rem] w-[1.2rem] text-secondary transition-all hover:text-primary dark:text-secondary-foreground dark:hover:text-primary"
-		/>
+		<span class="text-sm font-medium text-secondary transition-all hover:text-primary dark:text-secondary-foreground dark:hover:text-primary">
+			{localeLabels[$locale]}
+		</span>
 		<span class="sr-only">{$t('headerLabels.selectLanguage')}</span>
 	</Button>
 
