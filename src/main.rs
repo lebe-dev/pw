@@ -31,7 +31,7 @@ pub mod integration_tests;
 #[cfg(test)]
 pub mod security_tests;
 
-pub const VERSION: &str = "1.10.3 #1";
+pub const VERSION: &str = "1.11.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 
