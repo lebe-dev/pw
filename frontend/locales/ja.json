@@ -1,0 +1,77 @@
+{
+	"id": "ja",
+	"headerLabels": {
+		"backToHomeHint": "ホームに戻る",
+		"selectLanguage": "言語を選択"
+	},
+	"languages": {
+		"en": "英語",
+		"de": "ドイツ語",
+		"es": "スペイン語",
+		"ru": "ロシア語",
+		"ge": "ジョージア語",
+		"fr": "フランス語",
+		"ja": "日本語"
+	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
+	"messages": {
+		"loadingTitle": "読み込み中..",
+		"errorTitle": "エラー"
+	},
+	"errors": {
+		"loadingData": "データを読み込めませんでした",
+		"storeSecret": "シークレットの保存エラー",
+		"fileSizeLimit": "ファイルサイズが制限を超えています"
+	},
+	"homePage": {
+		"textTitle": "メッセージ",
+		"fileTitle": "ファイル",
+		"selectFileTitle": "ファイルを選択",
+		"fileSizeTitle": "サイズ",
+		"maxFileSizeTitle": "最大ファイルサイズ",
+		"messagePlaceholder": "データはブラウザで暗号化されます。",
+		"fileEncryptionHint": "ファイルはブラウザで暗号化されます。",
+		"secretLifetimeTitle": "シークレットの有効期限",
+		"lifetime": {
+			"oneHour": "1時間",
+			"twoHours": "2時間",
+			"oneDay": "1日",
+			"oneWeek": "1週間",
+			"oneTimeDownload": "1回限りのダウンロード",
+			"oneTimeDownloadPrecautionMessage": "このリンクは1回限りの使用です。開かないでください。そうしないとシークレットが消失します。"
+		},
+		"autoGeneratePassword": "パスワードを自動生成",
+		"customPassword": "パスワード",
+		"encryptMessageButton": "メッセージを暗号化",
+		"encryptFileButton": "ファイルを暗号化",
+		"secretUrlTitle": "シークレットURL",
+		"copyButton": "コピー"
+	},
+	"secretUrlPage": {
+		"title": "シークレット",
+		"textTitle": "メッセージ",
+		"fileTitle": "ファイル",
+		"fileNameTitle": "名前",
+		"fileSizeTitle": "サイズ",
+		"customPasswordTitle": "パスワードを入力:",
+		"customPasswordButton": "入力",
+		"invalidPasswordMessage": "無効なパスワード",
+		"oneTimeDownloadPrecautionMessage": "このリンクは1回限りの使用です。開かないでください。そうしないとシークレットが消失します。",
+		"copyButton": "コピー",
+		"downloadButton": "ダウンロード",
+		"removeButton": "削除",
+		"removeConfirmMessage": "シークレットが削除されます。続行しますか？"
+	},
+	"secretNotFoundPage": {
+		"title": "シークレットが見つかりませんでした",
+		"possibleReasonsText": "考えられる理由",
+		"possibleReasonsItems": "リンクの有効期限が切れました\n1回限りのリンクで、すでに誰かが開きました"
+	},
+	"footerLabels": {
+		"howItWorks": "よくある質問"
+	}
+}

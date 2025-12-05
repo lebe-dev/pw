@@ -15,7 +15,8 @@
 		es: 'ES',
 		ru: 'RU',
 		ge: 'GE',
-		fr: 'FR'
+		fr: 'FR',
+		ja: 'JA'
 	};
 
 	function selectLocale(selectedLocale: string) {
