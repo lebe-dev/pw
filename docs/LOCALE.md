@@ -13,6 +13,7 @@ Currently supported languages:
 - `ge` - ქართული (Georgian)
 - `fr` - Français (French)
 - `ja` - 日本語 (Japanese)
+- `ch` - 简体中文 (Simplified Chinese)
 
 Locale files are located in `frontend/locales/` directory.
 

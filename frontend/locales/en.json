@@ -11,7 +11,8 @@
 		"ru": "Русский",
 		"ge": "Georgian",
 		"fr": "French",
-		"ja": "Japanese"
+		"ja": "Japanese",
+		"ch": "Chinese (Simplified)"
 	},
 	"sizes": {
 		"kb": "KB",

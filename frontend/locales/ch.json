@@ -1,0 +1,78 @@
+{
+	"id": "ch",
+	"headerLabels": {
+		"backToHomeHint": "返回首页",
+		"selectLanguage": "选择语言"
+	},
+	"languages": {
+		"en": "英语",
+		"de": "德语",
+		"es": "西班牙语",
+		"ru": "俄语",
+		"ge": "格鲁吉亚语",
+		"fr": "法语",
+		"ja": "日语",
+		"ch": "简体中文"
+	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
+	"messages": {
+		"loadingTitle": "加载中..",
+		"errorTitle": "错误"
+	},
+	"errors": {
+		"loadingData": "无法加载数据",
+		"storeSecret": "存储密钥错误",
+		"fileSizeLimit": "文件大小超出限制"
+	},
+	"homePage": {
+		"textTitle": "消息",
+		"fileTitle": "文件",
+		"selectFileTitle": "选择文件",
+		"fileSizeTitle": "大小",
+		"maxFileSizeTitle": "最大文件大小",
+		"messagePlaceholder": "数据将在浏览器中加密。",
+		"fileEncryptionHint": "文件将在浏览器中加密。",
+		"secretLifetimeTitle": "密钥有效期",
+		"lifetime": {
+			"oneHour": "一小时",
+			"twoHours": "两小时",
+			"oneDay": "一天",
+			"oneWeek": "一周",
+			"oneTimeDownload": "一次性下载",
+			"oneTimeDownloadPrecautionMessage": "此链接仅供一次使用，请勿打开，否则密钥将消失。"
+		},
+		"autoGeneratePassword": "自动生成密码",
+		"customPassword": "您的密码",
+		"encryptMessageButton": "加密消息",
+		"encryptFileButton": "加密文件",
+		"secretUrlTitle": "密钥URL",
+		"copyButton": "复制"
+	},
+	"secretUrlPage": {
+		"title": "密钥",
+		"textTitle": "消息",
+		"fileTitle": "文件",
+		"fileNameTitle": "名称",
+		"fileSizeTitle": "大小",
+		"customPasswordTitle": "请输入密码：",
+		"customPasswordButton": "输入",
+		"invalidPasswordMessage": "密码无效",
+		"oneTimeDownloadPrecautionMessage": "此链接仅供一次使用，请勿打开，否则密钥将消失。",
+		"copyButton": "复制",
+		"downloadButton": "下载",
+		"removeButton": "删除",
+		"removeConfirmMessage": "密钥将被删除。是否继续？"
+	},
+	"secretNotFoundPage": {
+		"title": "未找到密钥",
+		"possibleReasonsText": "可能的原因",
+		"possibleReasonsItems": "链接已过期\n这是一次性链接，已被他人打开"
+	},
+	"footerLabels": {
+		"howItWorks": "常见问题"
+	}
+}
