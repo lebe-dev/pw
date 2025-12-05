@@ -11,13 +11,13 @@
 
 	const localeLabels: Record<string, string> = {
 		en: 'EN',
+		ru: 'RU',
 		de: 'DE',
 		es: 'ES',
-		ru: 'RU',
-		ge: 'GE',
 		fr: 'FR',
-		ja: 'JA',
-		ch: 'CH'
+		ge: 'GE',
+		ch: 'CH',
+		ja: 'JA'
 	};
 
 	function selectLocale(selectedLocale: string) {
