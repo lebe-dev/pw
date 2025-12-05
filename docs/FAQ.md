@@ -5,3 +5,4 @@
 - [Spain](faq/FAQ.es.md)
 - [Deutsch](faq/FAQ.de.md)
 - [ქართული](faq/FAQ.ge.md)
+- [Français](faq/FAQ.fr.md)
