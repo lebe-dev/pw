@@ -4,3 +4,4 @@
 - [Русский](faq/FAQ.ru.md)
 - [Spain](faq/FAQ.es.md)
 - [Deutsch](faq/FAQ.de.md)
+- [ქართული](faq/FAQ.ge.md)

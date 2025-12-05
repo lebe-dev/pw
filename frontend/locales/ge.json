@@ -1,0 +1,75 @@
+{
+	"id": "ge",
+	"headerLabels": {
+		"backToHomeHint": "დაბრუნება მთავარ გვერდზე",
+		"selectLanguage": "აირჩიეთ ენა"
+	},
+	"languages": {
+		"en": "ინგლისური",
+		"de": "გერმანული",
+		"es": "ესპანური",
+		"ru": "რუსული",
+		"ge": "ქართული"
+	},
+	"sizes": {
+		"kb": "KB",
+		"mb": "MB",
+		"gb": "GB"
+	},
+	"messages": {
+		"loadingTitle": "იტვირთება..",
+		"errorTitle": "შეცდომა"
+	},
+	"errors": {
+		"loadingData": "მონაცემების ჩატვირთვა ვერ მოხერხდა",
+		"storeSecret": "საიდუმლოს შენახვის შეცდომა",
+		"fileSizeLimit": "ფაილის ზომა აღემატება ლიმიტს"
+	},
+	"homePage": {
+		"textTitle": "შეტყობინება",
+		"fileTitle": "ფაილი",
+		"selectFileTitle": "აირჩიეთ ფაილი",
+		"fileSizeTitle": "ზომა",
+		"maxFileSizeTitle": "მაქსიმალური ზომა",
+		"messagePlaceholder": "მონაცემები დაიშიფრება ბრაუზერში.",
+		"fileEncryptionHint": "ფაილი დაიშიფრება ბრაუზერში.",
+		"secretLifetimeTitle": "საიდუმლოს ვადა",
+		"lifetime": {
+			"oneHour": "ერთი საათი",
+			"twoHours": "ორი საათი",
+			"oneDay": "ერთი დღე",
+			"oneWeek": "ერთი კვირა",
+			"oneTimeDownload": "ერთჯერადი ჩამოტვირთვა",
+			"oneTimeDownloadPrecautionMessage": "ეს ბმული განკუთვნილია ერთჯერადი გამოსაყენებლად, ამიტომ ნუ ცდილობთ გახსნას, წინააღმდეგ შემთხვევაში საიდუმლო გაქრება."
+		},
+		"autoGeneratePassword": "პაროლის ავტომატური გენერაცია",
+		"customPassword": "თქვენი პაროლი",
+		"encryptMessageButton": "შეტყობინების დაშიფვრა",
+		"encryptFileButton": "ფაილის დაშიფვრა",
+		"secretUrlTitle": "საიდუმლო URL",
+		"copyButton": "კოპირება"
+	},
+	"secretUrlPage": {
+		"title": "საიდუმლო",
+		"textTitle": "შეტყობინება",
+		"fileTitle": "ფაილი",
+		"fileNameTitle": "სახელი",
+		"fileSizeTitle": "ზომა",
+		"customPasswordTitle": "შეიყვანეთ პაროლი:",
+		"customPasswordButton": "შესვლა",
+		"invalidPasswordMessage": "არასწორი პაროლი",
+		"oneTimeDownloadPrecautionMessage": "ეს ბმული განკუთვნილია ერთჯერადი გამოსაყენებლად, ამიტომ ნუ ცდილობთ გახსნას, წინააღმდეგ შემთხვევაში საიდუმლო გაქრება.",
+		"copyButton": "კოპირება",
+		"downloadButton": "ჩამოტვირთვა",
+		"removeButton": "წაშლა",
+		"removeConfirmMessage": "საიდუმლო წაიშლება. გავაგრძელოთ?"
+	},
+	"secretNotFoundPage": {
+		"title": "საიდუმლო ვერ მოიძებნა",
+		"possibleReasonsText": "შესაძლო მიზეზები",
+		"possibleReasonsItems": "ბმულს ვადა გაუვიდა\nეს იყო ერთჯერადი ბმული და ვიღაცამ უკვე გახსნა"
+	},
+	"footerLabels": {
+		"howItWorks": "FAQ"
+	}
+}
