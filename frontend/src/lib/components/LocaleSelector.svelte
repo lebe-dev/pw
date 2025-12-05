@@ -9,6 +9,8 @@
 
 	const LOCALE_STORAGE_KEY = 'pw-preferred-locale';
 
+	const localeOrder = ['en', 'ru', 'de', 'es', 'fr', 'ge', 'ch', 'ja'];
+
 	const localeLabels: Record<string, string> = {
 		en: 'EN',
 		ru: 'RU',
@@ -19,6 +21,16 @@
 		ch: 'CH',
 		ja: 'JA'
 	};
+
+	function getSortedLocales(locales: string[]): string[] {
+		return locales.sort((a, b) => {
+			const indexA = localeOrder.indexOf(a);
+			const indexB = localeOrder.indexOf(b);
+			if (indexA === -1) return 1;
+			if (indexB === -1) return -1;
+			return indexA - indexB;
+		});
+	}
 
 	function selectLocale(selectedLocale: string) {
 		locale.set(selectedLocale);
@@ -62,7 +74,7 @@
 		<div
 			class="absolute right-0 top-12 z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 shadow-md dark:border-gray-700 dark:bg-gray-800"
 		>
-			{#each $locales as localeOption}
+			{#each getSortedLocales([...$locales]) as localeOption}
 				<button
 					onclick={() => selectLocale(localeOption)}
 					class="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm text-gray-900 outline-none transition-colors hover:bg-primary hover:text-white focus:bg-primary focus:text-white dark:text-gray-200 dark:hover:bg-gray-200 dark:hover:text-gray-900 dark:focus:bg-gray-200 dark:focus:text-gray-900"
