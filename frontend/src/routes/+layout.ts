@@ -6,18 +6,19 @@ import { registerAll } from '$locales';
 registerAll();
 
 const LOCALE_STORAGE_KEY = 'pw-preferred-locale';
+const FALLBACK_LOCALE = 'en';
 
-function getInitialLocale(): string | undefined {
+function getInitialLocale(): string {
 	if (typeof window !== 'undefined') {
 		const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
 		if (savedLocale) {
 			return savedLocale;
 		}
 	}
-	return getLocaleFromNavigator() ?? undefined;
+	return getLocaleFromNavigator() ?? FALLBACK_LOCALE;
 }
 
-init({ initialLocale: getInitialLocale(), fallbackLocale: 'en' });
+init({ initialLocale: getInitialLocale(), fallbackLocale: FALLBACK_LOCALE });
 
 export const ssr = false;
 

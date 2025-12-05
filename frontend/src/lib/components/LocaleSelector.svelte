@@ -11,7 +11,7 @@
 
 	const localeOrder = ['en', 'ru', 'de', 'es', 'fr', 'ge', 'ch', 'ja'];
 
-	const localeLabels: Record<string, string> = {
+	const localeLabels = {
 		en: 'EN',
 		ru: 'RU',
 		de: 'DE',
@@ -20,7 +20,7 @@
 		ge: 'GE',
 		ch: 'CH',
 		ja: 'JA'
-	};
+	} as const;
 
 	function getSortedLocales(locales: string[]): string[] {
 		return locales.sort((a, b) => {
@@ -65,7 +65,7 @@
 		title={$t('headerLabels.selectLanguage')}
 	>
 		<span class="text-sm font-medium text-secondary transition-all hover:text-primary dark:text-secondary-foreground dark:hover:text-primary">
-			{localeLabels[$locale]}
+			{localeLabels[$locale] || localeLabels.en}
 		</span>
 		<span class="sr-only">{$t('headerLabels.selectLanguage')}</span>
 	</Button>
@@ -80,7 +80,7 @@
 					class="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm text-gray-900 outline-none transition-colors hover:bg-primary hover:text-white focus:bg-primary focus:text-white dark:text-gray-200 dark:hover:bg-gray-200 dark:hover:text-gray-900 dark:focus:bg-gray-200 dark:focus:text-gray-900"
 				>
 					<span class="flex items-center gap-2">
-						<span class="font-medium">{localeLabels[localeOption]}</span>
+						<span class="font-medium">{localeLabels[localeOption] || 'N/A'}</span>
 						<span class="opacity-70">{$t(`languages.${localeOption}`)}</span>
 					</span>
 					{#if $locale === localeOption}
