@@ -32,7 +32,7 @@ RUN cargo test && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.22.2
+FROM alpine:3.23.0
 
 WORKDIR /app
 

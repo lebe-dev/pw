@@ -1,0 +1,78 @@
+{
+	"id": "fr",
+	"headerLabels": {
+		"backToHomeHint": "Retour à l'accueil",
+		"selectLanguage": "Sélectionner la langue"
+	},
+	"languages": {
+		"en": "Anglais",
+		"de": "Allemand",
+		"es": "Espagnol",
+		"ru": "Russe",
+		"ge": "Géorgien",
+		"fr": "Français",
+		"ja": "Japonais",
+		"ch": "Chinois"
+	},
+	"sizes": {
+		"kb": "Ko",
+		"mb": "Mo",
+		"gb": "Go"
+	},
+	"messages": {
+		"loadingTitle": "Chargement..",
+		"errorTitle": "Erreur"
+	},
+	"errors": {
+		"loadingData": "Impossible de charger les données",
+		"storeSecret": "Erreur de stockage du secret",
+		"fileSizeLimit": "La taille du fichier dépasse la limite"
+	},
+	"homePage": {
+		"textTitle": "Message",
+		"fileTitle": "Fichier",
+		"selectFileTitle": "Sélectionner un fichier",
+		"fileSizeTitle": "Taille",
+		"maxFileSizeTitle": "Taille maximale du fichier",
+		"messagePlaceholder": "Les données seront chiffrées dans le navigateur.",
+		"fileEncryptionHint": "Le fichier sera chiffré dans le navigateur.",
+		"secretLifetimeTitle": "Durée de vie du secret",
+		"lifetime": {
+			"oneHour": "Une heure",
+			"twoHours": "Deux heures",
+			"oneDay": "Un jour",
+			"oneWeek": "Une semaine",
+			"oneTimeDownload": "Téléchargement unique",
+			"oneTimeDownloadPrecautionMessage": "Ce lien est à usage unique, n'essayez pas de l'ouvrir ou le secret disparaîtra."
+		},
+		"autoGeneratePassword": "Générer automatiquement le mot de passe",
+		"customPassword": "Votre mot de passe",
+		"encryptMessageButton": "Chiffrer le message",
+		"encryptFileButton": "Chiffrer le fichier",
+		"secretUrlTitle": "URL du secret",
+		"copyButton": "Copier"
+	},
+	"secretUrlPage": {
+		"title": "Secret",
+		"textTitle": "Message",
+		"fileTitle": "Fichier",
+		"fileNameTitle": "Nom",
+		"fileSizeTitle": "Taille",
+		"customPasswordTitle": "Entrez le mot de passe:",
+		"customPasswordButton": "Entrer",
+		"invalidPasswordMessage": "Mot de passe invalide",
+		"oneTimeDownloadPrecautionMessage": "Ce lien est à usage unique, n'essayez pas de l'ouvrir ou le secret disparaîtra.",
+		"copyButton": "Copier",
+		"downloadButton": "Télécharger",
+		"removeButton": "Supprimer",
+		"removeConfirmMessage": "Le secret sera supprimé. Continuer?"
+	},
+	"secretNotFoundPage": {
+		"title": "Secret introuvable",
+		"possibleReasonsText": "Raisons possibles",
+		"possibleReasonsItems": "Le lien a expiré\nC'était un lien à usage unique et quelqu'un l'a déjà ouvert"
+	},
+	"footerLabels": {
+		"howItWorks": "FAQ"
+	}
+}

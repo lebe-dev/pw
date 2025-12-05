@@ -21,7 +21,7 @@ To install the chart with the release name `pw`:
 ```bash
 helm repo add tinyops https://tinyops.ru/helm-charts/
 helm repo update
-helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.0.6
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.0.9
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -47,7 +47,7 @@ helm delete pw
 | Name                                        | Description                           | Value                |
 | ------------------------------------------- | ------------------------------------- | -------------------- |
 | `pw.image.repository`                       | PW image repository                   | `tinyops/pw`         |
-| `pw.image.tag`                             | PW image tag                          | `1.10.2`              |
+| `pw.image.tag`                             | PW image tag                          | `1.11.0`              |
 | `pw.image.pullPolicy`                      | PW image pull policy                  | `IfNotPresent`       |
 | `pw.replicaCount`                          | Number of PW replicas                 | `1`                  |
 | `pw.config.listen`                         | PW listen address                     | `0.0.0.0:8080`       |
@@ -71,7 +71,7 @@ helm delete pw
 | Name                           | Description                      | Value                    |
 | ------------------------------ | -------------------------------- | ------------------------ |
 | `redis.image.repository`       | Redis image repository           | `redis`                  |
-| `redis.image.tag`             | Redis image tag                  | `8.0.3-alpine3.21`       |
+| `redis.image.tag`             | Redis image tag                  | `8.4.0-alpine3.22`       |
 | `redis.image.pullPolicy`      | Redis image pull policy          | `IfNotPresent`           |
 | `redis.replicaCount`          | Number of Redis replicas         | `1`                      |
 | `redis.auth.enabled`          | Enable Redis authentication      | `true`                   |
