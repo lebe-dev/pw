@@ -1,18 +1,35 @@
 # Nginx configuration
 
+## Security Headers
+
+The configuration below includes comprehensive security headers including Content Security Policy (CSP) to protect against XSS, clickjacking, and other attacks.
+
+For detailed information about CSP configuration, see [CSP.md](../CSP.md).
+
+## Example Configuration
+
 For example, you have a host `pw.company.com`.
 
 Create `/etc/nginx/conf.d/pw.company.com.conf` with content:
 
 ```nginx
 server {
-    listen 443 ssl;
-    
+    listen 443 ssl http2;
+
     server_name pw.company.com;
 
     ssl_certificate /etc/nginx/ssl/postman/postman.crt;
     ssl_certificate_key /etc/nginx/ssl/postman/postman.key;
-    
+
+    # Security Headers
+    add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests;" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), speaker=()" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
     location / {
       proxy_pass http://localhost:8080;
       
@@ -23,11 +40,17 @@ server {
       proxy_set_header Host $host;
     }
     
+    # Static assets with caching and security headers
     location ~* \.(?:jpg|jpeg|gif|png|ico|js|svg|woff|woff2|ttf|css)$ {
       expires max;
-
       access_log off;
-      add_header Cache-Control "public";
+      add_header Cache-Control "public, immutable";
+
+      # Re-apply security headers for static assets
+      add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests;" always;
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Content-Type-Options "nosniff" always;
+
       proxy_pass http://localhost:8080;
     }
     
