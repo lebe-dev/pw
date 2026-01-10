@@ -9,7 +9,7 @@ test-image-build:
   docker build --progress=plain -t app:dev .
 
 run-backend:
-  cargo run --bin server
+  cargo run
 
 run-frontend:
   cd frontend && yarn && npm run dev -- --port=4200
@@ -17,6 +17,7 @@ run-frontend:
 lint:
   cargo fmt -- --check
   cargo clippy -- -D warnings
+  cd frontend && yarn lint
 
 test:
   cd frontend && yarn test run
