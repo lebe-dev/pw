@@ -2,6 +2,7 @@
 /frontend/.svelte-kit
 /frontend/node_modules
 /frontend/build
+/frontend/coverage
 /static
 /helm-chart
 /.tw

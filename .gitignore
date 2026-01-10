@@ -1,6 +1,7 @@
 /target
 /frontend/build
 /frontend/dist
+/frontend/coverage
 /pw.yml
 /pw.log
 /frontend/.svelte-kit
