@@ -1,24 +1,26 @@
 #[cfg(test)]
 mod tests {
-    use crate::config::model::{AppConfig, IpLimitsConfig, IpLimitEntry};
+    use crate::AppState;
+    use crate::config::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
+    use crate::dto::model::AppConfigDto;
     use crate::limits::LimitsService;
     use crate::middleware::client_ip::ClientIpExtractor;
     use crate::routes::{config::get_config_route, secret::store_secret_route};
-    use crate::secret::model::{Secret, SecretContentType, SecretTTL, SecretDownloadPolicy, SecretFileMetadata};
+    use crate::secret::model::{
+        Secret, SecretContentType, SecretDownloadPolicy, SecretFileMetadata, SecretTTL,
+    };
     use crate::secret::storage::MockSecretStorage;
-    use crate::dto::model::AppConfigDto;
-    use crate::AppState;
     use axum::{
         Router,
-        routing::{get, post},
-        middleware,
-        extract::{ConnectInfo, DefaultBodyLimit},
-        http::{Request, StatusCode, HeaderMap},
         body::Body,
+        extract::{ConnectInfo, DefaultBodyLimit},
+        http::{HeaderMap, Request, StatusCode},
+        middleware,
+        routing::{get, post},
     };
-    use tower::util::ServiceExt;
     use std::net::SocketAddr;
     use std::sync::Arc;
+    use tower::util::ServiceExt;
 
     fn create_security_test_app_state() -> Arc<AppState> {
         let ip_limits = IpLimitsConfig {
@@ -67,7 +69,10 @@ mod tests {
     fn create_security_test_router(app_state: Arc<AppState>) -> Router {
         Router::new()
             .route("/api/config", get(get_config_route))
-            .route("/api/secret", post(store_secret_route).layer(DefaultBodyLimit::disable()))
+            .route(
+                "/api/secret",
+                post(store_secret_route).layer(DefaultBodyLimit::disable()),
+            )
             .layer(middleware::from_fn(ClientIpExtractor::middleware))
             .with_state(app_state)
     }
@@ -77,7 +82,10 @@ mod tests {
         let app_state = create_security_test_app_state();
 
         let malicious_headers = vec![
-            ("192.168.1.100; DROP TABLE users;--", "Should not parse SQL injection"),
+            (
+                "192.168.1.100; DROP TABLE users;--",
+                "Should not parse SQL injection",
+            ),
             ("../../../etc/passwd", "Should not parse path traversal"),
             ("file:///etc/passwd", "Should not parse file URI"),
             ("192.168.1.100 extra", "Should not parse extra data"),
@@ -105,7 +113,9 @@ mod tests {
             let response = app.oneshot(request).await.unwrap();
             assert_eq!(response.status(), StatusCode::OK, "{}", description);
 
-            let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
             let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
             // Should fall back to connection IP (10.0.0.1) which matches 10.0.0.0/8
@@ -147,7 +157,9 @@ mod tests {
             let response = app.oneshot(request).await.unwrap();
             assert_eq!(response.status(), StatusCode::OK, "{}", description);
 
-            let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
             let _config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
             // Should use the spoofed IP if it's valid, demonstrating the need for trusted proxy validation
@@ -184,7 +196,7 @@ mod tests {
             .unwrap();
 
         let response = app.oneshot(request).await.unwrap();
-        
+
         // Should fail due to size limits enforcement
         assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -213,7 +225,9 @@ mod tests {
             let response = app.oneshot(request).await.unwrap();
             assert_eq!(response.status(), StatusCode::OK, "{}", description);
 
-            let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
             let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
             if should_match {
@@ -254,7 +268,9 @@ mod tests {
                 let response = app.oneshot(request).await.unwrap();
                 assert_eq!(response.status(), StatusCode::OK);
 
-                let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+                let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                    .await
+                    .unwrap();
                 let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
                 (i, config.message_max_length, ip)
@@ -265,13 +281,17 @@ mod tests {
         // Wait for all requests to complete
         for handle in handles {
             let (i, message_limit, ip) = handle.await.unwrap();
-            
+
             if i % 2 == 0 {
                 // Whitelisted IP should get increased limits
                 assert_eq!(message_limit, 8192, "Failed for whitelisted IP: {:?}", ip);
             } else {
                 // Non-whitelisted IP should get default limits
-                assert_eq!(message_limit, 1024, "Failed for non-whitelisted IP: {:?}", ip);
+                assert_eq!(
+                    message_limit, 1024,
+                    "Failed for non-whitelisted IP: {:?}",
+                    ip
+                );
             }
         }
     }
@@ -281,8 +301,11 @@ mod tests {
         let app_state = create_security_test_app_state();
 
         // Test extremely long header values
-        let long_ip_list = (1..=1000).map(|i| format!("192.168.1.{}", i % 255 + 1)).collect::<Vec<_>>().join(", ");
-        
+        let long_ip_list = (1..=1000)
+            .map(|i| format!("192.168.1.{}", i % 255 + 1))
+            .collect::<Vec<_>>()
+            .join(", ");
+
         let app = create_security_test_router(app_state);
 
         let mut headers = HeaderMap::new();
@@ -301,7 +324,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         // Should parse the first IP (192.168.1.2) and match whitelist entry
@@ -338,7 +363,9 @@ mod tests {
             let response = app.oneshot(request).await.unwrap();
             assert_eq!(response.status(), StatusCode::OK, "{}", description);
 
-            let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
             let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
             // Should not match IPv4 whitelist entries

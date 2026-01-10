@@ -1,24 +1,29 @@
 #[cfg(test)]
 mod tests {
-    use crate::config::model::{AppConfig, IpLimitsConfig, IpLimitEntry};
+    use crate::AppState;
+    use crate::config::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
+    use crate::dto::model::AppConfigDto;
     use crate::limits::LimitsService;
     use crate::middleware::client_ip::ClientIpExtractor;
-    use crate::routes::{config::get_config_route, secret::{store_secret_route, get_secret_route}};
-    use crate::secret::model::{Secret, SecretContentType, SecretTTL, SecretDownloadPolicy, SecretFileMetadata};
+    use crate::routes::{
+        config::get_config_route,
+        secret::{get_secret_route, store_secret_route},
+    };
+    use crate::secret::model::{
+        Secret, SecretContentType, SecretDownloadPolicy, SecretFileMetadata, SecretTTL,
+    };
     use crate::secret::storage::MockSecretStorage;
-    use crate::dto::model::AppConfigDto;
-    use crate::AppState;
     use axum::{
         Router,
-        routing::{get, post},
-        middleware,
-        extract::{ConnectInfo, DefaultBodyLimit},
-        http::{Request, StatusCode, HeaderMap},
         body::Body,
+        extract::{ConnectInfo, DefaultBodyLimit},
+        http::{HeaderMap, Request, StatusCode},
+        middleware,
+        routing::{get, post},
     };
-    use tower::util::ServiceExt;
     use std::net::SocketAddr;
     use std::sync::Arc;
+    use tower::util::ServiceExt;
 
     fn create_test_app_state(ip_limits_config: Option<IpLimitsConfig>) -> Arc<AppState> {
         let config = AppConfig {
@@ -46,7 +51,10 @@ mod tests {
     fn create_test_router(app_state: Arc<AppState>) -> Router {
         Router::new()
             .route("/api/config", get(get_config_route))
-            .route("/api/secret", post(store_secret_route).layer(DefaultBodyLimit::disable()))
+            .route(
+                "/api/secret",
+                post(store_secret_route).layer(DefaultBodyLimit::disable()),
+            )
             .route("/api/secret/{id}", get(get_secret_route))
             .layer(middleware::from_fn(ClientIpExtractor::middleware))
             .with_state(app_state)
@@ -81,7 +89,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         assert_eq!(config.message_max_length, 1024);
@@ -93,13 +103,11 @@ mod tests {
     async fn test_end_to_end_config_flow_with_ip_limits() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "192.168.1.100".to_string(),
-                    message_max_length: Some(8192),
-                    file_max_size: Some(104857600),
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.1.100".to_string(),
+                message_max_length: Some(8192),
+                file_max_size: Some(104857600),
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -114,7 +122,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         assert_eq!(config.message_max_length, 8192);
@@ -125,20 +135,21 @@ mod tests {
     async fn test_end_to_end_config_flow_with_proxy_headers() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "203.0.113.195".to_string(),
-                    message_max_length: Some(16384),
-                    file_max_size: Some(209715200),
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "203.0.113.195".to_string(),
+                message_max_length: Some(16384),
+                file_max_size: Some(209715200),
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
         let app = create_test_router(app_state);
 
         let mut headers = HeaderMap::new();
-        headers.insert("x-forwarded-for", "203.0.113.195, 192.168.1.1".parse().unwrap());
+        headers.insert(
+            "x-forwarded-for",
+            "203.0.113.195, 192.168.1.1".parse().unwrap(),
+        );
 
         let request = Request::builder()
             .uri("/api/config")
@@ -153,7 +164,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         // Should use limits for 203.0.113.195 (from X-Forwarded-For header)
@@ -203,13 +216,11 @@ mod tests {
     async fn test_end_to_end_secret_storage_with_increased_ip_limits() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "192.168.1.100".to_string(),
-                    message_max_length: Some(8192), // 8x default
-                    file_max_size: Some(4096000), // 4MB instead of 100MB
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.1.100".to_string(),
+                message_max_length: Some(8192), // 8x default
+                file_max_size: Some(4096000),   // 4MB instead of 100MB
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -234,20 +245,18 @@ mod tests {
     async fn test_end_to_end_cidr_matching() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "192.168.0.0/16".to_string(),
-                    message_max_length: Some(4096),
-                    file_max_size: Some(52428800),
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.0.0/16".to_string(),
+                message_max_length: Some(4096),
+                file_max_size: Some(52428800),
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
 
         // Test multiple IPs within the CIDR range
         let test_ips = vec![
-            ([192, 168, 1, 100], true),   // Should match
+            ([192, 168, 1, 100], true),  // Should match
             ([192, 168, 255, 1], true),  // Should match
             ([192, 167, 1, 100], false), // Should not match
             ([193, 168, 1, 100], false), // Should not match
@@ -265,15 +274,33 @@ mod tests {
             let response = app.oneshot(request).await.unwrap();
             assert_eq!(response.status(), StatusCode::OK);
 
-            let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
             let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
             if should_match {
-                assert_eq!(config.message_max_length, 4096, "Failed for IP: {:?}", ip_octets);
-                assert_eq!(config.file_max_size, 52428800, "Failed for IP: {:?}", ip_octets);
+                assert_eq!(
+                    config.message_max_length, 4096,
+                    "Failed for IP: {:?}",
+                    ip_octets
+                );
+                assert_eq!(
+                    config.file_max_size, 52428800,
+                    "Failed for IP: {:?}",
+                    ip_octets
+                );
             } else {
-                assert_eq!(config.message_max_length, 1024, "Failed for IP: {:?}", ip_octets); // default
-                assert_eq!(config.file_max_size, 10485760, "Failed for IP: {:?}", ip_octets); // default
+                assert_eq!(
+                    config.message_max_length, 1024,
+                    "Failed for IP: {:?}",
+                    ip_octets
+                ); // default
+                assert_eq!(
+                    config.file_max_size, 10485760,
+                    "Failed for IP: {:?}",
+                    ip_octets
+                ); // default
             }
         }
     }
@@ -316,7 +343,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         // Should use X-Forwarded-For (takes precedence)
@@ -328,13 +357,11 @@ mod tests {
     async fn test_end_to_end_invalid_headers_fallback() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "192.168.1.1".to_string(), // Connection IP
-                    message_max_length: Some(2048),
-                    file_max_size: Some(26214400),
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.1.1".to_string(), // Connection IP
+                message_max_length: Some(2048),
+                file_max_size: Some(26214400),
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -357,7 +384,9 @@ mod tests {
         let response = app.oneshot(request).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
 
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
 
         // Should fall back to connection IP and use its limits
@@ -369,13 +398,11 @@ mod tests {
     async fn test_end_to_end_complete_secret_lifecycle() {
         let ip_limits = IpLimitsConfig {
             enabled: true,
-            whitelist: vec![
-                IpLimitEntry {
-                    ip: "192.168.1.100".to_string(),
-                    message_max_length: Some(8192),
-                    file_max_size: Some(4096000), // 4MB instead of 100MB
-                },
-            ],
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.1.100".to_string(),
+                message_max_length: Some(8192),
+                file_max_size: Some(4096000), // 4MB instead of 100MB
+            }],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -391,7 +418,9 @@ mod tests {
         let config_response = app.oneshot(config_request).await.unwrap();
         assert_eq!(config_response.status(), StatusCode::OK);
 
-        let config_body = axum::body::to_bytes(config_response.into_body(), usize::MAX).await.unwrap();
+        let config_body = axum::body::to_bytes(config_response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let config: AppConfigDto = serde_json::from_slice(&config_body).unwrap();
         assert_eq!(config.message_max_length, 8192);
 
@@ -422,7 +451,9 @@ mod tests {
         let get_response = app.oneshot(get_request).await.unwrap();
         assert_eq!(get_response.status(), StatusCode::OK);
 
-        let secret_body = axum::body::to_bytes(get_response.into_body(), usize::MAX).await.unwrap();
+        let secret_body = axum::body::to_bytes(get_response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let retrieved_secret: Secret = serde_json::from_slice(&secret_body).unwrap();
         assert_eq!(retrieved_secret.id, secret_id);
     }

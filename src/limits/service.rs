@@ -22,11 +22,13 @@ pub struct LimitsService {
 
 impl LimitsService {
     pub fn new(config: &AppConfig) -> Self {
-        let encrypted_message_max_length = config.encrypted_message_max_length
-            .unwrap_or_else(|| Self::calculate_encrypted_max_length(
-                config.message_max_length,
-                config.file_max_size,
-            ));
+        let encrypted_message_max_length =
+            config.encrypted_message_max_length.unwrap_or_else(|| {
+                Self::calculate_encrypted_max_length(
+                    config.message_max_length,
+                    config.file_max_size,
+                )
+            });
 
         let default_limits = ClientLimits {
             message_max_length: config.message_max_length,
@@ -108,10 +110,8 @@ impl LimitsService {
             .file_max_size
             .unwrap_or(self.default_limits.file_max_size);
 
-        let encrypted_message_max_length = Self::calculate_encrypted_max_length(
-            message_max_length,
-            file_max_size,
-        );
+        let encrypted_message_max_length =
+            Self::calculate_encrypted_max_length(message_max_length, file_max_size);
 
         ClientLimits {
             message_max_length,
