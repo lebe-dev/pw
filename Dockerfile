@@ -10,7 +10,7 @@ RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
     yarn build
 
-FROM rust:1.91.1-alpine3.22 AS app-build
+FROM rust:1.92.0-alpine3.23 AS app-build
 
 WORKDIR /build
 
@@ -32,7 +32,7 @@ RUN cargo test && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.23.0
+FROM alpine:3.23.2
 
 WORKDIR /app
 
