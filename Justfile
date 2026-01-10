@@ -10,10 +10,21 @@ run-backend:
 run-frontend:
   cd frontend && yarn && npm run dev -- --port=4200
 
-test-all:
+lint:
+  cargo fmt -- --check
+  cargo clippy -- -D warnings
+
+test:
   cd frontend && yarn test run
   cargo test --lib
   cargo test --bin server
+
+test-all: test
+
+build: lint
+  cargo test --bin server
+  cargo test --lib
+  cargo test --test '*'
 
 build-release-image: test-all
   docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
