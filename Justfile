@@ -1,6 +1,10 @@
 version := `cat Cargo.toml | grep version | head -1 | cut -d " " -f 3 | tr -d "\""`
 image := "tinyops/pw"
 
+init:
+  rustup component add clippy
+  cargo install cargo-llvm-cov
+
 test-image-build:
   docker build --progress=plain -t app:dev .
 
