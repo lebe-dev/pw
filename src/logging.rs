@@ -21,7 +21,7 @@ pub fn get_logging_config(logging_level: &str, log_target: &str) -> Config {
             .appender(get_rolling_appender(level))
             .logger(get_default_logger(level))
             .build(Root::builder().appender(FILE_APPENDER_NAME).build(level))
-            .expect(&format!("unable to create log file '{}'", LOG_FILE_PATH)),
+            .unwrap_or_else(|_| panic!("unable to create log file '{}'", LOG_FILE_PATH)),
         _ => Config::builder()
             .appender(get_console_appender(level))
             .logger(get_default_logger(level))
@@ -31,14 +31,14 @@ pub fn get_logging_config(logging_level: &str, log_target: &str) -> Config {
 }
 
 fn get_logging_level_from_string(level: &str) -> LevelFilter {
-    return match level {
+    match level {
         "debug" => LevelFilter::Debug,
         "error" => LevelFilter::Error,
         "warn" => LevelFilter::Warn,
         "trace" => LevelFilter::Trace,
         "off" => LevelFilter::Off,
         _ => LevelFilter::Info,
-    };
+    }
 }
 
 fn get_rolling_appender(level: LevelFilter) -> Appender {

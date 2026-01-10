@@ -118,6 +118,12 @@ pub struct MockSecretStorage {
     store: Arc<Mutex<HashMap<String, Secret>>>,
 }
 
+impl Default for MockSecretStorage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MockSecretStorage {
     pub fn new() -> Self {
         Self {

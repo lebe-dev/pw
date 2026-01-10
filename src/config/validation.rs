@@ -15,9 +15,6 @@ pub enum ValidationError {
     #[error("Invalid CIDR notation '{cidr}': {reason}")]
     InvalidCidrFormat { cidr: String, reason: String },
 
-    #[error("Message max length {value} exceeds maximum allowed value of {max}")]
-    MessageLengthTooHigh { value: u16, max: u16 },
-
     #[error("Message max length cannot be zero")]
     MessageLengthZero,
 
@@ -47,7 +44,6 @@ pub enum ValidationError {
 }
 
 /// Configuration validation limits
-const MAX_MESSAGE_LENGTH: u16 = 65535; // Maximum u16 value
 const MAX_FILE_SIZE: u64 = 10_737_418_240; // 10GB
 
 /// Validates IP limits configuration
@@ -87,16 +83,16 @@ pub fn validate_ip_entry(entry: &IpLimitEntry) -> Result<(), Vec<ValidationError
         errors.push(err);
     }
 
-    if let Some(length) = entry.message_max_length {
-        if let Err(err) = validate_message_length(length) {
-            errors.push(err);
-        }
+    if let Some(length) = entry.message_max_length
+        && let Err(err) = validate_message_length(length)
+    {
+        errors.push(err);
     }
 
-    if let Some(size) = entry.file_max_size {
-        if let Err(err) = validate_file_size(size) {
-            errors.push(err);
-        }
+    if let Some(size) = entry.file_max_size
+        && let Err(err) = validate_file_size(size)
+    {
+        errors.push(err);
     }
 
     if errors.is_empty() {
@@ -206,12 +202,8 @@ pub fn validate_message_length(length: u16) -> Result<(), ValidationError> {
         return Err(ValidationError::MessageLengthZero);
     }
 
-    if length > MAX_MESSAGE_LENGTH {
-        return Err(ValidationError::MessageLengthTooHigh {
-            value: length,
-            max: MAX_MESSAGE_LENGTH,
-        });
-    }
+    // Note: Since message length is u16, the maximum value is implicitly u16::MAX (65535)
+    // No upper bound check is needed as the type itself enforces the limit
 
     Ok(())
 }
@@ -340,11 +332,11 @@ mod tests {
         assert!(validate_message_length(1).is_ok());
         assert!(validate_message_length(1024).is_ok());
         assert!(validate_message_length(32768).is_ok());
-        assert!(validate_message_length(MAX_MESSAGE_LENGTH).is_ok());
+        assert!(validate_message_length(u16::MAX).is_ok());
 
         // Invalid lengths
         assert!(validate_message_length(0).is_err());
-        // Can't test MAX_MESSAGE_LENGTH + 1 since it's u16::MAX
+        // Can't test u16::MAX + 1 since it's beyond u16 range
     }
 
     #[test]
@@ -464,12 +456,8 @@ mod tests {
                 .contains("octets must be between 0 and 255")
         );
 
-        let error = ValidationError::MessageLengthTooHigh {
-            value: 60000,
-            max: 32000,
-        };
-        assert!(error.to_string().contains("60000"));
-        assert!(error.to_string().contains("32000"));
+        let error = ValidationError::MessageLengthZero;
+        assert!(error.to_string().contains("cannot be zero"));
     }
 
     #[test]
@@ -484,7 +472,7 @@ mod tests {
     fn test_boundary_conditions() {
         // Test exact boundary values
         assert!(validate_message_length(MIN_MESSAGE_LENGTH).is_ok());
-        assert!(validate_message_length(MAX_MESSAGE_LENGTH).is_ok());
+        assert!(validate_message_length(u16::MAX).is_ok());
         assert!(validate_file_size(MIN_FILE_SIZE).is_ok());
         assert!(validate_file_size(MAX_FILE_SIZE).is_ok());
 
@@ -492,7 +480,7 @@ mod tests {
         if MIN_MESSAGE_LENGTH > 0 {
             assert!(validate_message_length(MIN_MESSAGE_LENGTH - 1).is_err());
         }
-        // Can't test MAX_MESSAGE_LENGTH + 1 since it's u16::MAX
+        // Can't test u16::MAX + 1 since it's beyond u16 range
         if MIN_FILE_SIZE > 0 {
             assert!(validate_file_size(MIN_FILE_SIZE - 1).is_err());
         }

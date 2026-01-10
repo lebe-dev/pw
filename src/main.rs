@@ -45,7 +45,7 @@ pub struct AppState {
 async fn main() -> anyhow::Result<()> {
     let config_file = Path::new("pw.yml").to_str().expect("unexpected error");
 
-    let app_config = load_config_from_file(&config_file)?;
+    let app_config = load_config_from_file(config_file)?;
 
     let logging_config = get_logging_config(&app_config.log_level, &app_config.log_target);
     log4rs::init_config(logging_config).expect("unable to init logging configuration");
@@ -76,7 +76,7 @@ async fn main() -> anyhow::Result<()> {
         ))
         .with_state(Arc::new(app_state));
 
-    let bind = format!("{}", app_config.listen);
+    let bind = app_config.listen.to_string();
 
     let listener = tokio::net::TcpListener::bind(&bind).await.unwrap();
 

@@ -20,7 +20,7 @@ impl ClientIpExtractor {
         mut request: Request,
         next: Next,
     ) -> Response {
-        let client_ip = Self::extract_client_ip(&request.headers(), addr.ip());
+        let client_ip = Self::extract_client_ip(request.headers(), addr.ip());
         debug!(
             "Extracted client IP: {} (connection IP: {})",
             client_ip,
@@ -31,29 +31,27 @@ impl ClientIpExtractor {
     }
 
     fn extract_client_ip(headers: &HeaderMap, connection_ip: IpAddr) -> IpAddr {
-        if let Some(forwarded_for) = headers.get("x-forwarded-for") {
-            if let Ok(header_value) = forwarded_for.to_str() {
-                debug!("Found X-Forwarded-For header: {}", header_value);
-                if let Some(first_ip) = Self::parse_forwarded_for(header_value) {
-                    debug!("Using IP from X-Forwarded-For: {}", first_ip);
-                    return first_ip;
-                } else {
-                    debug!(
-                        "Failed to parse valid IP from X-Forwarded-For header, trying X-Real-IP"
-                    );
-                }
+        if let Some(forwarded_for) = headers.get("x-forwarded-for")
+            && let Ok(header_value) = forwarded_for.to_str()
+        {
+            debug!("Found X-Forwarded-For header: {}", header_value);
+            if let Some(first_ip) = Self::parse_forwarded_for(header_value) {
+                debug!("Using IP from X-Forwarded-For: {}", first_ip);
+                return first_ip;
+            } else {
+                debug!("Failed to parse valid IP from X-Forwarded-For header, trying X-Real-IP");
             }
         }
 
-        if let Some(real_ip) = headers.get("x-real-ip") {
-            if let Ok(header_value) = real_ip.to_str() {
-                debug!("Found X-Real-IP header: {}", header_value);
-                if let Ok(ip) = header_value.trim().parse::<IpAddr>() {
-                    debug!("Using IP from X-Real-IP: {}", ip);
-                    return ip;
-                } else {
-                    debug!("Failed to parse IP from X-Real-IP header, using connection IP");
-                }
+        if let Some(real_ip) = headers.get("x-real-ip")
+            && let Ok(header_value) = real_ip.to_str()
+        {
+            debug!("Found X-Real-IP header: {}", header_value);
+            if let Ok(ip) = header_value.trim().parse::<IpAddr>() {
+                debug!("Using IP from X-Real-IP: {}", ip);
+                return ip;
+            } else {
+                debug!("Failed to parse IP from X-Real-IP header, using connection IP");
             }
         }
 

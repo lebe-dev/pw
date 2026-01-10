@@ -16,7 +16,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
                 .try_parsing(true)
                 .separator("_"),
         )
-        .add_source(File::with_name(&file_path));
+        .add_source(File::with_name(file_path));
 
     let settings = config_builder.build()?;
 
@@ -31,8 +31,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         get_env_var("PW_FILE_UPLOAD_ENABLED").unwrap_or(config.file_upload_enabled.to_string());
     let file_max_size = get_env_var("PW_FILE_MAX_SIZE").unwrap_or(config.file_max_size.to_string());
     let encrypted_message_max_length = get_env_var("PW_ENCRYPTED_MESSAGE_MAX_LENGTH")
-        .map(|v| v.parse::<u64>().ok())
-        .flatten()
+        .and_then(|v| v.parse::<u64>().ok())
         .or(config.encrypted_message_max_length);
     let redis_url = get_env_var("PW_REDIS_URL").unwrap_or(config.redis_url);
 
@@ -91,14 +90,14 @@ fn get_ip_limits_config(
         }
     }
 
-    if let Some(ref ip_config) = ip_limits {
-        if let Err(validation_errors) = validate_ip_limits_config(ip_config) {
-            let error_message = format_validation_errors(&validation_errors);
-            return Err(anyhow::anyhow!(
-                "Environment variable IP limits configuration validation failed:\n{}",
-                error_message
-            ));
-        }
+    if let Some(ref ip_config) = ip_limits
+        && let Err(validation_errors) = validate_ip_limits_config(ip_config)
+    {
+        let error_message = format_validation_errors(&validation_errors);
+        return Err(anyhow::anyhow!(
+            "Environment variable IP limits configuration validation failed:\n{}",
+            error_message
+        ));
     }
 
     Ok(ip_limits)
