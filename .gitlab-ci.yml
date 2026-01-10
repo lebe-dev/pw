@@ -6,9 +6,9 @@ build-image:
 
   when: manual
 
-  image: docker:28.3.3
+  image: docker:29.1.4
   services:
-    - docker:28.3.3-dind-alpine3.22
+    - docker:29.1.4-dind-alpine3.23
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
@@ -27,9 +27,9 @@ publish-image:
 
   needs: [build-image]
 
-  image: docker:28.3.3
+  image: docker:29.1.4
   services:
-    - docker:28.3.3-dind-alpine3.22
+    - docker:29.1.4-dind-alpine3.23
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
