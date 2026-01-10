@@ -61,10 +61,12 @@
 	<Button
 		onclick={toggleDropdown}
 		variant="outline"
-		class="border-0 bg-transparent align-middle dark:bg-transparent px-3 min-w-[3rem]"
+		class="min-w-[3rem] border-0 bg-transparent px-3 align-middle dark:bg-transparent"
 		title={$t('headerLabels.selectLanguage')}
 	>
-		<span class="text-sm font-medium text-secondary transition-all hover:text-primary dark:text-secondary-foreground dark:hover:text-primary">
+		<span
+			class="text-sm font-medium text-secondary transition-all hover:text-primary dark:text-secondary-foreground dark:hover:text-primary"
+		>
 			{localeLabels[$locale] || localeLabels.en}
 		</span>
 		<span class="sr-only">{$t('headerLabels.selectLanguage')}</span>

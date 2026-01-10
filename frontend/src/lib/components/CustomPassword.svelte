@@ -5,7 +5,7 @@
 
 	let { checked = $bindable(true), value = $bindable(''), disabled = $bindable(false) } = $props();
 
-	let customPasswordInput;
+	let customPasswordInput: HTMLInputElement | undefined = $state();
 
 	function focusOnCustomPasswordInput() {
 		setTimeout(() => {

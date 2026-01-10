@@ -26,7 +26,7 @@
 
 	let possibleReasonsItems: string[] = $state([]);
 
-	let customPasswordInput: any;
+	let customPasswordInput: HTMLInputElement | undefined = $state();
 
 	let askForPassword: boolean = $state(false);
 	let customPassword: string = $state('');
@@ -154,7 +154,6 @@
 			<div class="mb-2 pb-0">{$t('secretUrlPage.customPasswordTitle')}</div>
 			<input
 				bind:this={customPasswordInput}
-				autofocus={true}
 				type="password"
 				value={customPassword}
 				maxlength="32"

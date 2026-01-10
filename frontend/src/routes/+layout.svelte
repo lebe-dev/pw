@@ -13,7 +13,7 @@
 
 <ModeWatcher />
 
-{#await waitLocale() then _}
+{#await waitLocale() then}
 	<div class="container m-0 h-screen max-h-full max-w-full p-0">
 		<nav
 			data-sveltekit-reload
