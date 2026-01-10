@@ -1,4 +1,4 @@
-FROM node:25.2.1-alpine3.22 AS frontend-build
+FROM node:25.2.1-alpine3.23 AS frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
@@ -8,6 +8,7 @@ COPY frontend/ /build
 
 RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
+    yarn lint && \
     yarn build
 
 FROM rust:1.92.0-alpine3.23 AS app-build
