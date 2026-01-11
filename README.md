@@ -46,6 +46,7 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 ## Roadmap
 
 - Backend: improve return codes
+- Backend: migration to Hexagonal Architecture
 
 ## Thanks
 
