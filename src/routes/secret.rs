@@ -101,10 +101,15 @@ mod tests {
         let limits_service = LimitsService::new(&config);
         let secret_storage = MockSecretStorage::new();
 
+        let body_limit = limits_service
+            .body_limit_as_usize()
+            .expect("Failed to calculate body limit");
+
         Arc::new(AppState {
             config,
             limits_service,
             secret_storage: Box::new(secret_storage),
+            body_limit,
         })
     }
 

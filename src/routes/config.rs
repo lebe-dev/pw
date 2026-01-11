@@ -21,7 +21,7 @@ pub async fn get_config_route(
     let limits = state.limits_service.get_limits_for_ip(&client_ip);
 
     info!(
-        "Config request from {}: returning limits message_max_length: {}, file_max_size: {}",
+        "config request from {}: returning limits message_max_length: {}, file_max_size: {}",
         client_ip, limits.message_max_length, limits.file_max_size
     );
 
@@ -61,10 +61,15 @@ mod tests {
         let limits_service = LimitsService::new(&config);
         let secret_storage = MockSecretStorage::new();
 
+        let body_limit = limits_service
+            .body_limit_as_usize()
+            .expect("failed to calculate body limit");
+
         Arc::new(AppState {
             config,
             limits_service,
             secret_storage: Box::new(secret_storage),
+            body_limit,
         })
     }
 
@@ -281,10 +286,15 @@ mod tests {
         let limits_service = LimitsService::new(&base_config);
         let secret_storage = MockSecretStorage::new();
 
+        let body_limit = limits_service
+            .body_limit_as_usize()
+            .expect("Failed to calculate body limit");
+
         let state = Arc::new(AppState {
             config: base_config,
             limits_service,
             secret_storage: Box::new(secret_storage),
+            body_limit,
         });
 
         let request = create_request_with_ip("192.168.1.100".parse().unwrap());

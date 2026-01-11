@@ -125,6 +125,53 @@ impl LimitsService {
         let max_content_size = std::cmp::max(message_limit as u64, file_limit);
         (max_content_size as f64 * overhead_factor) as u64
     }
+
+    /// Calculates the maximum body limit across all configurations
+    ///
+    /// This method determines the highest possible encrypted payload size across:
+    /// - Global default limits (message_max_length, file_max_size)
+    /// - All IP whitelist entries (if IP limits are enabled)
+    ///
+    /// Returns the calculated limit with encryption overhead applied, suitable
+    /// for use with Axum's DefaultBodyLimit::max()
+    pub fn calculate_max_body_limit(&self) -> u64 {
+        let mut max_limit = self.default_limits.encrypted_message_max_length;
+
+        if self.ip_limits_enabled {
+            for entry in &self.ip_whitelist {
+                let entry_limits = self.calculate_limits_for_entry(entry);
+                max_limit = std::cmp::max(max_limit, entry_limits.encrypted_message_max_length);
+            }
+        }
+
+        max_limit
+    }
+
+    /// Converts body limit to usize with safety margin and overflow protection
+    ///
+    /// Adds a small safety margin (5%) to account for HTTP headers,
+    /// multipart boundaries, and JSON formatting overhead beyond encryption.
+    ///
+    /// Returns None if the limit would overflow usize on 32-bit systems.
+    pub fn body_limit_as_usize(&self) -> Option<usize> {
+        let base_limit = self.calculate_max_body_limit();
+
+        // Add 5% safety margin for HTTP overhead
+        let safety_factor = 1.05;
+        let limit_with_margin = (base_limit as f64 * safety_factor) as u64;
+
+        // Check for usize overflow
+        if limit_with_margin > usize::MAX as u64 {
+            log::warn!(
+                "Calculated body limit ({}) exceeds usize::MAX ({}), capping to usize::MAX",
+                limit_with_margin,
+                usize::MAX
+            );
+            return Some(usize::MAX);
+        }
+
+        Some(limit_with_margin as usize)
+    }
 }
 
 #[cfg(test)]
@@ -378,6 +425,161 @@ mod tests {
                 invalid_ip
             );
         }
+    }
+
+    #[test]
+    fn test_calculate_max_body_limit_defaults_only() {
+        let config = create_test_config(); // No IP limits
+        let service = LimitsService::new(&config);
+
+        let limit = service.calculate_max_body_limit();
+        let expected = (10485760.0 * 1.35) as u64; // max(1024, 10485760) * 1.35
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_calculate_max_body_limit_with_ip_whitelist() {
+        let mut config = create_test_config();
+        config.ip_limits = Some(IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(8192),
+                    file_max_size: Some(104857600), // 100 MB
+                },
+                IpLimitEntry {
+                    ip: "10.0.0.0/8".to_string(),
+                    message_max_length: Some(4096),
+                    file_max_size: Some(52428800), // 50 MB
+                },
+            ],
+        });
+
+        let service = LimitsService::new(&config);
+        let limit = service.calculate_max_body_limit();
+
+        // Should be max(100MB, 50MB) with 1.35 overhead = 100MB * 1.35
+        let expected = (104857600.0 * 1.35) as u64;
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_calculate_max_body_limit_disabled_ip_limits() {
+        let mut config = create_test_config();
+        config.ip_limits = Some(IpLimitsConfig {
+            enabled: false, // Disabled
+            whitelist: vec![IpLimitEntry {
+                ip: "192.168.1.100".to_string(),
+                message_max_length: Some(8192),
+                file_max_size: Some(104857600),
+            }],
+        });
+
+        let service = LimitsService::new(&config);
+        let limit = service.calculate_max_body_limit();
+
+        // Should use default limits since IP limits are disabled
+        let expected = (10485760.0 * 1.35) as u64;
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_body_limit_as_usize_normal_case() {
+        let config = create_test_config();
+        let service = LimitsService::new(&config);
+
+        let limit = service.body_limit_as_usize().unwrap();
+        let base = (10485760.0 * 1.35) as u64;
+        let expected = (base as f64 * 1.05) as usize;
+
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_body_limit_as_usize_with_high_limits() {
+        let mut config = create_test_config();
+        config.file_max_size = 10_737_418_240; // 10 GB (maximum allowed)
+
+        let service = LimitsService::new(&config);
+        let limit = service.body_limit_as_usize();
+
+        assert!(limit.is_some());
+        let limit_value = limit.unwrap();
+
+        // Should be ~10GB * 1.35 * 1.05 = ~14.175 GB
+        let expected_approx = (10_737_418_240.0 * 1.35 * 1.05) as usize;
+        assert_eq!(limit_value, expected_approx);
+    }
+
+    #[test]
+    fn test_body_limit_with_message_larger_than_file() {
+        let mut config = create_test_config();
+        config.message_max_length = 65535; // u16::MAX
+        config.file_max_size = 1024; // Smaller than message
+
+        let service = LimitsService::new(&config);
+        let limit = service.calculate_max_body_limit();
+
+        // Should use message length since it's larger
+        let expected = (65535.0 * 1.35) as u64;
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_body_limit_empty_whitelist() {
+        let mut config = create_test_config();
+        config.ip_limits = Some(IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![], // Empty whitelist
+        });
+
+        let service = LimitsService::new(&config);
+        let limit = service.calculate_max_body_limit();
+
+        // Should fall back to defaults
+        let expected = (10485760.0 * 1.35) as u64;
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_body_limit_partial_ip_overrides() {
+        let mut config = create_test_config();
+        config.ip_limits = Some(IpLimitsConfig {
+            enabled: true,
+            whitelist: vec![
+                IpLimitEntry {
+                    ip: "192.168.1.100".to_string(),
+                    message_max_length: Some(16384),
+                    file_max_size: None, // Uses default
+                },
+                IpLimitEntry {
+                    ip: "10.0.0.1".to_string(),
+                    message_max_length: None,       // Uses default
+                    file_max_size: Some(209715200), // 200 MB
+                },
+            ],
+        });
+
+        let service = LimitsService::new(&config);
+        let limit = service.calculate_max_body_limit();
+
+        // Should be max of 200MB (from second entry) with overhead
+        let expected = (209715200.0 * 1.35) as u64;
+        assert_eq!(limit, expected);
+    }
+
+    #[test]
+    fn test_body_limit_safety_margin() {
+        let config = create_test_config();
+        let service = LimitsService::new(&config);
+
+        let base_limit = service.calculate_max_body_limit();
+        let limit_with_margin = service.body_limit_as_usize().unwrap();
+
+        // Verify 5% safety margin is applied
+        let expected_margin = (base_limit as f64 * 1.05) as usize;
+        assert_eq!(limit_with_margin, expected_margin);
     }
 
     #[test]

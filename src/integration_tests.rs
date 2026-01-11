@@ -41,19 +41,26 @@ mod tests {
         let limits_service = LimitsService::new(&config);
         let secret_storage = MockSecretStorage::new();
 
+        let body_limit = limits_service
+            .body_limit_as_usize()
+            .expect("Failed to calculate body limit");
+
         Arc::new(AppState {
             config,
             limits_service,
             secret_storage: Box::new(secret_storage),
+            body_limit,
         })
     }
 
     fn create_test_router(app_state: Arc<AppState>) -> Router {
+        let body_limit = app_state.body_limit;
+
         Router::new()
             .route("/api/config", get(get_config_route))
             .route(
                 "/api/secret",
-                post(store_secret_route).layer(DefaultBodyLimit::disable()),
+                post(store_secret_route).layer(DefaultBodyLimit::max(body_limit)),
             )
             .route("/api/secret/{id}", get(get_secret_route))
             .layer(middleware::from_fn(ClientIpExtractor::middleware))
@@ -209,7 +216,9 @@ mod tests {
             .unwrap();
 
         let response = app.oneshot(request).await.unwrap();
-        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        // With DefaultBodyLimit now enforced, oversized payloads are rejected with 413 Payload Too Large
+        // at the HTTP layer before reaching application logic
+        assert_eq!(response.status(), StatusCode::PAYLOAD_TOO_LARGE);
     }
 
     #[tokio::test]

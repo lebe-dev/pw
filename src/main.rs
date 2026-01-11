@@ -39,6 +39,7 @@ pub struct AppState {
     pub config: AppConfig,
     pub secret_storage: Box<dyn SecretStorage + Send + Sync>,
     pub limits_service: limits::LimitsService,
+    pub body_limit: usize,
 }
 
 #[tokio::main]
@@ -53,17 +54,30 @@ async fn main() -> anyhow::Result<()> {
     let secret_storage = RedisSecretStorage::new(&app_config.redis_url);
     let limits_service = limits::LimitsService::new(&app_config);
 
+    let body_limit = limits_service
+        .body_limit_as_usize()
+        .expect("failed to calculate body limit");
+
+    log::info!(
+        "configured HTTP body limit: {} bytes ({:.2} MB)",
+        body_limit,
+        body_limit as f64 / 1_048_576.0
+    );
+
     let app_state = AppState {
         config: app_config.clone(),
         secret_storage: Box::new(secret_storage),
         limits_service,
+        body_limit,
     };
+
+    let body_limit_for_route = app_state.body_limit;
 
     let app = Router::new()
         .route("/api/config", get(get_config_route))
         .route(
             "/api/secret",
-            post(store_secret_route).layer(DefaultBodyLimit::disable()),
+            post(store_secret_route).layer(DefaultBodyLimit::max(body_limit_for_route)),
         )
         .route(
             "/api/secret/{id}",
