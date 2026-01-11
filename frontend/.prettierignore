@@ -5,3 +5,4 @@ yarn.lock
 
 # UI Components (auto-generated or external)
 src/lib/components/ui/
+coverage
