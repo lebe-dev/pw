@@ -1,4 +1,22 @@
 services:
+  app:
+    container_name: pw-dev
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    restart: always
+    environment:
+      PW_LISTEN: "0.0.0.0:8080"
+      PW_LOG_LEVEL: "info"
+      PW_MESSAGE_MAX_LENGTH: "3127"
+      PW_ENCRYPTED_MESSAGE_MAX_LENGTH: "15485760"
+      PW_FILE_UPLOAD_ENABLED: "true"
+      PW_FILE_MAX_SIZE: "1048576" # 1 MB
+      PW_REDIS_URL: "redis://redis:6379/"
+      PW_LOG_TARGET: "console"
+    ports:
+      - "18080:8080"
+
   redis:
     container_name: pw-redis
     image: redis:8.4.0-alpine3.22

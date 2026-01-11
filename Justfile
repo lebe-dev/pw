@@ -14,6 +14,12 @@ run-backend:
 run-frontend:
   cd frontend && yarn && npm run dev -- --port=4200
 
+run-dev-image:
+  docker compose -f docker-compose-dev.yml up -d
+
+stop-dev-image:
+  docker compose -f docker-compose-dev.yml down
+
 lint:
   cargo fmt -- --check
   cargo clippy -- -D warnings
