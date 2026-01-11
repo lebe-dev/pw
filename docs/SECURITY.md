@@ -1,78 +1,67 @@
 # Security
 
-- Browser generates encryption key or you can specify your own password
-- Browser encrypt data (text/file)
-- Browser generate and encode unique Secret URL which contains secret id and encryption key
-- Backend stores ONLY encrypted data
-- Backend doesn't use disk to store data
-- Backend do cleanup for in-memory storage:
-  - Each time when someone retrieve secret
-  - By redis TTL schedule
+This document provides an overview of the security architecture. For detailed information, see the specific documentation:
 
-## Decryption
+- **[Encryption & Zero-Knowledge Architecture](security/encryption-zero-knowledge.md)** - How data is encrypted client-side and why the backend cannot decrypt secrets
+- **[IP Whitelist & Rate Limiting](security/ip-whitelist-rate-limit.md)** - Access control, rate limiting, and trusted proxy configuration
+- **[Container Image Security](security/container-image-security.md)** - Vulnerability scanning results and security scanning procedures
 
-- User visits secret URL and send secret id to backend
-- Backend returns encrypted data to client side (browser)
-- Browser decrypt data and shows to end user
+## Security Layers
 
-## Image scan report
+### 1. Zero-Knowledge Encryption
 
-```bash
-$ trivy -v
-Version: 0.68.1
-Vulnerability DB:
-  Version: 2
-  UpdatedAt: 2025-12-05 12:26:38.481889982 +0000 UTC
-  NextUpdate: 2025-12-06 12:26:38.481889712 +0000 UTC
-  DownloadedAt: 2025-12-05 12:58:07.216851 +0000 UTC
-Java DB:
-  Version: 1
-  UpdatedAt: 2025-11-20 00:57:10.039747638 +0000 UTC
-  NextUpdate: 2025-11-23 00:57:10.039747518 +0000 UTC
-  DownloadedAt: 2025-11-20 07:42:07.774353 +0000 UTC
+All encryption happens in the browser, ensuring maximum privacy:
 
-$ trivy image tinyops/pw:1.11.0
-2025-12-05T16:02:41+03:00	INFO	[vuln] Vulnerability scanning is enabled
-2025-12-05T16:02:41+03:00	INFO	[secret] Secret scanning is enabled
-2025-12-05T16:02:41+03:00	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2025-12-05T16:02:41+03:00	INFO	[secret] Please see https://trivy.dev/docs/v0.68/guide/scanner/secret#recommendation for faster secret detection
-2025-12-05T16:02:41+03:00	INFO	Detected OS	family="alpine" version="3.23.0"
-2025-12-05T16:02:41+03:00	WARN	This OS version is not on the EOL list	family="alpine" version="3.23"
-2025-12-05T16:02:41+03:00	INFO	[alpine] Detecting vulnerabilities...	os_version="3.23" repository="3.23" pkg_num=16
-2025-12-05T16:02:41+03:00	INFO	Number of language-specific files	num=0
+- All encryption happens in the browser
+- Backend stores only encrypted data
+- Encryption keys never transmitted to server
+- Backend operators cannot read secrets
 
-Report Summary
+**[Read more →](security/encryption-zero-knowledge.md)**
 
-┌───────────────────────────────────┬────────┬─────────────────┬─────────┐
-│              Target               │  Type  │ Vulnerabilities │ Secrets │
-├───────────────────────────────────┼────────┼─────────────────┼─────────┤
-│ tinyops/pw:1.11.0 (alpine 3.23.0) │ alpine │        0        │    -    │
-└───────────────────────────────────┴────────┴─────────────────┴─────────┘
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
-```
+### 2. Access Control
 
-And for redis:
+Multi-layered protection against abuse:
 
-```bash
-$ trivy image redis:8.4.0-alpine3.22
-2025-11-21T16:28:46+03:00	INFO	[vuln] Vulnerability scanning is enabled
-2025-11-21T16:28:46+03:00	INFO	[secret] Secret scanning is enabled
-2025-11-21T16:28:46+03:00	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2025-11-21T16:28:46+03:00	INFO	[secret] Please see https://trivy.dev/v0.67/docs/scanner/secret#recommendation for faster secret detection
-2025-11-21T16:28:54+03:00	INFO	Detected OS	family="alpine" version="3.22.2"
-2025-11-21T16:28:54+03:00	INFO	[alpine] Detecting vulnerabilities...	os_version="3.22" repository="3.22" pkg_num=22
-2025-11-21T16:28:54+03:00	INFO	Number of language-specific files	num=0
+- Rate limiting (enabled by default)
+- IP whitelist support
+- Per-IP custom limits
+- Trusted proxy validation
 
-Report Summary
+**[Read more →](security/ip-whitelist-rate-limit.md)**
 
-┌────────────────────────────────────────┬────────┬─────────────────┬─────────┐
-│                 Target                 │  Type  │ Vulnerabilities │ Secrets │
-├────────────────────────────────────────┼────────┼─────────────────┼─────────┤
-│ redis:8.4.0-alpine3.22 (alpine 3.22.2) │ alpine │        0        │    -    │
-└────────────────────────────────────────┴────────┴─────────────────┴─────────┘
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
-```
+### 3. Container Security
+
+Regularly scanned images with zero vulnerabilities:
+
+- Regular vulnerability scanning with Trivy
+- Alpine-based minimal images
+- Zero known vulnerabilities
+
+**[Read more →](security/container-image-security.md)**
+
+## Quick Start
+
+### For Users
+
+Secrets are encrypted in your browser before transmission. The server cannot decrypt your data. Share the generated URL securely.
+
+**Key points:**
+- Your secret is encrypted before leaving your browser
+- The server never sees unencrypted data
+- Share Secret URLs only through secure channels
+- Secrets expire automatically (max 7 days)
+
+### For Administrators
+
+1. Review [encryption architecture](security/encryption-zero-knowledge.md) to understand zero-knowledge model
+2. Configure [rate limiting and IP whitelist](security/ip-whitelist-rate-limit.md) if needed
+3. Monitor [container security](security/container-image-security.md) scan results
+
+**Configuration files:**
+- Main config: `pw.yml`
+- Environment variables: See individual security docs
+
+## Security Contact
+
+If you discover a security vulnerability, please report it to the project maintainers. Do not create public GitHub issues for security vulnerabilities.
