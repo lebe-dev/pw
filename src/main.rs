@@ -64,14 +64,14 @@ async fn main() -> anyhow::Result<()> {
         body_limit as f64 / 1_048_576.0
     );
 
-    if let Some(ref rate_limit_cfg) = app_config.rate_limit {
-        if rate_limit_cfg.enabled {
-            log::info!(
-                "rate limiting enabled: {} req/min (burst: {})",
-                rate_limit_cfg.requests_per_minute,
-                rate_limit_cfg.burst_size
-            );
-        }
+    if let Some(ref rate_limit_cfg) = app_config.rate_limit
+        && rate_limit_cfg.enabled
+    {
+        log::info!(
+            "rate limiting enabled: {} req/min (burst: {})",
+            rate_limit_cfg.requests_per_minute,
+            rate_limit_cfg.burst_size
+        );
     }
 
     let app_state = AppState {
@@ -96,16 +96,16 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/version", get(get_version_route))
         .fallback(static_handler);
 
-    if let Some(ref rate_limit_cfg) = app_config.rate_limit {
-        if rate_limit_cfg.enabled {
-            app = app.layer(middleware::rate_limit::create_rate_limit_layer(
-                rate_limit_cfg,
-            ));
+    if let Some(ref rate_limit_cfg) = app_config.rate_limit
+        && rate_limit_cfg.enabled
+    {
+        app = app.layer(middleware::rate_limit::create_rate_limit_layer(
+            rate_limit_cfg,
+        ));
 
-            app = app.layer(axum::middleware::from_fn(
-                middleware::rate_limit::rate_limit_middleware,
-            ));
-        }
+        app = app.layer(axum::middleware::from_fn(
+            middleware::rate_limit::rate_limit_middleware,
+        ));
     }
 
     let app = app

@@ -15,13 +15,13 @@ pub async fn rate_limit_middleware(
 ) -> Response {
     let client_ip = request.extensions().get::<ClientIp>().map(|ip| ip.0);
 
-    if let Some(ip) = client_ip {
-        if let Some(ref limits_config) = ip_limits {
-            if limits_config.enabled && is_whitelisted(&ip, limits_config) {
-                debug!("IP {} is whitelisted, bypassing rate limit", ip);
-                request.extensions_mut().insert(BypassRateLimit);
-            }
-        }
+    if let Some(ip) = client_ip
+        && let Some(ref limits_config) = ip_limits
+        && limits_config.enabled
+        && is_whitelisted(&ip, limits_config)
+    {
+        debug!("IP {} is whitelisted, bypassing rate limit", ip);
+        request.extensions_mut().insert(BypassRateLimit);
     }
 
     next.run(request).await
