@@ -65,30 +65,34 @@ impl SecretStorage for RedisSecretStorage {
         let client = redis::Client::open(&*self.cnn_url)?;
         let mut cnn = client.get_connection()?;
 
-        let id = id.to_string();
+        let script = redis::Script::new(
+            r#"
+            local value = redis.call('GET', KEYS[1])
+            if value then
+                local secret = cjson.decode(value)
+                if secret.downloadPolicy == "OneTime" then
+                    redis.call('DEL', KEYS[1])
+                end
+            end
+            return value
+            "#,
+        );
 
-        if cnn.exists(&id)? {
-            let res: String = cnn.get(&id)?;
+        let res: Option<String> = script.key(id).invoke(&mut cnn)?;
 
-            let res = serde_json::from_str::<Secret>(&res);
-
-            match res {
-                Ok(secret) => {
-                    if secret.download_policy == SecretDownloadPolicy::OneTime {
-                        let _: String = cnn.del(&id)?;
-                    }
-
-                    info!("secret has been found");
-                    Ok(Some(secret.clone()))
-                }
-                Err(e) => {
+        match res {
+            Some(json) => {
+                let secret = serde_json::from_str::<Secret>(&json).map_err(|e| {
                     error!("{}", e);
-                    Err(anyhow!("unable to get key"))
-                }
+                    anyhow!("unable to deserialize secret")
+                })?;
+                info!("secret has been found");
+                Ok(Some(secret))
             }
-        } else {
-            info!("secret wasn't found by id '{id}'");
-            Ok(None)
+            None => {
+                info!("secret wasn't found by id '{id}'");
+                Ok(None)
+            }
         }
     }
 
