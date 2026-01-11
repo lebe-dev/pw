@@ -5,7 +5,7 @@ init:
   rustup component add clippy
   cargo install cargo-llvm-cov
 
-test-image-build:
+build-dev-image:
   docker build --progress=plain -t app:dev .
 
 run-backend:
@@ -14,8 +14,8 @@ run-backend:
 run-frontend:
   cd frontend && yarn && npm run dev -- --port=4200
 
-run-dev-image:
-  docker compose -f docker-compose-dev.yml up -d
+start-dev-image:
+  docker compose -f docker-compose-dev.yml up -d --build --force-recreate
 
 stop-dev-image:
   docker compose -f docker-compose-dev.yml down
@@ -31,10 +31,8 @@ test:
 
 test-all: test
 
-build: lint
-  cargo test --bin server
-  cargo test --lib
-  cargo test --test '*'
+build: lint && test
+  cargo build
 
 build-release-image: test-all
   docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
