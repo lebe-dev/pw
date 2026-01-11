@@ -55,3 +55,16 @@ ip-limits:
   #   - ip: '172.16.10.5'              # Monitoring server
   #     message-max-length: 32768      # 32KB for detailed reports
   #     file-max-size: 1073741824      # 1GB for log bundles
+
+# Rate limiting (per-IP protection against abuse)
+rate-limit:
+  enabled: true                      # Enabled by default for security
+  requests-per-minute: 60            # 60 requests per minute per IP (1 req/sec average)
+  burst-size: 10                     # Allow burst of 10 requests
+
+  # Note: IPs in the ip-limits whitelist above will bypass rate limiting completely
+
+  # Environment variable overrides:
+  # PW_RATE_LIMIT_ENABLED=false                 # Disable rate limiting
+  # PW_RATE_LIMIT_REQUESTS_PER_MINUTE=120       # Allow 120 requests per minute
+  # PW_RATE_LIMIT_BURST_SIZE=20                 # Allow burst of 20 requests

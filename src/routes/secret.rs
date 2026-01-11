@@ -23,7 +23,7 @@ pub async fn store_secret_route(
     let client_limits = state.limits_service.get_limits_for_ip(&client_ip_str);
 
     info!(
-        "Secret storage request from {}: applying encrypted_message_max_length: {}",
+        "secret storage request from {}: applying encrypted_message_max_length: {}",
         client_ip_str, client_limits.encrypted_message_max_length
     );
 
@@ -33,11 +33,11 @@ pub async fn store_secret_route(
         client_limits.encrypted_message_max_length,
     ) {
         Ok(_) => {
-            info!("Secret stored successfully for client {}", client_ip_str);
+            info!("secret stored successfully for client {}", client_ip_str);
             StatusCode::OK
         }
         Err(e) => {
-            error!("Failed to store secret for client {}: {}", client_ip_str, e);
+            error!("failed to store secret for client {}: {}", client_ip_str, e);
             StatusCode::INTERNAL_SERVER_ERROR
         }
     }
@@ -96,6 +96,7 @@ mod tests {
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: ip_limits_config,
+            rate_limit: None,
         };
 
         let limits_service = LimitsService::new(&config);

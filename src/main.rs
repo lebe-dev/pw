@@ -64,6 +64,16 @@ async fn main() -> anyhow::Result<()> {
         body_limit as f64 / 1_048_576.0
     );
 
+    if let Some(ref rate_limit_cfg) = app_config.rate_limit {
+        if rate_limit_cfg.enabled {
+            log::info!(
+                "rate limiting enabled: {} req/min (burst: {})",
+                rate_limit_cfg.requests_per_minute,
+                rate_limit_cfg.burst_size
+            );
+        }
+    }
+
     let app_state = AppState {
         config: app_config.clone(),
         secret_storage: Box::new(secret_storage),
@@ -73,7 +83,7 @@ async fn main() -> anyhow::Result<()> {
 
     let body_limit_for_route = app_state.body_limit;
 
-    let app = Router::new()
+    let mut app = Router::new()
         .route("/api/config", get(get_config_route))
         .route(
             "/api/secret",
@@ -84,7 +94,21 @@ async fn main() -> anyhow::Result<()> {
             get(get_secret_route).delete(remove_secret_route),
         )
         .route("/api/version", get(get_version_route))
-        .fallback(static_handler)
+        .fallback(static_handler);
+
+    if let Some(ref rate_limit_cfg) = app_config.rate_limit {
+        if rate_limit_cfg.enabled {
+            app = app.layer(middleware::rate_limit::create_rate_limit_layer(
+                rate_limit_cfg,
+            ));
+
+            app = app.layer(axum::middleware::from_fn(
+                middleware::rate_limit::rate_limit_middleware,
+            ));
+        }
+    }
+
+    let app = app
         .layer(axum::Extension(app_config.ip_limits.clone()))
         .layer(axum::middleware::from_fn(
             middleware::ClientIpExtractor::middleware,

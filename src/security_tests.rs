@@ -55,6 +55,7 @@ mod tests {
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: Some(ip_limits),
+            rate_limit: None,
         };
 
         let limits_service = LimitsService::new(&config);
@@ -402,6 +403,7 @@ mod tests {
                 }],
                 trusted_proxies: vec![],
             }),
+            rate_limit: None,
         };
 
         let config2 = AppConfig {
@@ -413,6 +415,7 @@ mod tests {
             file_max_size: 20971520,
             encrypted_message_max_length: Some(31457280),
             redis_url: "redis://localhost".to_string(),
+            rate_limit: None,
             ip_limits: Some(IpLimitsConfig {
                 enabled: true,
                 whitelist: vec![IpLimitEntry {

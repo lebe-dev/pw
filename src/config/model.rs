@@ -22,6 +22,14 @@ pub struct IpLimitsConfig {
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
+pub struct RateLimitConfig {
+    pub enabled: bool,
+    pub requests_per_minute: u32,
+    pub burst_size: u32,
+}
+
+#[derive(PartialEq, Deserialize, Clone, Debug)]
+#[serde(rename_all = "kebab-case")]
 pub struct AppConfig {
     pub listen: String,
 
@@ -43,6 +51,8 @@ pub struct AppConfig {
     pub redis_url: String,
 
     pub ip_limits: Option<IpLimitsConfig>,
+
+    pub rate_limit: Option<RateLimitConfig>,
 }
 
 impl Display for AppConfig {
@@ -51,7 +61,7 @@ impl Display for AppConfig {
             f,
             "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
             file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {:?}, redis-url: '{}', \
-            ip-limits: {:?}",
+            ip-limits: {:?}, rate-limit: {:?}",
             self.listen,
             self.log_level,
             self.log_target,
@@ -60,7 +70,8 @@ impl Display for AppConfig {
             self.file_max_size,
             self.encrypted_message_max_length,
             self.redis_url,
-            self.ip_limits
+            self.ip_limits,
+            self.rate_limit
         )
     }
 }
