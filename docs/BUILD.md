@@ -1,20 +1,20 @@
 # How to build
 
-## How to build docker image
+## How to build docker image (Recommended)
 
 1. Install [Docker](https://docs.docker.com/engine/install/)
 
 2. Build image:
 
 ```shell
-docker build --progress=plain --platform=linux/amd64 -t tinyops/pw:1.9.0 .
+docker build --progress=plain --platform=linux/amd64 -t IMAGE-TAG .
 ```
 
 ## How to build standalone version
 
-**1. Install Rust 1.85 or later**
+**1. Install [Rust](https://rust-lang.org/learn/get-started/)**
 
-**2. Install NodeJS and npm**
+**2. Install [NodeJS and npm](https://nodejs.org/en/download)**
 
 **3. Build frontend module**
 
@@ -32,7 +32,7 @@ cp -r frontend/build/ static/
 cargo build --release
 cd ..
 
-# Linux
+# Linux/MacOS
 cp target/release/pw pw
 
 # Windows
