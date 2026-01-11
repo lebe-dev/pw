@@ -21,8 +21,7 @@ lint:
 
 test:
   cd frontend && yarn test run
-  cargo test --lib
-  cargo test --bin server
+  cargo test
 
 test-all: test
 
