@@ -85,6 +85,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/api/version", get(get_version_route))
         .fallback(static_handler)
+        .layer(axum::Extension(app_config.ip_limits.clone()))
         .layer(axum::middleware::from_fn(
             middleware::ClientIpExtractor::middleware,
         ))

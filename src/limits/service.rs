@@ -214,6 +214,7 @@ mod tests {
                     file_max_size: Some(209715200),
                 },
             ],
+            trusted_proxies: vec![],
         });
         config
     }
@@ -351,6 +352,7 @@ mod tests {
                 message_max_length: Some(16384),
                 file_max_size: Some(209715200),
             }],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 
@@ -381,6 +383,7 @@ mod tests {
                     file_max_size: Some(104857600),
                 },
             ],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 
@@ -454,6 +457,7 @@ mod tests {
                     file_max_size: Some(52428800), // 50 MB
                 },
             ],
+            trusted_proxies: vec![],
         });
 
         let service = LimitsService::new(&config);
@@ -474,6 +478,7 @@ mod tests {
                 message_max_length: Some(8192),
                 file_max_size: Some(104857600),
             }],
+            trusted_proxies: vec![],
         });
 
         let service = LimitsService::new(&config);
@@ -532,6 +537,7 @@ mod tests {
         config.ip_limits = Some(IpLimitsConfig {
             enabled: true,
             whitelist: vec![], // Empty whitelist
+            trusted_proxies: vec![],
         });
 
         let service = LimitsService::new(&config);
@@ -559,6 +565,7 @@ mod tests {
                     file_max_size: Some(209715200), // 200 MB
                 },
             ],
+            trusted_proxies: vec![],
         });
 
         let service = LimitsService::new(&config);
@@ -592,6 +599,7 @@ mod tests {
                 message_max_length: Some(4096),
                 file_max_size: Some(52428800),
             }],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 
@@ -633,6 +641,7 @@ mod tests {
                     file_max_size: Some(209715200),
                 },
             ],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 
@@ -672,6 +681,7 @@ mod tests {
                     file_max_size: Some(26214400),
                 },
             ],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 
@@ -727,6 +737,7 @@ mod tests {
         config.ip_limits = Some(IpLimitsConfig {
             enabled: true,
             whitelist: vec![],
+            trusted_proxies: vec![],
         });
         let service = LimitsService::new(&config);
 

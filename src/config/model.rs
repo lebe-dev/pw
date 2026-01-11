@@ -16,6 +16,8 @@ pub struct IpLimitEntry {
 pub struct IpLimitsConfig {
     pub enabled: bool,
     pub whitelist: Vec<IpLimitEntry>,
+    #[serde(default)]
+    pub trusted_proxies: Vec<String>,
 }
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]

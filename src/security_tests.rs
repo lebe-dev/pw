@@ -42,6 +42,7 @@ mod tests {
                     file_max_size: Some(52428800),
                 },
             ],
+            trusted_proxies: vec![],
         };
 
         let config = AppConfig {
@@ -399,6 +400,7 @@ mod tests {
                     message_max_length: Some(8192),
                     file_max_size: Some(104857600),
                 }],
+                trusted_proxies: vec![],
             }),
         };
 
@@ -418,6 +420,7 @@ mod tests {
                     message_max_length: Some(4096),
                     file_max_size: Some(52428800),
                 }],
+                trusted_proxies: vec![],
             }),
         };
 

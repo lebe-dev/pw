@@ -22,6 +22,18 @@ redis-url: 'redis://cache:6379/'
 # IP-based dynamic limits (new feature)
 ip-limits:
   enabled: false                      # Default: disabled for backward compatibility
+
+  # Trusted proxies (SECURITY: Required when using reverse proxy with IP limits enabled)
+  # When IP limits are enabled, only requests from these IPs will have their
+  # X-Forwarded-For / X-Real-IP headers trusted. This prevents IP spoofing attacks.
+  # Leave empty to ignore all forwarded headers (secure by default).
+  trusted-proxies: []
+  # trusted-proxies:
+  #   - '127.0.0.1'                    # Local nginx/proxy
+  #   - '10.0.0.1'                     # Load balancer
+  #   - '172.16.0.0/12'                # Docker network range
+  #   - '2001:db8::/32'                # IPv6 proxy range
+
   whitelist: []
   # whitelist:
   #   # Development environment example

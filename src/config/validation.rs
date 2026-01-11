@@ -68,6 +68,18 @@ pub fn validate_ip_limits_config(config: &IpLimitsConfig) -> Result<(), Vec<Vali
         }
     }
 
+    for proxy_ip in &config.trusted_proxies {
+        if let Err(err) = validate_ip_format(proxy_ip) {
+            errors.push(err);
+        }
+    }
+
+    if config.enabled && config.trusted_proxies.is_empty() {
+        warn!(
+            "IP limits enabled but trusted-proxies is empty - forwarded headers will be ignored for security"
+        );
+    }
+
     if errors.is_empty() {
         Ok(())
     } else {
@@ -259,6 +271,7 @@ mod tests {
         IpLimitsConfig {
             enabled: true,
             whitelist: entries,
+            trusted_proxies: vec![],
         }
     }
 
@@ -396,6 +409,7 @@ mod tests {
         let config = IpLimitsConfig {
             enabled: true,
             whitelist: vec![],
+            trusted_proxies: vec![],
         };
         assert!(validate_ip_limits_config(&config).is_ok());
 

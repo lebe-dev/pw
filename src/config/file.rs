@@ -72,6 +72,7 @@ fn get_ip_limits_config(
             ip_limits = Some(IpLimitsConfig {
                 enabled,
                 whitelist: Vec::new(),
+                trusted_proxies: Vec::new(),
             });
         }
     }
@@ -86,6 +87,24 @@ fn get_ip_limits_config(
             ip_limits = Some(IpLimitsConfig {
                 enabled: false, // Default to false if only whitelist is provided
                 whitelist: whitelist_entries,
+                trusted_proxies: Vec::new(),
+            });
+        }
+    }
+
+    if let Some(trusted_proxies_json) = get_env_var("PW_IP_LIMITS_TRUSTED_PROXIES") {
+        let trusted_proxy_entries: Vec<String> = serde_json::from_str(&trusted_proxies_json)
+            .map_err(|e| {
+                anyhow::anyhow!("Failed to parse PW_IP_LIMITS_TRUSTED_PROXIES JSON: {}", e)
+            })?;
+
+        if let Some(ref mut limits) = ip_limits {
+            limits.trusted_proxies = trusted_proxy_entries;
+        } else {
+            ip_limits = Some(IpLimitsConfig {
+                enabled: false, // Default to false if only trusted proxies is provided
+                whitelist: Vec::new(),
+                trusted_proxies: trusted_proxy_entries,
             });
         }
     }
@@ -124,6 +143,7 @@ mod tests {
                 message_max_length: None,
                 file_max_size: None,
             }],
+            trusted_proxies: vec![],
         });
 
         let result = get_ip_limits_config(yaml_config.clone()).unwrap();
@@ -146,6 +166,7 @@ mod tests {
                 message_max_length: None,
                 file_max_size: None,
             }],
+            trusted_proxies: vec![],
         });
 
         let result = get_ip_limits_config(yaml_config).unwrap();
@@ -177,6 +198,7 @@ mod tests {
                 message_max_length: None,
                 file_max_size: None,
             }],
+            trusted_proxies: vec![],
         });
 
         let result = get_ip_limits_config(yaml_config).unwrap().unwrap();
@@ -343,6 +365,7 @@ mod tests {
                 message_max_length: Some(2048),
                 file_max_size: Some(52428800),
             }],
+            trusted_proxies: vec![],
         });
 
         let result = get_ip_limits_config(yaml_config).unwrap().unwrap();

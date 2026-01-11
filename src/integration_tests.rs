@@ -115,6 +115,7 @@ mod tests {
                 message_max_length: Some(8192),
                 file_max_size: Some(104857600),
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -147,6 +148,7 @@ mod tests {
                 message_max_length: Some(16384),
                 file_max_size: Some(209715200),
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -230,6 +232,7 @@ mod tests {
                 message_max_length: Some(8192), // 8x default
                 file_max_size: Some(4096000),   // 4MB instead of 100MB
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -259,6 +262,7 @@ mod tests {
                 message_max_length: Some(4096),
                 file_max_size: Some(52428800),
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -330,6 +334,7 @@ mod tests {
                     file_max_size: Some(52428800),
                 },
             ],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -371,6 +376,7 @@ mod tests {
                 message_max_length: Some(2048),
                 file_max_size: Some(26214400),
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
@@ -412,6 +418,7 @@ mod tests {
                 message_max_length: Some(8192),
                 file_max_size: Some(4096000), // 4MB instead of 100MB
             }],
+            trusted_proxies: vec![],
         };
 
         let app_state = create_test_app_state(Some(ip_limits));
