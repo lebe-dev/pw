@@ -148,8 +148,8 @@ describe('url utilities', () => {
 
 	describe('getUrlBaseHost', () => {
 		beforeEach(() => {
-			delete (global as any).window;
-			global.window = {} as any;
+			delete (global as Window & typeof globalThis).window;
+			global.window = {} as Window & typeof globalThis;
 		});
 
 		afterEach(() => {
@@ -161,7 +161,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: 'example.com',
 				port: '80'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://example.com');
 		});
@@ -171,7 +171,7 @@ describe('url utilities', () => {
 				protocol: 'https:',
 				hostname: 'example.com',
 				port: '443'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('https://example.com');
 		});
@@ -181,7 +181,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: 'localhost',
 				port: '3000'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://localhost:3000');
 		});
@@ -191,7 +191,7 @@ describe('url utilities', () => {
 				protocol: 'https:',
 				hostname: 'example.com',
 				port: '8443'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('https://example.com:8443');
 		});
@@ -201,7 +201,7 @@ describe('url utilities', () => {
 				protocol: 'https:',
 				hostname: 'example.com',
 				port: ''
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('https://example.com');
 		});
@@ -211,7 +211,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: '192.168.1.1',
 				port: '8080'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://192.168.1.1:8080');
 		});
@@ -221,7 +221,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: 'localhost',
 				port: '5173'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://localhost:5173');
 		});
@@ -231,7 +231,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: 'localhost',
 				port: '80'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://localhost');
 		});
@@ -241,7 +241,7 @@ describe('url utilities', () => {
 				protocol: 'http:',
 				hostname: '::1',
 				port: '3000'
-			} as any;
+			} as Location;
 
 			expect(getUrlBaseHost()).toBe('http://::1:3000');
 		});

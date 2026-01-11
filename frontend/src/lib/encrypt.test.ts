@@ -152,17 +152,19 @@ describe('encrypt utilities', () => {
 			const mockGenerateKey = vi.fn();
 			const mockExportKey = vi.fn();
 
-			mockGenerateKey.mockImplementation(async (algorithm: any) => {
+			mockGenerateKey.mockImplementation(async (algorithm: { name: string; length: number }) => {
 				return {
 					type: 'secret',
 					algorithm: { name: 'AES-GCM', length: algorithm.length }
 				};
 			});
 
-			mockExportKey.mockImplementation(async (format: string, key: any) => {
-				const length = key.algorithm.length / 8;
-				return new Uint8Array(Array.from({ length }, (_, i) => i % 256)).buffer;
-			});
+			mockExportKey.mockImplementation(
+				async (format: string, key: { algorithm: { length: number } }) => {
+					const length = key.algorithm.length / 8;
+					return new Uint8Array(Array.from({ length }, (_, i) => i % 256)).buffer;
+				}
+			);
 
 			global.window = {
 				crypto: {
@@ -171,7 +173,7 @@ describe('encrypt utilities', () => {
 						exportKey: mockExportKey
 					}
 				}
-			} as any;
+			} as unknown as Window & typeof globalThis;
 		});
 
 		afterEach(() => {
@@ -209,7 +211,7 @@ describe('encrypt utilities', () => {
 					.mockResolvedValueOnce(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]).buffer)
 					.mockResolvedValueOnce(new Uint8Array([9, 10, 11, 12, 13, 14, 15, 16]).buffer);
 
-				(window.crypto.subtle.exportKey as any) = mockExportKey;
+				window.crypto.subtle.exportKey = mockExportKey;
 
 				const key1 = await generateRandomKey();
 				const key2 = await generateRandomKey();
@@ -261,11 +263,11 @@ describe('encrypt utilities', () => {
 			});
 
 			it('should convert exported key buffer to hex correctly', async () => {
-				const mockExportKey = vi.fn().mockResolvedValue(
-					new Uint8Array([0x0a, 0x0b, 0x0c, 0x0d]).buffer
-				);
+				const mockExportKey = vi
+					.fn()
+					.mockResolvedValue(new Uint8Array([0x0a, 0x0b, 0x0c, 0x0d]).buffer);
 
-				(window.crypto.subtle.exportKey as any) = mockExportKey;
+				window.crypto.subtle.exportKey = mockExportKey;
 
 				const result = await getRandomHexDataWithLength(4);
 				expect(result).toBe('0a0b0c0d');
@@ -275,14 +277,14 @@ describe('encrypt utilities', () => {
 		describe('error handling', () => {
 			it('should propagate errors from generateKey', async () => {
 				const mockGenerateKey = vi.fn().mockRejectedValue(new Error('Crypto not available'));
-				(window.crypto.subtle.generateKey as any) = mockGenerateKey;
+				window.crypto.subtle.generateKey = mockGenerateKey;
 
 				await expect(generateRandomKey()).rejects.toThrow('Crypto not available');
 			});
 
 			it('should propagate errors from exportKey', async () => {
 				const mockExportKey = vi.fn().mockRejectedValue(new Error('Export failed'));
-				(window.crypto.subtle.exportKey as any) = mockExportKey;
+				window.crypto.subtle.exportKey = mockExportKey;
 
 				await expect(generateRandomKey()).rejects.toThrow('Export failed');
 			});
@@ -295,7 +297,7 @@ describe('encrypt utilities', () => {
 			const mockExportKey = vi.fn();
 
 			let keyCounter = 0;
-			mockGenerateKey.mockImplementation(async (algorithm: any) => {
+			mockGenerateKey.mockImplementation(async (algorithm: { name: string; length: number }) => {
 				return {
 					type: 'secret',
 					algorithm: { name: 'AES-GCM', length: algorithm.length },
@@ -303,11 +305,13 @@ describe('encrypt utilities', () => {
 				};
 			});
 
-			mockExportKey.mockImplementation(async (format: string, key: any) => {
-				const length = key.algorithm.length / 8;
-				const offset = key.id || 0;
-				return new Uint8Array(Array.from({ length }, (_, i) => (i + offset) % 256)).buffer;
-			});
+			mockExportKey.mockImplementation(
+				async (format: string, key: { algorithm: { length: number }; id?: number }) => {
+					const length = key.algorithm.length / 8;
+					const offset = key.id || 0;
+					return new Uint8Array(Array.from({ length }, (_, i) => (i + offset) % 256)).buffer;
+				}
+			);
 
 			global.window = {
 				crypto: {
@@ -316,7 +320,7 @@ describe('encrypt utilities', () => {
 						exportKey: mockExportKey
 					}
 				}
-			} as any;
+			} as unknown as Window & typeof globalThis;
 		});
 
 		afterEach(() => {
@@ -325,9 +329,7 @@ describe('encrypt utilities', () => {
 
 		it('should generate valid hex from random bytes', async () => {
 			const key = await generateRandomKey();
-			const bytes = new Uint8Array(
-				key.match(/.{2}/g)!.map((byte) => parseInt(byte, 16))
-			);
+			const bytes = new Uint8Array(key.match(/.{2}/g)!.map((byte) => parseInt(byte, 16)));
 
 			expect(bytes).toHaveLength(32);
 			expect(buf2hex(bytes)).toBe(key);
