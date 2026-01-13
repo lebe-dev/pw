@@ -21,7 +21,7 @@ To install the chart with the release name `pw`:
 ```bash
 helm repo add tinyops https://tinyops.ru/helm-charts/
 helm repo update
-helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.2.1
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.3.1
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
