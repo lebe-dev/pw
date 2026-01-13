@@ -1,7 +1,7 @@
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.11.1
+    image: tinyops/pw:1.12.0
     restart: always
     environment:
       PW_LISTEN: "0.0.0.0:8080"
@@ -22,13 +22,6 @@ services:
       PW_RATE_LIMIT_DELETE_SECRET_ENABLED: "true"
       PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE: "120"
       PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE: "30"
-      # CORS configuration
-      PW_CORS_ENABLED: "true"
-      PW_CORS_ALLOWED_ORIGINS: "https://example.com, https://app.example.com"
-      PW_CORS_ALLOWED_METHODS: "GET, POST, DELETE, OPTIONS"
-      PW_CORS_ALLOWED_HEADERS: "Content-Type, Authorization"
-      PW_CORS_ALLOW_CREDENTIALS: "false"
-      PW_CORS_MAX_AGE: "3600"
     #volumes:
     #- ./pw.yml:/app/pw.yml
     ports:
