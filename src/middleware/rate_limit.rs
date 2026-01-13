@@ -23,7 +23,7 @@ pub async fn rate_limit_middleware(
             if !limits_config.enabled {
                 debug!("IP limits are disabled in config");
             } else if is_whitelisted(&ip, limits_config) {
-                info!("IP {} is whitelisted, bypassing rate limit", ip);
+                debug!("IP {} is whitelisted, bypassing rate limit", ip);
                 request.extensions_mut().insert(BypassRateLimit);
             } else {
                 debug!("IP {} will be subject to rate limiting", ip);
