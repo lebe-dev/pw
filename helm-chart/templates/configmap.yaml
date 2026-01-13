@@ -18,3 +18,20 @@ data:
   PW_IP_LIMITS_WHITELIST: {{ .Values.pw.config.ipLimits.whitelist | toJson | quote }}
   {{- end }}
   {{- end }}
+  {{- if .Values.pw.config.rateLimits }}
+  {{- if .Values.pw.config.rateLimits.postSecret }}
+  PW_RATE_LIMIT_POST_SECRET_ENABLED: {{ .Values.pw.config.rateLimits.postSecret.enabled | quote }}
+  PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE: {{ .Values.pw.config.rateLimits.postSecret.requestsPerMinute | quote }}
+  PW_RATE_LIMIT_POST_SECRET_BURST_SIZE: {{ .Values.pw.config.rateLimits.postSecret.burstSize | quote }}
+  {{- end }}
+  {{- if .Values.pw.config.rateLimits.getSecret }}
+  PW_RATE_LIMIT_GET_SECRET_ENABLED: {{ .Values.pw.config.rateLimits.getSecret.enabled | quote }}
+  PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE: {{ .Values.pw.config.rateLimits.getSecret.requestsPerMinute | quote }}
+  PW_RATE_LIMIT_GET_SECRET_BURST_SIZE: {{ .Values.pw.config.rateLimits.getSecret.burstSize | quote }}
+  {{- end }}
+  {{- if .Values.pw.config.rateLimits.deleteSecret }}
+  PW_RATE_LIMIT_DELETE_SECRET_ENABLED: {{ .Values.pw.config.rateLimits.deleteSecret.enabled | quote }}
+  PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE: {{ .Values.pw.config.rateLimits.deleteSecret.requestsPerMinute | quote }}
+  PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE: {{ .Values.pw.config.rateLimits.deleteSecret.burstSize | quote }}
+  {{- end }}
+  {{- end }}

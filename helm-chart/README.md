@@ -59,6 +59,15 @@ helm delete pw
 **Note**: The encrypted message max length is calculated dynamically as `max(messageMaxLength, fileMaxSize) * 1.35` to account for encryption overhead. You can optionally override this by setting the `PW_ENCRYPTED_MESSAGE_MAX_LENGTH` environment variable.
 | `pw.config.ipLimits.enabled`               | Enable IP whitelist limits            | `false`              |
 | `pw.config.ipLimits.whitelist`             | Array of IP whitelist entries         | `[]`                 |
+| `pw.config.rateLimits.postSecret.enabled`  | Enable rate limiting for POST /secret | `true`               |
+| `pw.config.rateLimits.postSecret.requestsPerMinute` | Rate limit for POST /secret  | `120`                |
+| `pw.config.rateLimits.postSecret.burstSize` | Burst size for POST /secret          | `30`                 |
+| `pw.config.rateLimits.getSecret.enabled`   | Enable rate limiting for GET /secret  | `true`               |
+| `pw.config.rateLimits.getSecret.requestsPerMinute` | Rate limit for GET /secret    | `600`                |
+| `pw.config.rateLimits.getSecret.burstSize` | Burst size for GET /secret           | `100`                |
+| `pw.config.rateLimits.deleteSecret.enabled` | Enable rate limiting for DELETE /secret | `true`            |
+| `pw.config.rateLimits.deleteSecret.requestsPerMinute` | Rate limit for DELETE /secret | `120`           |
+| `pw.config.rateLimits.deleteSecret.burstSize` | Burst size for DELETE /secret      | `30`                 |
 | `pw.service.type`                          | PW service type                       | `ClusterIP`          |
 | `pw.service.port`                          | PW service port                       | `8080`               |
 | `pw.resources.limits.cpu`                  | PW CPU limit                          | `500m`               |
@@ -100,6 +109,55 @@ helm delete pw
 | `podSecurityContext.fsGroup`   | Pod security context fsGroup      | `1000`  |
 | `securityContext.runAsNonRoot` | Run containers as non-root user   | `true`  |
 | `securityContext.runAsUser`    | Run containers as specific user   | `1000`  |
+
+## Rate Limiting
+
+PW implements per-route rate limiting using a token bucket algorithm to protect against abuse and ensure fair resource usage. Rate limits can be configured independently for each API endpoint.
+
+### Configuration
+
+Rate limiting is enabled by default with production-ready values. Each route has three configurable parameters:
+
+- **enabled**: Enable/disable rate limiting for the route
+- **requestsPerMinute**: Maximum number of requests allowed per minute
+- **burstSize**: Maximum burst capacity (token bucket size)
+
+### Example Configuration
+
+```yaml
+pw:
+  config:
+    rateLimits:
+      postSecret:
+        enabled: true
+        requestsPerMinute: 120
+        burstSize: 30
+      getSecret:
+        enabled: true
+        requestsPerMinute: 600
+        burstSize: 100
+      deleteSecret:
+        enabled: true
+        requestsPerMinute: 120
+        burstSize: 30
+```
+
+### Default Rate Limits
+
+| Route            | Requests/Min | Burst Size | Purpose                        |
+| ---------------- | ------------ | ---------- | ------------------------------ |
+| POST /secret     | 120          | 30         | Creating new secrets           |
+| GET /secret      | 600          | 100        | Retrieving secrets (read-heavy)|
+| DELETE /secret   | 120          | 30         | Deleting secrets               |
+
+### Notes
+
+- Rate limits are applied per client IP address
+- The token bucket algorithm allows for bursts of traffic while maintaining an average rate
+- GET operations have higher limits (600/min) to accommodate read-heavy workloads
+- Write operations (POST/DELETE) have conservative limits (120/min) to prevent abuse
+- Environment variables (`PW_RATE_LIMIT_*`) override YAML configuration
+- Rate limiting can be disabled per route by setting `enabled: false`
 
 ## IP Whitelist Configuration
 

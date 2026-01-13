@@ -5,7 +5,7 @@ global:
 pw:
   image:
     repository: tinyops/pw
-    tag: ""  # Uses Chart.appVersion by default
+    tag: "" # Uses Chart.appVersion by default
     pullPolicy: IfNotPresent
 
   replicaCount: 1
@@ -32,6 +32,21 @@ pw:
       #     messageMaxLength: 4096
       #   - ip: "172.16.1.5"
       #     fileMaxSize: 209715200
+
+    # Rate limit configuration
+    rateLimits:
+      postSecret:
+        enabled: true
+        requestsPerMinute: 120
+        burstSize: 30
+      getSecret:
+        enabled: true
+        requestsPerMinute: 600
+        burstSize: 100
+      deleteSecret:
+        enabled: true
+        requestsPerMinute: 120
+        burstSize: 30
 
   service:
     type: ClusterIP
