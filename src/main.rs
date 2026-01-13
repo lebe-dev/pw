@@ -31,7 +31,7 @@ pub mod integration_tests;
 #[cfg(test)]
 pub mod security_tests;
 
-pub const VERSION: &str = "1.12.0 #1";
+pub const VERSION: &str = "1.13.0 #1";
 
 static INDEX_HTML: &str = "index.html";
 
@@ -64,36 +64,6 @@ async fn main() -> anyhow::Result<()> {
         body_limit as f64 / 1_048_576.0
     );
 
-    if let Some(ref rate_limit_cfg) = app_config.rate_limit {
-        if let Some(ref cfg) = rate_limit_cfg.post_secret
-            && cfg.enabled
-        {
-            log::info!(
-                "rate limiting POST /api/secret: {} req/min (burst: {})",
-                cfg.requests_per_minute,
-                cfg.burst_size
-            );
-        }
-        if let Some(ref cfg) = rate_limit_cfg.get_secret
-            && cfg.enabled
-        {
-            log::info!(
-                "rate limiting GET /api/secret/{{id}}: {} req/min (burst: {})",
-                cfg.requests_per_minute,
-                cfg.burst_size
-            );
-        }
-        if let Some(ref cfg) = rate_limit_cfg.delete_secret
-            && cfg.enabled
-        {
-            log::info!(
-                "rate limiting DELETE /api/secret/{{id}}: {} req/min (burst: {})",
-                cfg.requests_per_minute,
-                cfg.burst_size
-            );
-        }
-    }
-
     let app_state = AppState {
         config: app_config.clone(),
         secret_storage: Box::new(secret_storage),
@@ -103,70 +73,19 @@ async fn main() -> anyhow::Result<()> {
 
     let body_limit_for_route = app_state.body_limit;
 
-    let post_secret_route = {
-        let mut route = post(store_secret_route).layer(DefaultBodyLimit::max(body_limit_for_route));
-        if let Some(ref rate_limit_cfg) = app_config.rate_limit
-            && let Some(ref cfg) = rate_limit_cfg.post_secret
-            && cfg.enabled
-        {
-            route = route.layer(middleware::rate_limit::create_rate_limit_layer(cfg));
-        }
-        route
-    };
-
-    let get_secret_route_handler = {
-        let mut route = get(get_secret_route);
-        if let Some(ref rate_limit_cfg) = app_config.rate_limit
-            && let Some(ref cfg) = rate_limit_cfg.get_secret
-            && cfg.enabled
-        {
-            route = route.layer(middleware::rate_limit::create_rate_limit_layer(cfg));
-        }
-        route
-    };
-
-    let delete_secret_route_handler = {
-        let mut route = axum::routing::delete(remove_secret_route);
-        if let Some(ref rate_limit_cfg) = app_config.rate_limit
-            && let Some(ref cfg) = rate_limit_cfg.delete_secret
-            && cfg.enabled
-        {
-            route = route.layer(middleware::rate_limit::create_rate_limit_layer(cfg));
-        }
-        route
-    };
-
-    let any_rate_limit_enabled = app_config
-        .rate_limit
-        .as_ref()
-        .map(|cfg| {
-            cfg.post_secret.as_ref().is_some_and(|c| c.enabled)
-                || cfg.get_secret.as_ref().is_some_and(|c| c.enabled)
-                || cfg.delete_secret.as_ref().is_some_and(|c| c.enabled)
-        })
-        .unwrap_or(false);
-
-    let mut app = Router::new()
+    let app = Router::new()
         .route("/api/config", get(get_config_route))
-        .route("/api/secret", post_secret_route)
+        .route(
+            "/api/secret",
+            post(store_secret_route).layer(DefaultBodyLimit::max(body_limit_for_route)),
+        )
         .route(
             "/api/secret/{id}",
-            get_secret_route_handler.merge(delete_secret_route_handler),
+            get(get_secret_route).delete(remove_secret_route),
         )
         .route("/api/version", get(get_version_route))
-        .fallback(static_handler);
-
-    if any_rate_limit_enabled {
-        app = app.layer(axum::middleware::from_fn(
-            middleware::rate_limit::rate_limit_middleware,
-        ));
-    }
-
-    let app = app
+        .fallback(static_handler)
         .layer(axum::Extension(app_config.ip_limits.clone()))
-        .layer(axum::middleware::from_fn(
-            middleware::ClientIpExtractor::middleware,
-        ))
         .with_state(Arc::new(app_state));
 
     let bind = app_config.listen.to_string();

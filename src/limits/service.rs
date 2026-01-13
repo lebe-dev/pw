@@ -190,7 +190,6 @@ mod tests {
             encrypted_message_max_length: None, // Will be calculated dynamically
             redis_url: "redis://localhost".to_string(),
             ip_limits: None,
-            rate_limit: None,
         }
     }
 

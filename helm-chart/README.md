@@ -21,7 +21,7 @@ To install the chart with the release name `pw`:
 ```bash
 helm repo add tinyops https://tinyops.ru/helm-charts/
 helm repo update
-helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.0.11
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.2.1
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -59,15 +59,7 @@ helm delete pw
 **Note**: The encrypted message max length is calculated dynamically as `max(messageMaxLength, fileMaxSize) * 1.35` to account for encryption overhead. You can optionally override this by setting the `PW_ENCRYPTED_MESSAGE_MAX_LENGTH` environment variable.
 | `pw.config.ipLimits.enabled`               | Enable IP whitelist limits            | `false`              |
 | `pw.config.ipLimits.whitelist`             | Array of IP whitelist entries         | `[]`                 |
-| `pw.config.rateLimits.postSecret.enabled`  | Enable rate limiting for POST /secret | `true`               |
-| `pw.config.rateLimits.postSecret.requestsPerMinute` | Rate limit for POST /secret  | `120`                |
-| `pw.config.rateLimits.postSecret.burstSize` | Burst size for POST /secret          | `30`                 |
-| `pw.config.rateLimits.getSecret.enabled`   | Enable rate limiting for GET /secret  | `true`               |
-| `pw.config.rateLimits.getSecret.requestsPerMinute` | Rate limit for GET /secret    | `600`                |
-| `pw.config.rateLimits.getSecret.burstSize` | Burst size for GET /secret           | `100`                |
-| `pw.config.rateLimits.deleteSecret.enabled` | Enable rate limiting for DELETE /secret | `true`            |
-| `pw.config.rateLimits.deleteSecret.requestsPerMinute` | Rate limit for DELETE /secret | `120`           |
-| `pw.config.rateLimits.deleteSecret.burstSize` | Burst size for DELETE /secret      | `30`                 |
+| `pw.config.ipLimits.trustedProxies`        | Array of trusted proxy IPs            | `[]`                 |
 | `pw.service.type`                          | PW service type                       | `ClusterIP`          |
 | `pw.service.port`                          | PW service port                       | `8080`               |
 | `pw.resources.limits.cpu`                  | PW CPU limit                          | `500m`               |
@@ -110,55 +102,6 @@ helm delete pw
 | `securityContext.runAsNonRoot` | Run containers as non-root user   | `true`  |
 | `securityContext.runAsUser`    | Run containers as specific user   | `1000`  |
 
-## Rate Limiting
-
-PW implements per-route rate limiting using a token bucket algorithm to protect against abuse and ensure fair resource usage. Rate limits can be configured independently for each API endpoint.
-
-### Configuration
-
-Rate limiting is enabled by default with production-ready values. Each route has three configurable parameters:
-
-- **enabled**: Enable/disable rate limiting for the route
-- **requestsPerMinute**: Maximum number of requests allowed per minute
-- **burstSize**: Maximum burst capacity (token bucket size)
-
-### Example Configuration
-
-```yaml
-pw:
-  config:
-    rateLimits:
-      postSecret:
-        enabled: true
-        requestsPerMinute: 120
-        burstSize: 30
-      getSecret:
-        enabled: true
-        requestsPerMinute: 600
-        burstSize: 100
-      deleteSecret:
-        enabled: true
-        requestsPerMinute: 120
-        burstSize: 30
-```
-
-### Default Rate Limits
-
-| Route            | Requests/Min | Burst Size | Purpose                        |
-| ---------------- | ------------ | ---------- | ------------------------------ |
-| POST /secret     | 120          | 30         | Creating new secrets           |
-| GET /secret      | 600          | 100        | Retrieving secrets (read-heavy)|
-| DELETE /secret   | 120          | 30         | Deleting secrets               |
-
-### Notes
-
-- Rate limits are applied per client IP address
-- The token bucket algorithm allows for bursts of traffic while maintaining an average rate
-- GET operations have higher limits (600/min) to accommodate read-heavy workloads
-- Write operations (POST/DELETE) have conservative limits (120/min) to prevent abuse
-- Environment variables (`PW_RATE_LIMIT_*`) override YAML configuration
-- Rate limiting can be disabled per route by setting `enabled: false`
-
 ## IP Whitelist Configuration
 
 PW supports IP-based access restrictions with custom payload limits. When enabled, only IPs in the whitelist can access the service, and each IP can have individual limits for message and file sizes.
@@ -190,6 +133,28 @@ pw:
 | `ip`                | string | Yes      | IP address or CIDR block (IPv4/IPv6) |
 | `messageMaxLength`  | number | No       | Custom message size limit in bytes    |
 | `fileMaxSize`       | number | No       | Custom file size limit in bytes      |
+
+### Trusted Proxies
+
+When PW is deployed behind a reverse proxy or load balancer, configure trusted proxies to correctly identify client IP addresses:
+
+```yaml
+pw:
+  config:
+    ipLimits:
+      trustedProxies:
+        - "192.168.1.1"       # Nginx proxy
+        - "10.0.0.1"          # Load balancer
+        - "proxy.example.com" # Named proxy
+```
+
+### Notes on Trusted Proxies
+
+- Trusted proxy IPs are used to extract the real client IP from proxy headers
+- Supports both IPv4 and IPv6 addresses
+- Can specify hostnames that resolve to IP addresses
+- Environment variable `PW_IP_LIMITS_TRUSTED_PROXIES` overrides YAML configuration
+- Format: JSON array of strings (e.g., `["192.168.1.1", "10.0.0.1"]`)
 
 ### Notes
 

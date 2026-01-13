@@ -55,36 +55,3 @@ ip-limits:
   #   - ip: '172.16.10.5'              # Monitoring server
   #     message-max-length: 32768      # 32KB for detailed reports
   #     file-max-size: 1073741824      # 1GB for log bundles
-
-# Rate limiting (per-IP, per-route protection against abuse)
-# Per-route configuration allows different limits for different API endpoints
-# Only API endpoints for creating/reading/deleting secrets are rate limited
-# Static files, /api/config, /api/version are NOT rate limited
-rate-limit:
-  post-secret: # POST /api/secret - creating secrets
-    enabled: true
-    requests-per-minute: 120 # 2 req/sec - generous for normal use
-    burst-size: 30 # Allow bursts for legitimate users
-
-  get-secret: # GET /api/secret/{id} - reading secrets
-    enabled: true
-    requests-per-minute: 600 # 10 req/sec - most frequently used
-    burst-size: 100 # Large burst for page loads with many secrets
-
-  delete-secret: # DELETE /api/secret/{id} - deleting secrets
-    enabled: true
-    requests-per-minute: 120 # 2 req/sec
-    burst-size: 30
-
-  # Note: IPs in the ip-limits whitelist above will bypass rate limiting completely
-
-  # Environment variable examples (per-route):
-  # PW_RATE_LIMIT_POST_SECRET_ENABLED=true
-  # PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE=120
-  # PW_RATE_LIMIT_POST_SECRET_BURST_SIZE=30
-  # PW_RATE_LIMIT_GET_SECRET_ENABLED=true
-  # PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE=600
-  # PW_RATE_LIMIT_GET_SECRET_BURST_SIZE=100
-  # PW_RATE_LIMIT_DELETE_SECRET_ENABLED=true
-  # PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE=120
-  # PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE=30

@@ -56,7 +56,6 @@ mod tests {
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: ip_limits_config,
-            rate_limit: None,
         };
 
         let limits_service = LimitsService::new(&config);
@@ -287,7 +286,6 @@ mod tests {
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
             ip_limits: None,
-            rate_limit: None,
         };
 
         let limits_service = LimitsService::new(&base_config);

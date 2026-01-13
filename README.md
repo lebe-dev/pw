@@ -23,7 +23,6 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 - Secure: All data is encrypted in the browser ([details](docs/SECURITY.md))
 - Supported media types: text, file
 - BLAZING FAST 🌝 (Svelte+Rust)
-- Rate limits support
 - Dynamic configuration limits based on ip whitelist
 - Low resources usage:
   ```shell
@@ -46,7 +45,6 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 
 ## Roadmap
 
-- CORS support
 - Backend: improve return codes
 - Backend: migration to Hexagonal Architecture
 

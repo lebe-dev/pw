@@ -1,6 +1,6 @@
 [package]
 name = "pw"
-version = "1.12.0"
+version = "1.13.0"
 edition = "2024"
 
 [profile.release]
@@ -31,8 +31,6 @@ walkdir = "2.5.0"
 
 ipnet = "2.11.0"
 tower = "0.5.2"
-tower_governor = "0.8.0"
-governor = "0.10.4"
 uuid = { version = "1.19.0", features = ["v4"] }
 
 log = "0.4.29"

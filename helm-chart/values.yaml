@@ -22,6 +22,7 @@ pw:
     ipLimits:
       enabled: false
       whitelist: []
+      trustedProxies: []
       # Example configuration:
       # enabled: true
       # whitelist:
@@ -32,21 +33,10 @@ pw:
       #     messageMaxLength: 4096
       #   - ip: "172.16.1.5"
       #     fileMaxSize: 209715200
-
-    # Rate limit configuration
-    rateLimits:
-      postSecret:
-        enabled: true
-        requestsPerMinute: 120
-        burstSize: 30
-      getSecret:
-        enabled: true
-        requestsPerMinute: 600
-        burstSize: 100
-      deleteSecret:
-        enabled: true
-        requestsPerMinute: 120
-        burstSize: 30
+      # trustedProxies:
+      #   - "192.168.1.1"
+      #   - "10.0.0.1"
+      #   - "proxy.example.com"
 
   service:
     type: ClusterIP

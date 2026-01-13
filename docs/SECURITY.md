@@ -3,7 +3,7 @@
 This document provides an overview of the security architecture. For detailed information, see the specific documentation:
 
 - **[Encryption & Zero-Knowledge Architecture](security/encryption-zero-knowledge.md)** - How data is encrypted client-side and why the backend cannot decrypt secrets
-- **[IP Whitelist & Rate Limiting](security/ip-whitelist-rate-limit.md)** - Access control, rate limiting, and trusted proxy configuration
+- **[IP Whitelist](security/ip-whitelist.md)** - Access control and trusted proxy configuration
 - **[Container Image Security](security/container-image-security.md)** - Vulnerability scanning results and security scanning procedures
 
 ## Security Layers
@@ -21,14 +21,13 @@ All encryption happens in the browser, ensuring maximum privacy:
 
 ### 2. Access Control
 
-Multi-layered protection against abuse:
+IP-based access control:
 
-- Rate limiting (enabled by default)
 - IP whitelist support
 - Per-IP custom limits
 - Trusted proxy validation
 
-**[Read more →](security/ip-whitelist-rate-limit.md)**
+**[Read more →](security/ip-whitelist.md)**
 
 ### 3. Container Security
 
@@ -55,7 +54,7 @@ Secrets are encrypted in your browser before transmission. The server cannot dec
 ### For Administrators
 
 1. Review [encryption architecture](security/encryption-zero-knowledge.md) to understand zero-knowledge model
-2. Configure [rate limiting and IP whitelist](security/ip-whitelist-rate-limit.md) if needed
+2. Configure [IP whitelist](security/ip-whitelist.md) if needed
 3. Monitor [container security](security/container-image-security.md) scan results
 
 **Configuration files:**

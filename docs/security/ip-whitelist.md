@@ -1,70 +1,14 @@
-# IP Whitelist & Rate Limiting
+# IP Whitelist
 
 ## Overview
 
-Access control and abuse prevention through IP-based restrictions. This feature provides two layers of protection:
-
-1. **Rate Limiting**: Prevents abuse by limiting requests per IP address
-2. **IP Whitelist**: Allows trusted IPs to bypass limits or have custom restrictions
-
-## Rate Limiting
-
-### Default Configuration
-
-Rate limiting is **enabled by default** for security:
-
-- **60 requests per minute** (1 request/second average)
-- **Burst size: 10 requests** (allows short bursts)
-- Applied **per client IP address**
-
-### Configuration
-
-**YAML (`pw.yml`):**
-```yaml
-rate-limit:
-  enabled: true
-  requests-per-minute: 60
-  burst-size: 10
-```
-
-**Environment Variables:**
-```bash
-PW_RATE_LIMIT_ENABLED=true
-PW_RATE_LIMIT_REQUESTS_PER_MINUTE=120
-PW_RATE_LIMIT_BURST_SIZE=20
-```
-
-### How It Works
-
-- Uses **token bucket algorithm** (via `tower-governor` library)
-- Tracks requests **per client IP**
-- **Whitelisted IPs bypass rate limits entirely**
-- Returns `429 Too Many Requests` when limit exceeded
-
-### Adjusting Limits
-
-For higher traffic scenarios:
-```yaml
-rate-limit:
-  enabled: true
-  requests-per-minute: 300  # 5 requests/second
-  burst-size: 50
-```
-
-For stricter control:
-```yaml
-rate-limit:
-  enabled: true
-  requests-per-minute: 30   # 1 request every 2 seconds
-  burst-size: 5
-```
+IP-based access restrictions with custom payload limits. This feature allows you to whitelist specific IP addresses to bypass limits or have custom restrictions.
 
 ## IP Whitelist
 
 ### Overview
 
 Whitelist specific IP addresses to:
-- **Bypass rate limiting** completely
 - **Set custom per-IP limits** for message length and file size
 - **Allow trusted internal services** unrestricted access
 
@@ -272,20 +216,6 @@ ERROR: File size exceeds maximum: 20000000000 (max: 10737418240)
 
 ## Troubleshooting
 
-### Rate Limiting Not Working
-
-1. Check if rate limiting is enabled:
-```yaml
-rate-limit:
-  enabled: true  # Must be true
-```
-
-2. Verify IP is not whitelisted:
-```yaml
-ip-limits:
-  whitelist: []  # Whitelisted IPs bypass rate limits
-```
-
 ### Wrong IP Address Detected
 
 1. Check if behind a proxy - configure `trusted-proxies`:
@@ -315,7 +245,6 @@ ip-limits:
 ### Implementation Files
 
 - Client IP extraction: `src/middleware/client_ip.rs`
-- Rate limiting: `src/middleware/rate_limit.rs`
 - Configuration models: `src/config/model.rs`
 - Validation: `src/config/validation.rs`
 - Limits service: `src/limits/service.rs`

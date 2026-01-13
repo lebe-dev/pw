@@ -20,24 +20,6 @@ pub struct IpLimitsConfig {
     pub trusted_proxies: Vec<String>,
 }
 
-/// Rate limit configuration for a single route
-#[derive(PartialEq, Deserialize, Clone, Debug)]
-#[serde(rename_all = "kebab-case")]
-pub struct RouteRateLimitConfig {
-    pub enabled: bool,
-    pub requests_per_minute: u32,
-    pub burst_size: u32,
-}
-
-/// Per-route rate limit configuration
-#[derive(PartialEq, Deserialize, Clone, Debug, Default)]
-#[serde(rename_all = "kebab-case")]
-pub struct RateLimitConfig {
-    pub post_secret: Option<RouteRateLimitConfig>,
-    pub get_secret: Option<RouteRateLimitConfig>,
-    pub delete_secret: Option<RouteRateLimitConfig>,
-}
-
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub struct AppConfig {
@@ -61,8 +43,6 @@ pub struct AppConfig {
     pub redis_url: String,
 
     pub ip_limits: Option<IpLimitsConfig>,
-
-    pub rate_limit: Option<RateLimitConfig>,
 }
 
 impl Display for AppConfig {
@@ -71,7 +51,7 @@ impl Display for AppConfig {
             f,
             "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
             file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {:?}, redis-url: '{}', \
-            ip-limits: {:?}, rate-limit: {:?}",
+            ip-limits: {:?}",
             self.listen,
             self.log_level,
             self.log_target,
@@ -80,8 +60,7 @@ impl Display for AppConfig {
             self.file_max_size,
             self.encrypted_message_max_length,
             self.redis_url,
-            self.ip_limits,
-            self.rate_limit
+            self.ip_limits
         )
     }
 }
