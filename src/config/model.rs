@@ -20,12 +20,22 @@ pub struct IpLimitsConfig {
     pub trusted_proxies: Vec<String>,
 }
 
+/// Rate limit configuration for a single route
 #[derive(PartialEq, Deserialize, Clone, Debug)]
 #[serde(rename_all = "kebab-case")]
-pub struct RateLimitConfig {
+pub struct RouteRateLimitConfig {
     pub enabled: bool,
     pub requests_per_minute: u32,
     pub burst_size: u32,
+}
+
+/// Per-route rate limit configuration
+#[derive(PartialEq, Deserialize, Clone, Debug, Default)]
+#[serde(rename_all = "kebab-case")]
+pub struct RateLimitConfig {
+    pub post_secret: Option<RouteRateLimitConfig>,
+    pub get_secret: Option<RouteRateLimitConfig>,
+    pub delete_secret: Option<RouteRateLimitConfig>,
 }
 
 #[derive(PartialEq, Deserialize, Clone, Debug)]

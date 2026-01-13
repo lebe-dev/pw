@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "Impossible de charger les données",
 		"storeSecret": "Erreur de stockage du secret",
-		"fileSizeLimit": "La taille du fichier dépasse la limite"
+		"fileSizeLimit": "La taille du fichier dépasse la limite",
+		"rateLimitExceeded": "Trop de requêtes. Veuillez réessayer plus tard"
 	},
 	"homePage": {
 		"textTitle": "Message",

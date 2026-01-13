@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "データを読み込めませんでした",
 		"storeSecret": "シークレットの保存エラー",
-		"fileSizeLimit": "ファイルサイズが制限を超えています"
+		"fileSizeLimit": "ファイルサイズが制限を超えています",
+		"rateLimitExceeded": "リクエストが多すぎます。後でもう一度お試しください"
 	},
 	"homePage": {
 		"textTitle": "メッセージ",

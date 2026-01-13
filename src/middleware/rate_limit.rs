@@ -1,10 +1,11 @@
 use axum::{Extension, extract::Request, middleware::Next, response::Response};
 use ipnet::IpNet;
-use log::debug;
+use log::{debug, info, warn};
 use std::net::IpAddr;
+use std::time::Duration;
 use tower_governor::{GovernorLayer, governor::GovernorConfigBuilder, key_extractor::KeyExtractor};
 
-use crate::config::model::{IpLimitsConfig, RateLimitConfig};
+use crate::config::model::{IpLimitsConfig, RouteRateLimitConfig};
 use crate::middleware::client_ip::ClientIp;
 
 /// Middleware function that checks whitelist before rate limiting
@@ -15,13 +16,23 @@ pub async fn rate_limit_middleware(
 ) -> Response {
     let client_ip = request.extensions().get::<ClientIp>().map(|ip| ip.0);
 
-    if let Some(ip) = client_ip
-        && let Some(ref limits_config) = ip_limits
-        && limits_config.enabled
-        && is_whitelisted(&ip, limits_config)
-    {
-        debug!("IP {} is whitelisted, bypassing rate limit", ip);
-        request.extensions_mut().insert(BypassRateLimit);
+    if let Some(ip) = client_ip {
+        debug!("processing rate limit check for IP: {}", ip);
+
+        if let Some(ref limits_config) = ip_limits {
+            if !limits_config.enabled {
+                debug!("IP limits are disabled in config");
+            } else if is_whitelisted(&ip, limits_config) {
+                info!("IP {} is whitelisted, bypassing rate limit", ip);
+                request.extensions_mut().insert(BypassRateLimit);
+            } else {
+                debug!("IP {} will be subject to rate limiting", ip);
+            }
+        } else {
+            debug!("no IP limits configuration found");
+        }
+    } else {
+        warn!("unable to extract client IP for rate limiting");
     }
 
     next.run(request).await
@@ -33,24 +44,38 @@ struct BypassRateLimit;
 
 /// Check if IP is in whitelist
 fn is_whitelisted(ip: &IpAddr, config: &IpLimitsConfig) -> bool {
+    debug!(
+        "checking if IP {} is in whitelist ({} entries)",
+        ip,
+        config.whitelist.len()
+    );
+
     for entry in &config.whitelist {
         if matches_ip_or_cidr(ip, &entry.ip) {
+            debug!("IP {} matched whitelist entry: {}", ip, entry.ip);
             return true;
         }
     }
+
+    debug!("IP {} not found in whitelist", ip);
     false
 }
 
 /// Match IP against pattern (exact IP or CIDR)
 fn matches_ip_or_cidr(ip: &IpAddr, pattern: &str) -> bool {
     if let Ok(pattern_ip) = pattern.parse::<IpAddr>() {
-        return ip == &pattern_ip;
+        let matches = ip == &pattern_ip;
+        debug!("exact IP match check: {} vs {} = {}", ip, pattern, matches);
+        return matches;
     }
 
     if let Ok(network) = pattern.parse::<IpNet>() {
-        return network.contains(ip);
+        let contains = network.contains(ip);
+        debug!("CIDR match check: {} in {} = {}", ip, pattern, contains);
+        return contains;
     }
 
+    warn!("invalid IP/CIDR pattern in whitelist: {}", pattern);
     false
 }
 
@@ -64,36 +89,47 @@ impl KeyExtractor for IpKeyExtractor {
 
     fn extract<B>(&self, req: &Request<B>) -> Result<Self::Key, tower_governor::GovernorError> {
         if req.extensions().get::<BypassRateLimit>().is_some() {
-            debug!("request has bypass marker, allowing through");
+            debug!("request has bypass marker, allowing through without rate limiting");
             return Err(tower_governor::GovernorError::UnableToExtractKey);
         }
 
-        req.extensions()
-            .get::<ClientIp>()
-            .map(|ip| ip.0)
-            .ok_or(tower_governor::GovernorError::UnableToExtractKey)
+        match req.extensions().get::<ClientIp>() {
+            Some(client_ip) => {
+                debug!("extracting IP {} for rate limiting", client_ip.0);
+                Ok(client_ip.0)
+            }
+            None => {
+                warn!("failed to extract client IP for rate limiting");
+                Err(tower_governor::GovernorError::UnableToExtractKey)
+            }
+        }
     }
 }
 
-/// Build governor configuration from app config
+/// Build governor configuration from route config
 pub fn create_rate_limit_layer(
-    config: &RateLimitConfig,
+    config: &RouteRateLimitConfig,
 ) -> GovernorLayer<
     IpKeyExtractor,
     governor::middleware::NoOpMiddleware<governor::clock::QuantaInstant>,
     axum::body::Body,
 > {
-    // Convert requests per minute to requests per second
-    // Governor uses period per request, so for 60 req/min = 1 req/sec, period = 1 second
-    let requests_per_second = config.requests_per_minute / 60;
-    let requests_per_second = requests_per_second.max(1); // Minimum 1 req/sec
+    // Calculate period between requests: 60 seconds / requests_per_minute
+    // Example: 1 req/min → 60s period, 120 req/min → 0.5s period
+    let period_seconds = 60.0 / config.requests_per_minute as f64;
+    let period = Duration::from_secs_f64(period_seconds);
+
+    info!(
+        "creating rate limit layer: {} requests/minute (period: {:.3}s), burst size: {}",
+        config.requests_per_minute, period_seconds, config.burst_size
+    );
 
     let governor_config = GovernorConfigBuilder::default()
-        .per_second(requests_per_second as u64)
+        .period(period)
         .burst_size(config.burst_size)
         .key_extractor(IpKeyExtractor)
         .finish()
-        .expect("Failed to build rate limit config");
+        .expect("failed to build rate limit config");
 
     GovernorLayer::new(governor_config)
 }

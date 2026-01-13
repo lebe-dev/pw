@@ -4,7 +4,9 @@ use std::env;
 use config::{Config, File};
 use serde_json;
 
-use super::model::{AppConfig, IpLimitEntry, IpLimitsConfig, RateLimitConfig};
+use super::model::{
+    AppConfig, IpLimitEntry, IpLimitsConfig, RateLimitConfig, RouteRateLimitConfig,
+};
 use super::validation::{format_validation_errors, validate_ip_limits_config};
 
 pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
@@ -124,58 +126,82 @@ fn get_ip_limits_config(
     Ok(ip_limits)
 }
 
-fn get_rate_limit_config(
-    yaml_config: Option<RateLimitConfig>,
-) -> anyhow::Result<Option<RateLimitConfig>> {
+fn get_route_rate_limit_config(
+    yaml_config: Option<RouteRateLimitConfig>,
+    env_prefix: &str,
+) -> anyhow::Result<Option<RouteRateLimitConfig>> {
     let mut rate_limit = yaml_config;
 
-    // Handle PW_RATE_LIMIT_ENABLED environment variable
-    if let Some(enabled_str) = get_env_var("PW_RATE_LIMIT_ENABLED") {
+    let enabled_var = format!("{}_ENABLED", env_prefix);
+    let requests_var = format!("{}_REQUESTS_PER_MINUTE", env_prefix);
+    let burst_var = format!("{}_BURST_SIZE", env_prefix);
+
+    if let Some(enabled_str) = get_env_var(&enabled_var) {
         let enabled = enabled_str.parse::<bool>()?;
 
         if let Some(ref mut limit) = rate_limit {
             limit.enabled = enabled;
         } else {
-            // Create default config with only enabled set
-            rate_limit = Some(RateLimitConfig {
+            rate_limit = Some(RouteRateLimitConfig {
                 enabled,
-                requests_per_minute: 60, // Default value
-                burst_size: 10,          // Default value
+                requests_per_minute: 60,
+                burst_size: 10,
             });
         }
     }
 
-    // Handle PW_RATE_LIMIT_REQUESTS_PER_MINUTE environment variable
-    if let Some(requests_str) = get_env_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE") {
+    if let Some(requests_str) = get_env_var(&requests_var) {
         let requests_per_minute = requests_str.parse::<u32>()?;
 
         if let Some(ref mut limit) = rate_limit {
             limit.requests_per_minute = requests_per_minute;
         } else {
-            rate_limit = Some(RateLimitConfig {
-                enabled: true, // Default to enabled if requests_per_minute is set
+            rate_limit = Some(RouteRateLimitConfig {
+                enabled: true,
                 requests_per_minute,
-                burst_size: 10, // Default value
+                burst_size: 10,
             });
         }
     }
 
-    // Handle PW_RATE_LIMIT_BURST_SIZE environment variable
-    if let Some(burst_str) = get_env_var("PW_RATE_LIMIT_BURST_SIZE") {
+    if let Some(burst_str) = get_env_var(&burst_var) {
         let burst_size = burst_str.parse::<u32>()?;
 
         if let Some(ref mut limit) = rate_limit {
             limit.burst_size = burst_size;
         } else {
-            rate_limit = Some(RateLimitConfig {
-                enabled: true,           // Default to enabled if burst_size is set
-                requests_per_minute: 60, // Default value
+            rate_limit = Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 60,
                 burst_size,
             });
         }
     }
 
     Ok(rate_limit)
+}
+
+fn get_rate_limit_config(
+    yaml_config: Option<RateLimitConfig>,
+) -> anyhow::Result<Option<RateLimitConfig>> {
+    let yaml_config = yaml_config.unwrap_or_default();
+
+    let post_secret =
+        get_route_rate_limit_config(yaml_config.post_secret, "PW_RATE_LIMIT_POST_SECRET")?;
+    let get_secret =
+        get_route_rate_limit_config(yaml_config.get_secret, "PW_RATE_LIMIT_GET_SECRET")?;
+    let delete_secret =
+        get_route_rate_limit_config(yaml_config.delete_secret, "PW_RATE_LIMIT_DELETE_SECRET")?;
+
+    if post_secret.is_none() && get_secret.is_none() && delete_secret.is_none() {
+        return Ok(None);
+    }
+
+    Ok(Some(RateLimitConfig {
+        post_secret,
+        get_secret,
+        delete_secret,
+    }))
 }
 
 #[cfg(test)]
@@ -784,20 +810,39 @@ mod tests {
         }
     }
 
-    // Rate limit configuration tests
+    // Helper to clean up rate limit env vars
+    fn cleanup_rate_limit_env_vars() {
+        unsafe {
+            for route in ["POST_SECRET", "GET_SECRET", "DELETE_SECRET"] {
+                env::remove_var(format!("PW_RATE_LIMIT_{}_ENABLED", route));
+                env::remove_var(format!("PW_RATE_LIMIT_{}_REQUESTS_PER_MINUTE", route));
+                env::remove_var(format!("PW_RATE_LIMIT_{}_BURST_SIZE", route));
+            }
+        }
+    }
+
+    // Rate limit configuration tests (per-route)
     #[test]
     #[serial]
     fn test_get_rate_limit_config_with_yaml_only() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-        }
+        cleanup_rate_limit_env_vars();
 
         let yaml_config = Some(RateLimitConfig {
-            enabled: true,
-            requests_per_minute: 100,
-            burst_size: 20,
+            post_secret: Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 120,
+                burst_size: 30,
+            }),
+            get_secret: Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 600,
+                burst_size: 100,
+            }),
+            delete_secret: Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 120,
+                burst_size: 30,
+            }),
         });
 
         let result = get_rate_limit_config(yaml_config.clone()).unwrap();
@@ -806,147 +851,89 @@ mod tests {
 
     #[test]
     #[serial]
-    fn test_get_rate_limit_config_with_env_enabled_override() {
+    fn test_get_rate_limit_config_with_env_override_post_secret() {
+        cleanup_rate_limit_env_vars();
         unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_ENABLED", "false");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_ENABLED", "false");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE", "200");
         }
 
         let yaml_config = Some(RateLimitConfig {
-            enabled: true,
-            requests_per_minute: 100,
-            burst_size: 20,
-        });
-
-        let result = get_rate_limit_config(yaml_config).unwrap();
-        let config = result.unwrap();
-        assert_eq!(config.enabled, false);
-        assert_eq!(config.requests_per_minute, 100); // Should keep YAML value
-        assert_eq!(config.burst_size, 20); // Should keep YAML value
-
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-        }
-    }
-
-    #[test]
-    #[serial]
-    fn test_get_rate_limit_config_with_env_requests_override() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE", "120");
-        }
-
-        let yaml_config = Some(RateLimitConfig {
-            enabled: true,
-            requests_per_minute: 60,
-            burst_size: 10,
+            post_secret: Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 120,
+                burst_size: 30,
+            }),
+            get_secret: None,
+            delete_secret: None,
         });
 
         let result = get_rate_limit_config(yaml_config).unwrap().unwrap();
-        assert_eq!(result.enabled, true);
-        assert_eq!(result.requests_per_minute, 120); // Overridden by env
-        assert_eq!(result.burst_size, 10); // Should keep YAML value
+        let post = result.post_secret.unwrap();
+        assert_eq!(post.enabled, false); // Overridden by env
+        assert_eq!(post.requests_per_minute, 200); // Overridden by env
+        assert_eq!(post.burst_size, 30); // Kept from YAML
 
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-        }
-    }
-
-    #[test]
-    #[serial]
-    fn test_get_rate_limit_config_with_env_burst_override() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_BURST_SIZE", "30");
-        }
-
-        let yaml_config = Some(RateLimitConfig {
-            enabled: true,
-            requests_per_minute: 60,
-            burst_size: 10,
-        });
-
-        let result = get_rate_limit_config(yaml_config).unwrap().unwrap();
-        assert_eq!(result.enabled, true);
-        assert_eq!(result.requests_per_minute, 60); // Should keep YAML value
-        assert_eq!(result.burst_size, 30); // Overridden by env
-
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-        }
+        cleanup_rate_limit_env_vars();
     }
 
     #[test]
     #[serial]
     fn test_get_rate_limit_config_create_from_env_only() {
+        cleanup_rate_limit_env_vars();
         unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_ENABLED", "true");
-            env::set_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE", "100");
-            env::set_var("PW_RATE_LIMIT_BURST_SIZE", "20");
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_ENABLED", "true");
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE", "500");
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_BURST_SIZE", "80");
         }
 
         let result = get_rate_limit_config(None).unwrap().unwrap();
-        assert_eq!(result.enabled, true);
-        assert_eq!(result.requests_per_minute, 100);
-        assert_eq!(result.burst_size, 20);
+        assert!(result.post_secret.is_none());
+        assert!(result.delete_secret.is_none());
 
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-        }
+        let get = result.get_secret.unwrap();
+        assert_eq!(get.enabled, true);
+        assert_eq!(get.requests_per_minute, 500);
+        assert_eq!(get.burst_size, 80);
+
+        cleanup_rate_limit_env_vars();
     }
 
     #[test]
     #[serial]
     fn test_get_rate_limit_config_invalid_bool() {
+        cleanup_rate_limit_env_vars();
         unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::set_var("PW_RATE_LIMIT_ENABLED", "not_a_bool");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_ENABLED", "not_a_bool");
         }
 
         let result = get_rate_limit_config(None);
         assert!(result.is_err());
 
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-        }
+        cleanup_rate_limit_env_vars();
     }
 
     #[test]
     #[serial]
     fn test_get_rate_limit_config_invalid_number() {
+        cleanup_rate_limit_env_vars();
         unsafe {
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::set_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE", "not_a_number");
+            env::set_var(
+                "PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE",
+                "not_a_number",
+            );
         }
 
         let result = get_rate_limit_config(None);
         assert!(result.is_err());
 
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-        }
+        cleanup_rate_limit_env_vars();
     }
 
     #[test]
     #[serial]
     fn test_get_rate_limit_config_no_config() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-        }
+        cleanup_rate_limit_env_vars();
 
         let result = get_rate_limit_config(None).unwrap();
         assert_eq!(result, None);
@@ -954,72 +941,60 @@ mod tests {
 
     #[test]
     #[serial]
-    fn test_get_rate_limit_config_partial_env_enabled() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_ENABLED", "true");
-        }
-
-        let result = get_rate_limit_config(None).unwrap().unwrap();
-        assert_eq!(result.enabled, true);
-        assert_eq!(result.requests_per_minute, 60); // Default value
-        assert_eq!(result.burst_size, 10); // Default value
-
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-        }
-    }
-
-    #[test]
-    #[serial]
-    fn test_get_rate_limit_config_partial_env_requests() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE", "120");
-        }
-
-        let result = get_rate_limit_config(None).unwrap().unwrap();
-        assert_eq!(result.enabled, true); // Default to true when setting requests
-        assert_eq!(result.requests_per_minute, 120);
-        assert_eq!(result.burst_size, 10); // Default value
-
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-        }
-    }
-
-    #[test]
-    #[serial]
-    fn test_get_rate_limit_config_all_env_override() {
-        unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
-            env::set_var("PW_RATE_LIMIT_ENABLED", "false");
-            env::set_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE", "200");
-            env::set_var("PW_RATE_LIMIT_BURST_SIZE", "50");
-        }
+    fn test_get_rate_limit_config_partial_routes() {
+        cleanup_rate_limit_env_vars();
 
         let yaml_config = Some(RateLimitConfig {
-            enabled: true,
-            requests_per_minute: 60,
-            burst_size: 10,
+            post_secret: Some(RouteRateLimitConfig {
+                enabled: true,
+                requests_per_minute: 120,
+                burst_size: 30,
+            }),
+            get_secret: None,    // Not configured
+            delete_secret: None, // Not configured
         });
 
         let result = get_rate_limit_config(yaml_config).unwrap().unwrap();
-        // Environment variables should override YAML
-        assert_eq!(result.enabled, false); // env overrides yaml (true -> false)
-        assert_eq!(result.requests_per_minute, 200); // env overrides yaml (60 -> 200)
-        assert_eq!(result.burst_size, 50); // env overrides yaml (10 -> 50)
+        assert!(result.post_secret.is_some());
+        assert!(result.get_secret.is_none());
+        assert!(result.delete_secret.is_none());
+    }
 
+    #[test]
+    #[serial]
+    fn test_get_rate_limit_config_all_routes_from_env() {
+        cleanup_rate_limit_env_vars();
         unsafe {
-            env::remove_var("PW_RATE_LIMIT_ENABLED");
-            env::remove_var("PW_RATE_LIMIT_REQUESTS_PER_MINUTE");
-            env::remove_var("PW_RATE_LIMIT_BURST_SIZE");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_ENABLED", "true");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE", "100");
+            env::set_var("PW_RATE_LIMIT_POST_SECRET_BURST_SIZE", "20");
+
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_ENABLED", "true");
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE", "500");
+            env::set_var("PW_RATE_LIMIT_GET_SECRET_BURST_SIZE", "80");
+
+            env::set_var("PW_RATE_LIMIT_DELETE_SECRET_ENABLED", "false");
+            env::set_var("PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE", "50");
+            env::set_var("PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE", "10");
         }
+
+        let result = get_rate_limit_config(None).unwrap().unwrap();
+
+        let post = result.post_secret.unwrap();
+        assert_eq!(post.enabled, true);
+        assert_eq!(post.requests_per_minute, 100);
+        assert_eq!(post.burst_size, 20);
+
+        let get = result.get_secret.unwrap();
+        assert_eq!(get.enabled, true);
+        assert_eq!(get.requests_per_minute, 500);
+        assert_eq!(get.burst_size, 80);
+
+        let delete = result.delete_secret.unwrap();
+        assert_eq!(delete.enabled, false);
+        assert_eq!(delete.requests_per_minute, 50);
+        assert_eq!(delete.burst_size, 10);
+
+        cleanup_rate_limit_env_vars();
     }
 }

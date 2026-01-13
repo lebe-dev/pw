@@ -12,10 +12,23 @@ services:
       PW_FILE_MAX_SIZE: "1048576"
       PW_REDIS_URL: "redis://redis:6379/"
       PW_LOG_TARGET: "console"
-      # Rate limiting configuration
-      PW_RATE_LIMIT_ENABLED: "true"
-      PW_RATE_LIMIT_REQUESTS_PER_MINUTE: "60"
-      PW_RATE_LIMIT_BURST_SIZE: "10"
+      # Rate limiting configuration (per-route)
+      PW_RATE_LIMIT_POST_SECRET_ENABLED: "true"
+      PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE: "120"
+      PW_RATE_LIMIT_POST_SECRET_BURST_SIZE: "30"
+      PW_RATE_LIMIT_GET_SECRET_ENABLED: "true"
+      PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE: "600"
+      PW_RATE_LIMIT_GET_SECRET_BURST_SIZE: "100"
+      PW_RATE_LIMIT_DELETE_SECRET_ENABLED: "true"
+      PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE: "120"
+      PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE: "30"
+      # CORS configuration
+      PW_CORS_ENABLED: "true"
+      PW_CORS_ALLOWED_ORIGINS: "https://example.com, https://app.example.com"
+      PW_CORS_ALLOWED_METHODS: "GET, POST, DELETE, OPTIONS"
+      PW_CORS_ALLOWED_HEADERS: "Content-Type, Authorization"
+      PW_CORS_ALLOW_CREDENTIALS: "false"
+      PW_CORS_MAX_AGE: "3600"
     #volumes:
     #- ./pw.yml:/app/pw.yml
     ports:

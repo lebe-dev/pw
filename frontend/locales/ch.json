@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "无法加载数据",
 		"storeSecret": "存储密钥错误",
-		"fileSizeLimit": "文件大小超出限制"
+		"fileSizeLimit": "文件大小超出限制",
+		"rateLimitExceeded": "请求过多。请稍后再试"
 	},
 	"homePage": {
 		"textTitle": "消息",

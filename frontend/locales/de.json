@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "Daten konnten nicht geladen werden",
 		"storeSecret": "Fehler beim Speichern des Geheimnisses",
-		"fileSizeLimit": "Dateigröße überschreitet das Limit"
+		"fileSizeLimit": "Dateigröße überschreitet das Limit",
+		"rateLimitExceeded": "Zu viele Anfragen. Bitte versuchen Sie es später erneut"
 	},
 	"homePage": {
 		"textTitle": "Nachricht",

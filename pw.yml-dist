@@ -1,4 +1,4 @@
-listen: '0.0.0.0:8080'
+listen: "0.0.0.0:8080"
 
 log-level: info
 
@@ -17,11 +17,11 @@ file-max-size: 10485760
 # You can optionally override this with a static value if needed
 # encrypted-message-max-length: 15485760
 
-redis-url: 'redis://cache:6379/'
+redis-url: "redis://cache:6379/"
 
 # IP-based dynamic limits (new feature)
 ip-limits:
-  enabled: false                      # Default: disabled for backward compatibility
+  enabled: false # Default: disabled for backward compatibility
 
   # Trusted proxies (SECURITY: Required when using reverse proxy with IP limits enabled)
   # When IP limits are enabled, only requests from these IPs will have their
@@ -56,15 +56,35 @@ ip-limits:
   #     message-max-length: 32768      # 32KB for detailed reports
   #     file-max-size: 1073741824      # 1GB for log bundles
 
-# Rate limiting (per-IP protection against abuse)
+# Rate limiting (per-IP, per-route protection against abuse)
+# Per-route configuration allows different limits for different API endpoints
+# Only API endpoints for creating/reading/deleting secrets are rate limited
+# Static files, /api/config, /api/version are NOT rate limited
 rate-limit:
-  enabled: true                      # Enabled by default for security
-  requests-per-minute: 60            # 60 requests per minute per IP (1 req/sec average)
-  burst-size: 10                     # Allow burst of 10 requests
+  post-secret: # POST /api/secret - creating secrets
+    enabled: true
+    requests-per-minute: 120 # 2 req/sec - generous for normal use
+    burst-size: 30 # Allow bursts for legitimate users
+
+  get-secret: # GET /api/secret/{id} - reading secrets
+    enabled: true
+    requests-per-minute: 600 # 10 req/sec - most frequently used
+    burst-size: 100 # Large burst for page loads with many secrets
+
+  delete-secret: # DELETE /api/secret/{id} - deleting secrets
+    enabled: true
+    requests-per-minute: 120 # 2 req/sec
+    burst-size: 30
 
   # Note: IPs in the ip-limits whitelist above will bypass rate limiting completely
 
-  # Environment variable overrides:
-  # PW_RATE_LIMIT_ENABLED=false                 # Disable rate limiting
-  # PW_RATE_LIMIT_REQUESTS_PER_MINUTE=120       # Allow 120 requests per minute
-  # PW_RATE_LIMIT_BURST_SIZE=20                 # Allow burst of 20 requests
+  # Environment variable examples (per-route):
+  # PW_RATE_LIMIT_POST_SECRET_ENABLED=true
+  # PW_RATE_LIMIT_POST_SECRET_REQUESTS_PER_MINUTE=120
+  # PW_RATE_LIMIT_POST_SECRET_BURST_SIZE=30
+  # PW_RATE_LIMIT_GET_SECRET_ENABLED=true
+  # PW_RATE_LIMIT_GET_SECRET_REQUESTS_PER_MINUTE=600
+  # PW_RATE_LIMIT_GET_SECRET_BURST_SIZE=100
+  # PW_RATE_LIMIT_DELETE_SECRET_ENABLED=true
+  # PW_RATE_LIMIT_DELETE_SECRET_REQUESTS_PER_MINUTE=120
+  # PW_RATE_LIMIT_DELETE_SECRET_BURST_SIZE=30

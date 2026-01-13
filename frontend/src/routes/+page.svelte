@@ -227,6 +227,8 @@
 
 		if (status === 200) {
 			secretStored = true;
+		} else if (status === 429) {
+			toast.error($t('errors.rateLimitExceeded'));
 		} else {
 			toast.error('Encryption error');
 		}

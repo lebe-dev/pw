@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "Couldn't load data",
 		"storeSecret": "Store secret error",
-		"fileSizeLimit": "File size exceeds limit"
+		"fileSizeLimit": "File size exceeds limit",
+		"rateLimitExceeded": "Too many requests. Please try again later"
 	},
 	"homePage": {
 		"textTitle": "Message",

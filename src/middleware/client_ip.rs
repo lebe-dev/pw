@@ -27,7 +27,7 @@ impl ClientIpExtractor {
         let config = ip_limits_config.as_ref().and_then(|ext| ext.0.as_ref());
         let client_ip = Self::extract_client_ip(request.headers(), addr.ip(), config);
         debug!(
-            "Extracted client IP: {} (connection IP: {})",
+            "extracted client IP: {} (connection IP: {})",
             client_ip,
             addr.ip()
         );

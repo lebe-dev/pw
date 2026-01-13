@@ -26,7 +26,8 @@
 	"errors": {
 		"loadingData": "Ошибка загрузки данных",
 		"storeSecret": "Ошибка сохранения",
-		"fileSizeLimit": "Размер файла превышает лимит"
+		"fileSizeLimit": "Размер файла превышает лимит",
+		"rateLimitExceeded": "Слишком много запросов. Попробуйте позже"
 	},
 	"homePage": {
 		"textTitle": "Сообщение",
