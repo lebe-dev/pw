@@ -12,3 +12,7 @@ CONVENTIONS.md
 /helm-chart/*.tgz
 /*.tgz
 /.tw
+*.md
+!docs/**/*.md
+!LICENSE.md
+!README.md

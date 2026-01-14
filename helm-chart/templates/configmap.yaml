@@ -6,7 +6,7 @@ metadata:
     {{- include "pw.labels" . | nindent 4 }}
     app.kubernetes.io/component: pw
 data:
-  PW_LISTEN: {{ .Values.pw.config.listen | quote }}
+  PW_LISTEN: {{ .Values.nginx.enabled | ternary (printf "0.0.0.0:%d" (.Values.nginx.backendPort | int)) .Values.pw.config.listen | quote }}
   PW_LOG_TARGET: {{ .Values.pw.config.logTarget | quote }}
   PW_LOG_LEVEL: {{ .Values.pw.config.logLevel | quote }}
   PW_MESSAGE_MAX_LENGTH: {{ .Values.pw.config.messageMaxLength | quote }}

@@ -8,6 +8,7 @@ This Helm chart deploys PW (Secure Secret Share Service) on a Kubernetes cluster
 - Redis backend with authentication
 - Configurable TTL and download policies
 - File upload support
+- Optional nginx sidecar for static asset caching and performance optimization
 
 ## Prerequisites
 
@@ -21,7 +22,7 @@ To install the chart with the release name `pw`:
 ```bash
 helm repo add tinyops https://tinyops.ru/helm-charts/
 helm repo update
-helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.3.1
+helm upgrade --install --create-namespace -n pw pw tinyops/pw --version 1.4.0
 ```
 
 The command deploys PW on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -67,6 +68,19 @@ helm delete pw
 | `pw.resources.requests.cpu`                | PW CPU request                        | `100m`               |
 | `pw.resources.requests.memory`             | PW memory request                     | `64Mi`               |
 
+### Nginx Sidecar parameters
+
+| Name                           | Description                      | Value                                  |
+| ------------------------------ | -------------------------------- | -------------------------------------- |
+| `nginx.enabled`                | Enable nginx sidecar             | `true`                                 |
+| `nginx.image.repository`       | Nginx image repository           | `nginxinc/nginx-unprivileged`          |
+| `nginx.image.tag`             | Nginx image tag                  | `1.29.3-alpine-otel`                   |
+| `nginx.image.pullPolicy`      | Nginx image pull policy          | `IfNotPresent`                         |
+| `nginx.port`                  | Nginx container port             | `8080`                                 |
+| `nginx.backendPort`           | Backend PW app port              | `8081`                                 |
+| `nginx.resources`             | Nginx resource limits/requests   | `{}`                                   |
+| `nginx.config`                | Nginx configuration file         | See values.yaml for full config        |
+
 ### Redis parameters
 
 | Name                           | Description                      | Value                    |
@@ -101,6 +115,17 @@ helm delete pw
 | `podSecurityContext.fsGroup`   | Pod security context fsGroup      | `1000`  |
 | `securityContext.runAsNonRoot` | Run containers as non-root user   | `true`  |
 | `securityContext.runAsUser`    | Run containers as specific user   | `1000`  |
+
+## Nginx Sidecar Configuration
+
+PW includes an optional nginx sidecar container that provides:
+
+- **Static asset caching**: Immutable caching for hashed assets (CSS, JS, fonts, images) with `Cache-Control: public, immutable`
+- **Gzip compression**: Automatic compression for text-based content
+- **Security**: Blocks external access to `/api/health` and `/api/metrics` endpoints
+- **Performance**: Offloads static asset serving from the main application
+
+Enabled by default.
 
 ## IP Whitelist Configuration
 
@@ -197,8 +222,23 @@ kubectl get pods -l app.kubernetes.io/name=pw
 ### View logs:
 
 ```bash
-kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=pw
+# PW application logs
+kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=pw -c pw
+
+# Nginx sidecar logs (if enabled)
+kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=pw -c nginx
+
+# Redis logs
 kubectl logs -l app.kubernetes.io/name=pw,app.kubernetes.io/component=redis
+```
+
+### Check container status:
+
+```bash
+# Check if nginx sidecar is running
+kubectl get pods -l app.kubernetes.io/component=pw -o jsonpath='{.items[0].spec.containers[*].name}'
+# Expected output with nginx enabled: pw nginx
+# Expected output with nginx disabled: pw
 ```
 
 ## License
