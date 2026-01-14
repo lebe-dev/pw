@@ -34,7 +34,7 @@ spec:
           imagePullPolicy: {{ .Values.pw.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.pw.service.targetPort }}
+              containerPort: {{ .Values.nginx.enabled | ternary .Values.nginx.backendPort .Values.pw.service.targetPort }}
               protocol: TCP
           env:
             {{- if .Values.redis.auth.enabled }}
@@ -80,10 +80,41 @@ spec:
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+        {{- if .Values.nginx.enabled }}
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginx.port }}
+              protocol: TCP
+          {{- with .Values.nginx.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+        {{- end }}
       volumes:
         - name: tz-config
           hostPath:
             path: /etc/localtime
+        {{- if .Values.nginx.enabled }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "pw.fullname" . }}-nginx-config
+        {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
