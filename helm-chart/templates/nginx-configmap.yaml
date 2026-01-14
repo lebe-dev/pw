@@ -1,0 +1,12 @@
+{{- if .Values.nginx.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pw.fullname" . }}-nginx-config
+  labels:
+    {{- include "pw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+data:
+  nginx.conf: |
+{{ .Values.nginx.config | indent 4 }}
+{{- end }}
