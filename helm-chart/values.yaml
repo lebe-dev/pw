@@ -230,8 +230,9 @@ nginx:
             location ~* \.(js|css|woff|woff2|ttf|svg|jpg|jpeg|gif|png|ico)$ {
                 proxy_pass http://backend;
                 proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                # Forward headers from ingress-nginx as-is (preserve client IP)
+                proxy_set_header X-Real-IP $http_x_real_ip;
+                proxy_set_header X-Forwarded-For $http_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
 
                 expires max;
@@ -252,8 +253,9 @@ nginx:
             location / {
                 proxy_pass http://backend;
                 proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                # Forward headers from ingress-nginx as-is (preserve client IP)
+                proxy_set_header X-Real-IP $http_x_real_ip;
+                proxy_set_header X-Forwarded-For $http_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
                 proxy_set_header Connection "";
                 proxy_http_version 1.1;
