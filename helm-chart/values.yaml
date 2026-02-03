@@ -104,7 +104,8 @@ serviceAccount:
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
   # annotations:
   #   nginx.ingress.kubernetes.io/configuration-snippet: |
   #     proxy_set_header X-Real-IP $remote_addr;
@@ -191,7 +192,7 @@ nginx:
                         '$status $body_bytes_sent "$http_referer" '
                         '"$http_user_agent" "$http_x_forwarded_for"';
 
-        access_log /dev/stdout main;
+        access_log off;
 
         sendfile on;
         tcp_nopush on;
