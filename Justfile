@@ -6,7 +6,7 @@ init:
   cargo install cargo-llvm-cov
 
 build-dev-image:
-  docker build --progress=plain -t app:dev .
+  docker build --progress=plain --platform=linux/amd64 .
 
 run-backend:
   cargo run
@@ -31,13 +31,16 @@ test:
   cd frontend && yarn test run
   cargo test
 
+test-chart:
+  helm template helm-chart/
+
 build: lint && test
   cargo build
 
-build-release-image: test
+build-release-image: lint && test
   docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
 
-build-chart:
+build-chart: test-chart
   helm package helm-chart/
 
 trivy:
