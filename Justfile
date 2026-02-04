@@ -1,5 +1,6 @@
 version := `cat Cargo.toml | grep version | head -1 | cut -d " " -f 3 | tr -d "\""`
 image := "tinyops/pw"
+trivyReportFile := "docs/security/trivy-scan-report.txt"
 
 init:
   rustup component add clippy
@@ -37,15 +38,24 @@ test-chart:
 build: lint && test
   cargo build
 
-build-release-image: lint && test
-  docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
-
 build-chart: test-chart
   helm package helm-chart/
 
 trivy:
   trivy image --severity HIGH,CRITICAL {{image}}:{{version}}
 
+########################################
+# RELEASE
+########################################
+build-release-image: lint && test
+  docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
+
+trivy-save-reports:
+  trivy -v > {{trivyReportFile}}
+  trivy config Dockerfile >> {{trivyReportFile}}
+  trivy image --severity HIGH,CRITICAL {{image}}:{{version}} >> {{trivyReportFile}}
+
 release: build-release-image
   docker push {{image}}:{{version}}
-  helm package helm-chart/
+  just build-chart
+  just trivy-save-reports
