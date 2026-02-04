@@ -20,8 +20,10 @@ start-dev-image:
 stop-dev-image:
   docker compose -f docker-compose-dev.yml down
 
-lint:
-  cargo fmt -- --check
+format:
+  cargo fmt
+
+lint: format
   cargo clippy -- -D warnings
   cd frontend && yarn lint
 
@@ -29,12 +31,10 @@ test:
   cd frontend && yarn test run
   cargo test
 
-test-all: test
-
 build: lint && test
   cargo build
 
-build-release-image: test-all
+build-release-image: test
   docker build --progress=plain --platform=linux/amd64 -t {{image}}:{{version}} .
 
 build-chart:
