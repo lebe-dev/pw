@@ -81,6 +81,13 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Metrics service name
+*/}}
+{{- define "pw.metricsServiceName" -}}
+{{- printf "%s-pw-metrics" (include "pw.fullname" .) }}
+{{- end }}
+
+{{/*
 Redis service name
 */}}
 {{- define "pw.redisServiceName" -}}

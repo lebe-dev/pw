@@ -1,0 +1,18 @@
+{{- if .Values.pw.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pw.metricsServiceName" . }}
+  labels:
+    {{- include "pw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pw-metrics
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.pw.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "pw.pwSelectorLabels" . | nindent 4 }}
+{{- end }}

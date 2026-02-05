@@ -36,6 +36,11 @@ spec:
             - name: http
               containerPort: {{ .Values.nginx.enabled | ternary .Values.nginx.backendPort .Values.pw.service.targetPort }}
               protocol: TCP
+            {{- if .Values.pw.metrics.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.pw.metrics.targetPort }}
+              protocol: TCP
+            {{- end }}
           env:
             {{- if .Values.redis.auth.enabled }}
             - name: REDIS_PASSWORD
