@@ -5,8 +5,11 @@ ARG FALLBACK_LOCALE_ID=en
 WORKDIR /build
 
 COPY frontend/ /build
+COPY Cargo.toml /build/Cargo.toml
 
-RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
+RUN APP_VERSION=$(grep version /build/Cargo.toml | head -1 | cut -d ' ' -f 3 | tr -d '"') && \
+    sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$APP_VERSION\"/" /build/package.json && \
+    sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
     yarn build
 
