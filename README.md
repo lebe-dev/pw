@@ -37,6 +37,7 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 
 - [FAQ](docs/FAQ.md)
 - [Installation](docs/install/INSTALL.md)
+- [Monitoring](docs/MONITORING.md)
 - [Security](docs/SECURITY.md)
 - [Localization](docs/LOCALE.md)
 - [API](docs/API.md)
