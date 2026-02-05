@@ -157,3 +157,80 @@ fn escape_label_value(value: &str) -> String {
     }
     escaped
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bool_to_u8_converts_to_0_or_1() {
+        assert_eq!(bool_to_u8(false), 0);
+        assert_eq!(bool_to_u8(true), 1);
+    }
+
+    #[test]
+    fn escape_label_value_escapes_backslash_quote_and_newline() {
+        let input = "a\\b\"c\nend";
+        let escaped = escape_label_value(input);
+        assert_eq!(escaped, "a\\\\b\\\"c\\nend");
+    }
+
+    #[test]
+    fn to_prometheus_text_renders_expected_metrics_and_order() {
+        let metrics = Metrics {
+            up: true,
+            build: BuildInfo {
+                version: "1.2.3\\\"rc\n1".to_string(),
+            },
+            uptime_seconds: 12.5,
+            redis: RedisMetrics {
+                up: false,
+                latency_seconds: 0.25,
+            },
+            config: ConfigMetrics {
+                message_max_length: 500,
+                file_max_size_bytes: 10_000,
+                file_upload_enabled: true,
+                ip_limits_enabled: false,
+                body_limit_bytes: 1024,
+            },
+        };
+
+        let rendered = metrics.to_prometheus_text();
+
+        let expected = concat!(
+            "# HELP pw_up Application availability\n",
+            "# TYPE pw_up gauge\n",
+            "pw_up 1\n",
+            "# HELP pw_build_info Build information\n",
+            "# TYPE pw_build_info gauge\n",
+            "pw_build_info{version=\"1.2.3\\\\\\\"rc\\n1\"} 1\n",
+            "# HELP pw_uptime_seconds Process uptime in seconds\n",
+            "# TYPE pw_uptime_seconds gauge\n",
+            "pw_uptime_seconds 12.5\n",
+            "# HELP pw_redis_up Redis availability check result\n",
+            "# TYPE pw_redis_up gauge\n",
+            "pw_redis_up 0\n",
+            "# HELP pw_redis_latency_seconds Redis availability check latency in seconds\n",
+            "# TYPE pw_redis_latency_seconds gauge\n",
+            "pw_redis_latency_seconds 0.25\n",
+            "# HELP pw_config_message_max_length Configured message max length\n",
+            "# TYPE pw_config_message_max_length gauge\n",
+            "pw_config_message_max_length 500\n",
+            "# HELP pw_config_file_max_size_bytes Configured file max size in bytes\n",
+            "# TYPE pw_config_file_max_size_bytes gauge\n",
+            "pw_config_file_max_size_bytes 10000\n",
+            "# HELP pw_config_file_upload_enabled Configured file upload enabled flag\n",
+            "# TYPE pw_config_file_upload_enabled gauge\n",
+            "pw_config_file_upload_enabled 1\n",
+            "# HELP pw_ip_limits_enabled IP limits feature enabled\n",
+            "# TYPE pw_ip_limits_enabled gauge\n",
+            "pw_ip_limits_enabled 0\n",
+            "# HELP pw_body_limit_bytes Configured HTTP body limit in bytes\n",
+            "# TYPE pw_body_limit_bytes gauge\n",
+            "pw_body_limit_bytes 1024\n",
+        );
+
+        assert_eq!(rendered, expected);
+    }
+}
