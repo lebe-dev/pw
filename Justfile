@@ -28,6 +28,9 @@ build: lint && test
 # DEV ENV
 ########################################
 
+cleanup:
+    rm -f pw-*.tgz
+
 run-backend:
     cargo run
 
