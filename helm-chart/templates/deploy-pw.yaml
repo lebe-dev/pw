@@ -110,6 +110,9 @@ spec:
             runAsNonRoot: true
             runAsUser: 101
             runAsGroup: 101
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
         {{- end }}
       volumes:
         - name: tz-config

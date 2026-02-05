@@ -45,8 +45,8 @@ pw:
 
   metrics:
     enabled: true
-    port: 8081
-    targetPort: 8081
+    port: 8082
+    targetPort: 8082
 
   resources:
     limits:
@@ -129,16 +129,22 @@ ingress:
   #      - pw.company.com
 
 podSecurityContext:
-  fsGroup: 1000
+  runAsNonRoot: true
+  fsGroup: 1007
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
   capabilities:
     drop:
       - ALL
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
+  runAsUser: 1007
+  runAsGroup: 1007
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
 
 podAnnotations: {}
 
