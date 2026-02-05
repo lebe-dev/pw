@@ -10,6 +10,24 @@ init:
 build-dev-image:
     docker build --progress=plain --platform=linux/amd64 .
 
+format:
+    cargo fmt
+
+lint: format
+    cargo clippy -- -D warnings
+    cd frontend && yarn lint
+
+test:
+    cd frontend && yarn test run
+    cargo test
+
+build: lint && test
+    cargo build
+
+########################################
+# DEV ENV
+########################################
+
 run-backend:
     cargo run
 
@@ -22,37 +40,35 @@ start-dev-image:
 stop-dev-image:
     docker compose -f docker-compose-dev.yml down
 
-format:
-    cargo fmt
-
-lint: format
-    cargo clippy -- -D warnings
-    cd frontend && yarn lint
-
-test:
-    cd frontend && yarn test run
-    cargo test
+########################################
+# HELM CHART
+########################################
 
 test-chart:
     helm template helm-chart/
 
-build: lint && test
-    cargo build
-
 build-chart: test-chart
-    yq e -i '.appVersion = "{{ version }}"' helm-chart/Chart.yaml
-    helm package helm-chart/
+    helm package helm-chart/ --app-version {{ version }}
 
 release-chart: build-chart
     rm -rf helm-repo
     git clone git@github.com:tinyops-ru/tinyops-ru.github.io.git helm-repo
-    cp pw-{{ chartVersion }}.tgz helm-repo/helm-charts
-    cd helm-repo/helm-charts
-    helm repo index .
-    cd ..
-    git commit -a -m "Add helm chart: pw-{{ chartVersion }}"
-    git push
+    bash -euo pipefail -c '\
+        cd helm-repo && \
+        cp ../pw-{{ chartVersion }}.tgz helm-charts/ && \
+        helm repo index helm-charts/ && \
+        if [ -z "$(git status --porcelain)" ]; then \
+            echo "Chart pw-{{ chartVersion }} already published, skipping." && \
+            exit 0; \
+        fi && \
+        git add helm-charts/ && \
+        git commit -m "Add helm chart: pw-{{ chartVersion }}" && \
+        git push'
     rm -rf helm-repo
+
+########################################
+# SECURITY
+########################################
 
 trivy:
     trivy image --severity HIGH,CRITICAL {{ image }}:{{ version }}
@@ -69,7 +85,6 @@ trivy-save-reports:
     trivy config Dockerfile >> {{ trivyReportFile }}
     trivy image --severity HIGH,CRITICAL {{ image }}:{{ version }} >> {{ trivyReportFile }}
 
-release: build-release-image
+release: build-release-image && release-chart
     docker push {{ image }}:{{ version }}
-    just build-chart
     just trivy-save-reports
