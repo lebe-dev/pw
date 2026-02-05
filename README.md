@@ -1,5 +1,7 @@
 # PW
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/pw)](https://artifacthub.io/packages/search?repo=pw)
+
 PW is a project for sharing secrets (any confidential information). All data is encrypted in the browser.
 
 ![Screenshot of PW application for sharing secrets](pw-screenshot.png)
