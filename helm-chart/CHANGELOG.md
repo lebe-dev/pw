@@ -5,6 +5,14 @@ All notable changes to the PW Helm chart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-02-05
+
+### Security
+- Migrated nginx sidecar from nginxinc/nginx-unprivileged:1.29.3-alpine-otel to nginx:1.29.5-alpine3.23-perl
+- Fixed 32 HIGH/CRITICAL vulnerabilities found by Trivy in unprivileged nginx image
+- Updated nginx version from 1.29.3 to 1.29.5
+- Official nginx image maintains same unprivileged mode with runAsUser: 101
+
 ## [1.5.0] - 2026-02-05
 
 ### Added

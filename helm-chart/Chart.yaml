@@ -2,7 +2,7 @@ apiVersion: v2
 name: pw
 description: A Helm chart for PW - A secure secret-sharing service with end-to-end encryption. All data is encrypted directly in the browser.
 type: application
-version: 1.5.0
+version: 1.5.1
 appVersion: "1.14.0"
 keywords:
   - secret-sharing
@@ -16,6 +16,8 @@ maintainers:
     email: duke.tougu@gmail.com
 annotations:
   artifacthub.io/changes: |
+    - kind: security
+      description: Migrated nginx sidecar to official nginx:1.29.5-alpine3.23-perl image to fix 32 HIGH/CRITICAL vulnerabilities found by Trivy
     - kind: added
       description: Dedicated metrics endpoint with separate service for Prometheus monitoring
     - kind: added

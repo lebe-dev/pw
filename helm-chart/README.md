@@ -79,8 +79,8 @@ helm delete pw
 | Name                           | Description                      | Value                                  |
 | ------------------------------ | -------------------------------- | -------------------------------------- |
 | `nginx.enabled`                | Enable nginx sidecar             | `true`                                 |
-| `nginx.image.repository`       | Nginx image repository           | `nginxinc/nginx-unprivileged`          |
-| `nginx.image.tag`             | Nginx image tag                  | `1.29.3-alpine-otel`                   |
+| `nginx.image.repository`       | Nginx image repository           | `nginx`                                |
+| `nginx.image.tag`             | Nginx image tag                  | `1.29.5-alpine3.23-perl`               |
 | `nginx.image.pullPolicy`      | Nginx image pull policy          | `IfNotPresent`                         |
 | `nginx.port`                  | Nginx container port             | `8080`                                 |
 | `nginx.backendPort`           | Backend PW app port              | `8081`                                 |

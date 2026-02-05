@@ -1,6 +1,7 @@
 version := `cat Cargo.toml | grep version | head -1 | cut -d " " -f 3 | tr -d "\""`
 chartVersion := `cat helm-chart/Chart.yaml | yq -r '.version'`
 image := "tinyops/pw"
+nginxImage := `cat helm-chart/values.yaml | yq -r '.nginx.image.repository + ":" + .nginx.image.tag'`
 trivyReportFile := "docs/security/trivy-scan-report.txt"
 
 init:
@@ -87,6 +88,8 @@ trivy-save-reports:
     trivy -v > {{ trivyReportFile }}
     trivy config Dockerfile >> {{ trivyReportFile }}
     trivy image --severity HIGH,CRITICAL {{ image }}:{{ version }} >> {{ trivyReportFile }}
+    echo "\n=== Nginx Image Scan ===" >> {{ trivyReportFile }}
+    trivy image --severity HIGH,CRITICAL {{ nginxImage }} >> {{ trivyReportFile }}
 
 release: build-release-image && release-chart
     docker push {{ image }}:{{ version }}
