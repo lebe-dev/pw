@@ -10,6 +10,12 @@ This Helm chart deploys PW (Secure Secret Share Service) on a Kubernetes cluster
 - File upload support
 - Optional nginx sidecar for static asset caching and performance optimization
 
+## Changelog
+
+For detailed information about changes in each release, see [CHANGELOG.md](CHANGELOG.md).
+
+For releases from version 1.5.0 onwards, changelog information is also available on [Artifact Hub](https://artifacthub.io/packages/helm).
+
 ## Prerequisites
 
 - Kubernetes 1.19+

@@ -16,3 +16,4 @@ CONVENTIONS.md
 !docs/**/*.md
 !LICENSE.md
 !README.md
+!helm-chart/CHANGELOG.md

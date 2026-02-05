@@ -14,3 +14,15 @@ sources:
 maintainers:
   - name: Eugene Lebedev
     email: duke.tougu@gmail.com
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: Dedicated metrics endpoint with separate service for Prometheus monitoring
+    - kind: added
+      description: Optional nginx sidecar container for static asset caching and improved performance
+    - kind: security
+      description: Enhanced Kubernetes security with hardened pod security contexts and non-root execution
+    - kind: changed
+      description: Improved health check configurations for better reliability
+    - kind: changed
+      description: Updated Redis image to 8.4.0-alpine3.22
