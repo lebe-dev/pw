@@ -39,6 +39,7 @@ mod tests {
     use super::*;
     use crate::config::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
     use crate::limits::LimitsService;
+    use crate::metrics::service::MetricsServer;
     use crate::middleware::client_ip::ClientIp;
     use crate::secret::storage::MockSecretStorage;
     use axum::http::Request as HttpRequest;
@@ -65,11 +66,14 @@ mod tests {
             .body_limit_as_usize()
             .expect("failed to calculate body limit");
 
+        let metrics_server = MetricsServer::new(config.clone(), body_limit);
+
         Arc::new(AppState {
             config,
             limits_service,
             secret_storage: Box::new(secret_storage),
             body_limit,
+            metrics_server,
         })
     }
 
@@ -295,11 +299,14 @@ mod tests {
             .body_limit_as_usize()
             .expect("Failed to calculate body limit");
 
+        let metrics_server = MetricsServer::new(base_config.clone(), body_limit);
+
         let state = Arc::new(AppState {
             config: base_config,
             limits_service,
             secret_storage: Box::new(secret_storage),
             body_limit,
+            metrics_server,
         });
 
         let request = create_request_with_ip("192.168.1.100".parse().unwrap());

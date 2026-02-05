@@ -1,4 +1,5 @@
 use crate::config::model::AppConfig;
+use crate::metrics::service::MetricsServer;
 use crate::routes::secret::{get_secret_route, remove_secret_route, store_secret_route};
 use crate::secret::storage::{RedisSecretStorage, SecretStorage};
 use axum::Router;
@@ -9,6 +10,7 @@ use axum::routing::{get, post};
 use config::file::load_config_from_file;
 use logging::get_logging_config;
 use routes::config::get_config_route;
+use routes::metrics::get_metrics_route;
 use routes::version::get_version_route;
 use rust_embed::Embed;
 use std::path::Path;
@@ -18,6 +20,7 @@ pub mod config;
 pub mod dto;
 pub mod limits;
 pub mod logging;
+pub mod metrics;
 pub mod middleware;
 pub mod routes;
 pub mod secret;
@@ -31,7 +34,7 @@ pub mod integration_tests;
 #[cfg(test)]
 pub mod security_tests;
 
-pub const VERSION: &str = "1.13.1 #1";
+pub const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " #1");
 
 static INDEX_HTML: &str = "index.html";
 
@@ -40,6 +43,7 @@ pub struct AppState {
     pub secret_storage: Box<dyn SecretStorage + Send + Sync>,
     pub limits_service: limits::LimitsService,
     pub body_limit: usize,
+    pub metrics_server: MetricsServer,
 }
 
 #[tokio::main]
@@ -69,12 +73,14 @@ async fn main() -> anyhow::Result<()> {
         secret_storage: Box::new(secret_storage),
         limits_service,
         body_limit,
+        metrics_server: MetricsServer::new(app_config.clone(), body_limit),
     };
 
     let body_limit_for_route = app_state.body_limit;
 
     let app = Router::new()
         .route("/api/config", get(get_config_route))
+        .route("/api/metrics", get(get_metrics_route))
         .route(
             "/api/secret",
             post(store_secret_route).layer(DefaultBodyLimit::max(body_limit_for_route)),

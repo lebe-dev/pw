@@ -15,6 +15,7 @@
 	import { toast } from 'svelte-sonner';
 	import { t } from 'svelte-intl-precompile';
 	import { AppConfig } from '$lib/config';
+	import { version as appVersion } from '$lib/version';
 	import { Button } from '$lib/components/ui/button';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import OneTimeDownload from '$lib/components/OneTimeDownload.svelte';
@@ -397,7 +398,7 @@
 		<a
 			href="https://github.com/lebe-dev/pw/releases"
 			target="_blank"
-			class="hover:text-secondary-foreground hover:dark:text-accent">v1.13.1</a
+			class="hover:text-secondary-foreground hover:dark:text-accent">v{appVersion}</a
 		>
 
 		<span class="me-1 ms-1">|</span>

@@ -4,6 +4,7 @@ mod tests {
     use crate::config::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
     use crate::dto::model::AppConfigDto;
     use crate::limits::LimitsService;
+    use crate::metrics::service::MetricsServer;
     use crate::middleware::client_ip::ClientIpExtractor;
     use crate::routes::{config::get_config_route, secret::store_secret_route};
     use crate::secret::model::{
@@ -64,11 +65,14 @@ mod tests {
             .body_limit_as_usize()
             .expect("Failed to calculate body limit");
 
+        let metrics_server = MetricsServer::new(config.clone(), body_limit);
+
         Arc::new(AppState {
             config,
             limits_service,
             secret_storage: Box::new(secret_storage),
             body_limit,
+            metrics_server,
         })
     }
 

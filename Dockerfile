@@ -5,13 +5,15 @@ ARG FALLBACK_LOCALE_ID=en
 WORKDIR /build
 
 COPY frontend/ /build
+COPY Cargo.toml /build/Cargo.toml
 
-RUN sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
+RUN APP_VERSION=$(grep version /build/Cargo.toml | head -1 | cut -d ' ' -f 3 | tr -d '"') && \
+    sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$APP_VERSION\"/" /build/package.json && \
+    sed -i "s/'en'/'$FALLBACK_LOCALE_ID'/g" /build/src/routes/+layout.ts && \
     yarn && \
-    yarn lint && \
     yarn build
 
-FROM rust:1.92.0-alpine3.23 AS app-build
+FROM rust:1.93.0-alpine3.23 AS app-build
 
 WORKDIR /build
 
@@ -32,7 +34,7 @@ RUN rustup component add clippy && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.23.2
+FROM alpine:3.23.3
 
 WORKDIR /app
 
