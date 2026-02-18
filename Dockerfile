@@ -13,7 +13,7 @@ RUN APP_VERSION=$(grep version /build/Cargo.toml | head -1 | cut -d ' ' -f 3 | t
     yarn && \
     yarn build
 
-FROM rust:1.93.0-alpine3.23 AS app-build
+FROM rust:1.93.1-alpine3.23 AS app-build
 
 WORKDIR /build
 
