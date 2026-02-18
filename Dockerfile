@@ -39,7 +39,8 @@ FROM alpine:3.23.3
 WORKDIR /app
 
 RUN apk update && \
-    adduser -h /app -D pw && \
+    addgroup -g 10001 pw && \
+    adduser -h /app -D -u 10001 -G pw pw && \
     chmod 700 /app && \
     chown -R pw: /app
 
