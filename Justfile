@@ -25,10 +25,7 @@ test:
 build: lint && test
     cargo build
 
-########################################
 # DEV ENV
-########################################
-
 cleanup:
     rm -f pw-*.tgz
 
@@ -44,10 +41,7 @@ start-dev-image:
 stop-dev-image:
     docker compose -f docker-compose-dev.yml down
 
-########################################
 # HELM CHART
-########################################
-
 test-chart:
     helm template helm-chart/
 
@@ -70,17 +64,11 @@ release-chart: build-chart
         git push'
     rm -rf helm-repo
 
-########################################
 # SECURITY
-########################################
-
 trivy:
     trivy image --severity HIGH,CRITICAL {{ image }}:{{ version }}
 
-########################################
 # RELEASE
-
-# #######################################
 build-release-image: lint && test
     docker build --progress=plain --platform=linux/amd64 -t {{ image }}:{{ version }} .
 
