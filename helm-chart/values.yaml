@@ -130,7 +130,7 @@ ingress:
 
 podSecurityContext:
   runAsNonRoot: true
-  fsGroup: 1007
+  fsGroup: 10001
   seccompProfile:
     type: RuntimeDefault
 
@@ -140,8 +140,8 @@ securityContext:
       - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1007
-  runAsGroup: 1007
+  runAsUser: 10001
+  runAsGroup: 10001
   allowPrivilegeEscalation: false
   seccompProfile:
     type: RuntimeDefault
