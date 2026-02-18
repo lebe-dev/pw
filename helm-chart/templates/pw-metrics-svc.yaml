@@ -10,7 +10,7 @@ spec:
   type: ClusterIP
   ports:
     - port: {{ .Values.pw.metrics.port }}
-      targetPort: metrics
+      targetPort: {{ .Values.nginx.enabled | ternary .Values.nginx.backendPort "metrics" }}
       protocol: TCP
       name: metrics
   selector:

@@ -9,7 +9,7 @@ spec:
   type: {{ .Values.pw.service.type }}
   ports:
     - port: {{ .Values.pw.service.port }}
-      targetPort: {{ .Values.pw.service.targetPort }}
+      targetPort: {{ .Values.nginx.enabled | ternary .Values.nginx.port .Values.pw.service.targetPort }}
       protocol: TCP
       name: http
   selector:
