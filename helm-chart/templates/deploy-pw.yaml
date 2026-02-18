@@ -38,7 +38,7 @@ spec:
               protocol: TCP
             {{- if .Values.pw.metrics.enabled }}
             - name: metrics
-              containerPort: {{ .Values.pw.metrics.targetPort }}
+              containerPort: {{ .Values.nginx.enabled | ternary .Values.nginx.backendPort .Values.pw.metrics.targetPort }}
               protocol: TCP
             {{- end }}
           env:
