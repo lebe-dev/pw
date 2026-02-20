@@ -33,7 +33,7 @@
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
-		"svelte": "^5.0.0",
+		"svelte": "^5.51.5",
 		"svelte-check": "^4.0.0",
 		"svelte-intl-precompile": "^0.12.3",
 		"tailwind-merge": "^2.5.5",
