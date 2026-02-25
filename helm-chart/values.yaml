@@ -169,7 +169,7 @@ nginx:
   # See: docs/security/container-image-security.md
   image:
     repository: nginx
-    tag: 1.29.5-alpine3.23-perl
+    tag: 1.29.5-alpine3.23-slim
     pullPolicy: IfNotPresent
 
   # Nginx container port (internal)
