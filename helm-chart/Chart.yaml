@@ -2,8 +2,8 @@ apiVersion: v2
 name: pw
 description: A Helm chart for PW - A secure secret-sharing service with end-to-end encryption. All data is encrypted directly in the browser.
 type: application
-version: 1.5.5
-appVersion: "1.14.1"
+version: 1.5.6
+appVersion: "1.14.2"
 keywords:
   - secret-sharing
   - security
@@ -38,3 +38,5 @@ annotations:
       description: Metrics service now targets backend application port directly when nginx sidecar is enabled, bypassing nginx for /api/metrics scraping
     - kind: security
       description: Updated nginx sidecar image to nginx:1.29.5-alpine3.23-slim
+    - kind: security
+      description: Bump deps

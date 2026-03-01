@@ -4,9 +4,17 @@ image := "tinyops/pw"
 nginxImage := `cat helm-chart/values.yaml | yq -r '.nginx.image.repository + ":" + .nginx.image.tag'`
 trivyReportFile := "docs/security/trivy-scan-report.txt"
 
-init:
+init: cleanup
     rustup component add clippy
     cargo install cargo-llvm-cov
+
+bump-frontend-deps:
+    cd frontend && yarn upgrade
+
+bump-backend-deps:
+    cargo update
+
+bump-deps: bump-frontend-deps && bump-backend-deps
 
 build-dev-image:
     docker build --progress=plain --platform=linux/amd64 .
