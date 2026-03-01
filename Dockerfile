@@ -18,7 +18,7 @@ FROM rust:1.93.1-alpine3.23 AS app-build
 WORKDIR /build
 
 RUN mkdir -p /build/static && \
-    apk add nodejs npm musl-dev elfutils pkgconfig libressl-dev perl make mold upx
+    apk --no-cache add nodejs npm musl-dev elfutils pkgconfig libressl-dev perl make mold upx
 
 COPY . /build
 COPY --from=frontend-build /build/build/ /build/static/
@@ -38,8 +38,7 @@ FROM alpine:3.23.3
 
 WORKDIR /app
 
-RUN apk update && \
-    addgroup -g 10001 pw && \
+RUN addgroup -g 10001 pw && \
     adduser -h /app -D -u 10001 -G pw pw && \
     chmod 700 /app && \
     chown -R pw: /app
