@@ -2,7 +2,7 @@
 
 ## Overview
 
-Container images are regularly scanned for security vulnerabilities using [Trivy](https://trivy.dev/), an industry-standard open-source security scanner. This ensures that both the application and its dependencies remain secure and free from known vulnerabilities.
+Container images are regularly scanned for security vulnerabilities using [Trivy](https://trivy.dev/) and [Dockle](https://github.com/goodwithtech/dockle), an industry-standard open-source security scanners. This ensures that both the application and its dependencies remain secure and free from known vulnerabilities.
 
 ## Scanning Process
 
@@ -13,13 +13,14 @@ Images are scanned for:
 - **Secret detection**: Accidentally committed secrets or credentials
 - **Security misconfigurations**: Insecure container configurations
 
-## Latest Scan Results
+## Latest Scan Reports
 
-See [trivy-scan-report.txt](trivy-scan-report.txt).
+- [trivy-scan-report.txt](trivy-scan-report.txt)
+- [dockle-scan-report.txt](dockle-scan-report.txt)
 
 ## Nginx Image Selection
 
-The helm chart uses the official `nginx:1.29.5-alpine3.23-perl` image instead of `nginxinc/nginx-unprivileged` due to security considerations:
+The helm chart uses the official `nginx:1.29.5-alpine3.23-slim` image instead of `nginxinc/nginx-unprivileged` due to security considerations:
 
 - **Security**: Trivy scanner detected 32 HIGH/CRITICAL vulnerabilities in the unprivileged image
 - **Compatibility**: Official nginx image runs in unprivileged mode with `runAsUser: 101` (same as unprivileged variant)

@@ -3,10 +3,11 @@ chartVersion := `cat helm-chart/Chart.yaml | yq -r '.version'`
 image := "tinyops/pw"
 nginxImage := `cat helm-chart/values.yaml | yq -r '.nginx.image.repository + ":" + .nginx.image.tag'`
 trivyReportFile := "docs/security/trivy-scan-report.txt"
+dockleReportFile := "docs/security/dockle-scan-report.txt"
 
 init: cleanup
     rustup component add clippy
-    cargo install cargo-llvm-cov
+    cargo install cargo-llvm-cov cargo-crev
 
 bump-frontend-deps:
     cd frontend && yarn upgrade
@@ -87,6 +88,10 @@ trivy-save-reports:
     echo "\n=== Nginx Image Scan ===" >> {{ trivyReportFile }}
     trivy image --severity HIGH,CRITICAL {{ nginxImage }} >> {{ trivyReportFile }}
 
+dockle-scan-reports:
+    dockle --no-color {{ image }}:{{ version }} > {{ dockleReportFile }}
+
 release: build-release-image && release-chart
     docker push {{ image }}:{{ version }}
     just trivy-save-reports
+    just dockle-scan-reports

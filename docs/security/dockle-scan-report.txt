@@ -1,0 +1,2 @@
+INFO	- CIS-DI-0005: Enable Content trust for Docker
+	* export DOCKER_CONTENT_TRUST=1 before docker pull/build
