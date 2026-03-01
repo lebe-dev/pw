@@ -11,6 +11,7 @@ pub trait SecretStorage: Send + Sync {
     fn store(&self, id: &str, secret: &Secret) -> anyhow::Result<()>;
     fn load(&self, id: &str) -> anyhow::Result<Option<Secret>>;
     fn remove(&self, id: &str) -> anyhow::Result<()>;
+    fn ping(&self) -> anyhow::Result<()>;
 }
 
 #[derive(Clone)]
@@ -115,6 +116,15 @@ impl SecretStorage for RedisSecretStorage {
             Ok(())
         }
     }
+
+    fn ping(&self) -> anyhow::Result<()> {
+        let client = redis::Client::open(&*self.cnn_url)?;
+        let mut cnn = client
+            .get_connection()
+            .context("couldn't connect to redis")?;
+        redis::cmd("PING").query::<()>(&mut cnn)?;
+        Ok(())
+    }
 }
 
 #[derive(Clone)]
@@ -159,6 +169,10 @@ impl SecretStorage for MockSecretStorage {
     fn remove(&self, id: &str) -> anyhow::Result<()> {
         let mut store = self.store.lock().unwrap();
         store.remove(id);
+        Ok(())
+    }
+
+    fn ping(&self) -> anyhow::Result<()> {
         Ok(())
     }
 }

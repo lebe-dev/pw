@@ -10,6 +10,7 @@ use axum::routing::{get, post};
 use config::file::load_config_from_file;
 use logging::get_logging_config;
 use routes::config::get_config_route;
+use routes::health::get_health_route;
 use routes::metrics::get_metrics_route;
 use routes::version::get_version_route;
 use rust_embed::Embed;
@@ -80,6 +81,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/api/config", get(get_config_route))
+        .route("/api/health", get(get_health_route))
         .route("/api/metrics", get(get_metrics_route))
         .route(
             "/api/secret",

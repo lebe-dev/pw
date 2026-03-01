@@ -2,8 +2,8 @@ apiVersion: v2
 name: pw
 description: A Helm chart for PW - A secure secret-sharing service with end-to-end encryption. All data is encrypted directly in the browser.
 type: application
-version: 1.5.6
-appVersion: "1.14.2"
+version: 1.6.0
+appVersion: "1.15.0"
 keywords:
   - secret-sharing
   - security
@@ -40,3 +40,5 @@ annotations:
       description: Updated nginx sidecar image to nginx:1.29.5-alpine3.23-slim
     - kind: security
       description: Bump deps
+    - kind: security
+      description: add readiness and liveness probes

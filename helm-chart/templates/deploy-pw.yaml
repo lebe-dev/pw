@@ -60,22 +60,26 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "pw.fullname" . }}-config
+          {{- if .Values.pw.probes.liveness.enabled }}
           livenessProbe:
             httpGet:
               path: /api/health
               port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.pw.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.pw.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.pw.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.pw.probes.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.pw.probes.readiness.enabled }}
           readinessProbe:
             httpGet:
               path: /api/health
               port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.pw.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.pw.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.pw.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.pw.probes.readiness.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml .Values.pw.resources | nindent 12 }}
           volumeMounts:
