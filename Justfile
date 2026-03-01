@@ -1,9 +1,13 @@
 version := `cat Cargo.toml | grep version | head -1 | cut -d " " -f 3 | tr -d "\""`
+chartName := `cat helm-chart/Chart.yaml | yq -r '.name'`
 chartVersion := `cat helm-chart/Chart.yaml | yq -r '.version'`
 image := "tinyops/pw"
 nginxImage := `cat helm-chart/values.yaml | yq -r '.nginx.image.repository + ":" + .nginx.image.tag'`
 trivyReportFile := "docs/security/trivy-scan-report.txt"
 dockleReportFile := "docs/security/dockle-scan-report.txt"
+
+cleanup:
+    rm -f {{ chartName }}-*.tgz
 
 init: cleanup
     rustup component add clippy
@@ -35,8 +39,6 @@ build: lint && test
     cargo build
 
 # DEV ENV
-cleanup:
-    rm -f pw-*.tgz
 
 run-backend:
     cargo run
@@ -62,14 +64,14 @@ release-chart: build-chart
     git clone git@github.com:tinyops-ru/tinyops-ru.github.io.git helm-repo
     bash -euo pipefail -c '\
         cd helm-repo && \
-        cp ../pw-{{ chartVersion }}.tgz helm-charts/ && \
+        cp ../{{ chartName }}-{{ chartVersion }}.tgz helm-charts/ && \
         helm repo index helm-charts/ && \
         if [ -z "$(git status --porcelain)" ]; then \
-            echo "Chart pw-{{ chartVersion }} already published, skipping." && \
+            echo "Chart {{ chartName }}-{{ chartVersion }} already published, skipping." && \
             exit 0; \
         fi && \
         git add helm-charts/ && \
-        git commit -m "Add helm chart: pw-{{ chartVersion }}" && \
+        git commit -m "Add helm chart: {{ chartName }}-{{ chartVersion }}" && \
         git push'
     rm -rf helm-repo
 
