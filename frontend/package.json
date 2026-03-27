@@ -28,7 +28,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
-		"happy-dom": "^20.1.0",
+		"happy-dom": "^20.8.8",
 		"lucide-svelte": "^0.468.0",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.4.1",
