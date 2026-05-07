@@ -84,6 +84,9 @@ trivy:
 build-release-image: lint && test
     docker build --progress=plain --platform=linux/amd64 -t {{ image }}:{{ version }} .
 
+push-image:
+    docker push {{ image }}:{{ version }}
+
 trivy-save-reports:
     trivy -v > {{ trivyReportFile }}
     trivy config Dockerfile >> {{ trivyReportFile }}
@@ -96,7 +99,12 @@ trivy-save-reports:
 dockle-scan-reports:
     dockle --no-color {{ image }}:{{ version }} > {{ dockleReportFile }}
 
+release-image: build-release-image
+    @just push-image
+
 release: build-release-image && release-chart
-    docker push {{ image }}:{{ version }}
-    just trivy-save-reports
-    just dockle-scan-reports
+    @just push-image
+    @just trivy-save-reports
+    @just dockle-scan-reports
+    echo "---"
+    echo "Release completed successfully."
