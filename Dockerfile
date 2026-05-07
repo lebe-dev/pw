@@ -1,4 +1,4 @@
-FROM node:25.2.1-alpine3.23 AS frontend-build
+FROM node:25.9.0-alpine3.23 AS frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
@@ -13,7 +13,7 @@ RUN APP_VERSION=$(grep version /build/Cargo.toml | head -1 | cut -d ' ' -f 3 | t
     yarn && \
     yarn build
 
-FROM rust:1.93.1-alpine3.23 AS app-build
+FROM rust:1.95.0-alpine3.23 AS app-build
 
 WORKDIR /build
 
@@ -34,7 +34,7 @@ RUN rustup component add clippy && \
     upx -9 --lzma target/release/pw && \
     chmod +x target/release/pw
 
-FROM alpine:3.23.3
+FROM alpine:3.23
 
 WORKDIR /app
 
