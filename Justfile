@@ -3,6 +3,7 @@ chartName := `cat helm-chart/Chart.yaml | yq -r '.name'`
 chartVersion := `cat helm-chart/Chart.yaml | yq -r '.version'`
 image := "tinyops/pw"
 nginxImage := `cat helm-chart/values.yaml | yq -r '.nginx.image.repository + ":" + .nginx.image.tag'`
+redisImage := `cat helm-chart/values.yaml | yq -r '.redis.image.repository + ":" + .redis.image.tag'`
 trivyReportFile := "docs/security/trivy-scan-report.txt"
 dockleReportFile := "docs/security/dockle-scan-report.txt"
 
@@ -87,6 +88,8 @@ trivy-save-reports:
     trivy -v > {{ trivyReportFile }}
     trivy config Dockerfile >> {{ trivyReportFile }}
     trivy image --severity HIGH,CRITICAL {{ image }}:{{ version }} >> {{ trivyReportFile }}
+    echo "\n=== Redis Image Scan ===" >> {{ trivyReportFile }}
+    trivy image --severity HIGH,CRITICAL {{ redisImage }} >> {{ trivyReportFile }}
     echo "\n=== Nginx Image Scan ===" >> {{ trivyReportFile }}
     trivy image --severity HIGH,CRITICAL {{ nginxImage }} >> {{ trivyReportFile }}
 
