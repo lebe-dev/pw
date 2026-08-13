@@ -7,3 +7,5 @@
 /helm-chart
 /.tw
 *.md
+.env
+.DS_Store

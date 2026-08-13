@@ -31,6 +31,16 @@
 	let askForPassword: boolean = $state(false);
 	let customPassword: string = $state('');
 
+	// The page title is assigned here rather than through <svelte:head>: app.html carries a
+	// static <title> for the SPA shell, and Svelte appends its head nodes after it, so a
+	// <title> declared here would never win (the browser uses the first one in the document).
+	$effect(() => {
+		document.title = $t('secretUrlPage.title');
+		return () => {
+			document.title = 'PW';
+		};
+	});
+
 	$inspect('secret', secret);
 	$inspect('askForPassword', askForPassword);
 	$inspect('customPassword', customPassword);
@@ -138,7 +148,6 @@
 </script>
 
 <svelte:head>
-	<title>{$t('secretUrlPage.title')}</title>
 	<meta name="description" content="Secret page" />
 </svelte:head>
 

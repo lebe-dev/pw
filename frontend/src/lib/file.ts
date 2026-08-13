@@ -7,18 +7,15 @@ export async function fileToBase64(file: File): Promise<string> {
 			const base64Content = base64.split(',')[1];
 			resolve(base64Content);
 		};
-		reader.onerror = (error) => reject(error);
+		// FileReader hands out a DOMException (or nothing at all), which is not an Error —
+		// wrap it so callers can rely on the rejection reason being one.
+		reader.onerror = () =>
+			reject(new Error(reader.error?.message ?? `Failed to read file: ${file.name}`));
 	});
 }
 
 export function base64ToBlob(base64: string, contentType: string): Blob {
-	const byteCharacters = atob(base64);
-	const byteNumbers = new Array(byteCharacters.length);
-
-	for (let i = 0; i < byteCharacters.length; i++) {
-		byteNumbers[i] = byteCharacters.charCodeAt(i);
-	}
-
-	const byteArray = new Uint8Array(byteNumbers);
+	// atob() yields latin1 characters only, so each one is a single code point.
+	const byteArray = Uint8Array.from(atob(base64), (char) => char.codePointAt(0) ?? 0);
 	return new Blob([byteArray], { type: contentType });
 }

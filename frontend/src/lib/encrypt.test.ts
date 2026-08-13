@@ -91,28 +91,30 @@ describe('encrypt utilities', () => {
 			expect(results.size).toBeGreaterThan(90);
 		});
 
-		it('should use Math.random for randomness', async () => {
+		it('should draw from the Web Crypto CSPRNG, not Math.random', async () => {
 			const mockRandom = vi.spyOn(Math, 'random');
-			mockRandom.mockReturnValue(0.5);
+			const mockGetRandomValues = vi.spyOn(globalThis.crypto, 'getRandomValues');
 
 			const result = await getRandomKeyId();
 
-			expect(mockRandom).toHaveBeenCalled();
+			expect(mockGetRandomValues).toHaveBeenCalled();
+			expect(mockRandom).not.toHaveBeenCalled();
 			expect(result).toHaveLength(8);
 		});
 
-		it('should generate consistent output with mocked Math.random', async () => {
-			let callCount = 0;
-			const values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
-			vi.spyOn(Math, 'random').mockImplementation(() => {
-				return values[callCount++ % values.length];
-			});
+		it('should map random bytes onto the charset deterministically', async () => {
+			stubRandomBytes([0, 1, 61, 62, 123, 124, 185, 186]);
 
-			const result1 = await getRandomKeyId();
-			const result2 = await getRandomKeyId();
+			// byte % 62 over the charset 'a..zA..Z0..9'.
+			expect(await getRandomKeyId()).toBe('ab9a9a9a');
+		});
 
-			expect(result1).toHaveLength(8);
-			expect(result2).toHaveLength(8);
+		it('should discard bytes that would bias the charset distribution', async () => {
+			// 248 = 4 * 62, so 248..255 are rejected and a second batch is drawn; without
+			// rejection the first batch would have produced 'aghfhijk'.
+			stubRandomBytes([248, 255, 250, 249, 251, 252, 253, 254, 0, 1, 2, 3, 4, 5, 6, 7]);
+
+			expect(await getRandomKeyId()).toBe('abcdefgh');
 		});
 	});
 
@@ -166,17 +168,16 @@ describe('encrypt utilities', () => {
 				}
 			);
 
-			global.window = {
-				crypto: {
-					subtle: {
-						generateKey: mockGenerateKey,
-						exportKey: mockExportKey
-					}
+			vi.stubGlobal('crypto', {
+				subtle: {
+					generateKey: mockGenerateKey,
+					exportKey: mockExportKey
 				}
-			} as unknown as Window & typeof globalThis;
+			} as unknown as Crypto);
 		});
 
 		afterEach(() => {
+			vi.unstubAllGlobals();
 			vi.restoreAllMocks();
 		});
 
@@ -193,7 +194,7 @@ describe('encrypt utilities', () => {
 
 			it('should call Web Crypto API with correct parameters', async () => {
 				await generateRandomKey();
-				expect(window.crypto.subtle.generateKey).toHaveBeenCalledWith(
+				expect(globalThis.crypto.subtle.generateKey).toHaveBeenCalledWith(
 					{ name: 'AES-GCM', length: 256 },
 					true,
 					['encrypt', 'decrypt']
@@ -202,7 +203,7 @@ describe('encrypt utilities', () => {
 
 			it('should call exportKey with correct parameters', async () => {
 				await generateRandomKey();
-				expect(window.crypto.subtle.exportKey).toHaveBeenCalled();
+				expect(globalThis.crypto.subtle.exportKey).toHaveBeenCalled();
 			});
 
 			it('should generate different keys on subsequent calls', async () => {
@@ -211,7 +212,7 @@ describe('encrypt utilities', () => {
 					.mockResolvedValueOnce(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]).buffer)
 					.mockResolvedValueOnce(new Uint8Array([9, 10, 11, 12, 13, 14, 15, 16]).buffer);
 
-				window.crypto.subtle.exportKey = mockExportKey;
+				globalThis.crypto.subtle.exportKey = mockExportKey;
 
 				const key1 = await generateRandomKey();
 				const key2 = await generateRandomKey();
@@ -249,7 +250,7 @@ describe('encrypt utilities', () => {
 				const length = 16;
 				await getRandomHexDataWithLength(length);
 
-				expect(window.crypto.subtle.generateKey).toHaveBeenCalledWith(
+				expect(globalThis.crypto.subtle.generateKey).toHaveBeenCalledWith(
 					{ name: 'AES-GCM', length: length * 8 },
 					true,
 					['encrypt', 'decrypt']
@@ -267,7 +268,7 @@ describe('encrypt utilities', () => {
 					.fn()
 					.mockResolvedValue(new Uint8Array([0x0a, 0x0b, 0x0c, 0x0d]).buffer);
 
-				window.crypto.subtle.exportKey = mockExportKey;
+				globalThis.crypto.subtle.exportKey = mockExportKey;
 
 				const result = await getRandomHexDataWithLength(4);
 				expect(result).toBe('0a0b0c0d');
@@ -277,14 +278,14 @@ describe('encrypt utilities', () => {
 		describe('error handling', () => {
 			it('should propagate errors from generateKey', async () => {
 				const mockGenerateKey = vi.fn().mockRejectedValue(new Error('Crypto not available'));
-				window.crypto.subtle.generateKey = mockGenerateKey;
+				globalThis.crypto.subtle.generateKey = mockGenerateKey;
 
 				await expect(generateRandomKey()).rejects.toThrow('Crypto not available');
 			});
 
 			it('should propagate errors from exportKey', async () => {
 				const mockExportKey = vi.fn().mockRejectedValue(new Error('Export failed'));
-				window.crypto.subtle.exportKey = mockExportKey;
+				globalThis.crypto.subtle.exportKey = mockExportKey;
 
 				await expect(generateRandomKey()).rejects.toThrow('Export failed');
 			});
@@ -313,17 +314,16 @@ describe('encrypt utilities', () => {
 				}
 			);
 
-			global.window = {
-				crypto: {
-					subtle: {
-						generateKey: mockGenerateKey,
-						exportKey: mockExportKey
-					}
+			vi.stubGlobal('crypto', {
+				subtle: {
+					generateKey: mockGenerateKey,
+					exportKey: mockExportKey
 				}
-			} as unknown as Window & typeof globalThis;
+			} as unknown as Crypto);
 		});
 
 		afterEach(() => {
+			vi.unstubAllGlobals();
 			vi.restoreAllMocks();
 		});
 
@@ -346,3 +346,18 @@ describe('encrypt utilities', () => {
 		});
 	});
 });
+
+// Feeds crypto.getRandomValues a fixed byte sequence (cycled if the caller asks for
+// more), so the mapping from bytes to characters can be asserted exactly.
+function stubRandomBytes(bytes: number[]) {
+	let next = 0;
+	vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(
+		<T extends ArrayBufferView>(target: T | null) => {
+			const view = new Uint8Array(target!.buffer, target!.byteOffset, target!.byteLength);
+			for (let i = 0; i < view.length; i++) {
+				view[i] = bytes[next++ % bytes.length];
+			}
+			return target as T;
+		}
+	);
+}

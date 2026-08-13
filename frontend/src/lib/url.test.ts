@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
 	getEncodedUrlSlug,
 	getEncodedUrlSlugParts,
@@ -147,101 +147,65 @@ describe('url utilities', () => {
 	});
 
 	describe('getUrlBaseHost', () => {
-		beforeEach(() => {
-			delete (global as Window & typeof globalThis).window;
-			global.window = {} as Window & typeof globalThis;
-		});
+		const stubLocation = (protocol: string, hostname: string, port: string) => {
+			vi.stubGlobal('location', { protocol, hostname, port } as Location);
+		};
 
 		afterEach(() => {
+			vi.unstubAllGlobals();
 			vi.restoreAllMocks();
 		});
 
 		it('should return protocol and hostname without port for default HTTP', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: 'example.com',
-				port: '80'
-			} as Location;
+			stubLocation('http:', 'example.com', '80');
 
 			expect(getUrlBaseHost()).toBe('http://example.com');
 		});
 
 		it('should return protocol and hostname without port for default HTTPS', () => {
-			global.window.location = {
-				protocol: 'https:',
-				hostname: 'example.com',
-				port: '443'
-			} as Location;
+			stubLocation('https:', 'example.com', '443');
 
 			expect(getUrlBaseHost()).toBe('https://example.com');
 		});
 
 		it('should include custom port', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: 'localhost',
-				port: '3000'
-			} as Location;
+			stubLocation('http:', 'localhost', '3000');
 
 			expect(getUrlBaseHost()).toBe('http://localhost:3000');
 		});
 
 		it('should include custom HTTPS port', () => {
-			global.window.location = {
-				protocol: 'https:',
-				hostname: 'example.com',
-				port: '8443'
-			} as Location;
+			stubLocation('https:', 'example.com', '8443');
 
 			expect(getUrlBaseHost()).toBe('https://example.com:8443');
 		});
 
 		it('should handle empty port', () => {
-			global.window.location = {
-				protocol: 'https:',
-				hostname: 'example.com',
-				port: ''
-			} as Location;
+			stubLocation('https:', 'example.com', '');
 
 			expect(getUrlBaseHost()).toBe('https://example.com');
 		});
 
 		it('should handle IP addresses', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: '192.168.1.1',
-				port: '8080'
-			} as Location;
+			stubLocation('http:', '192.168.1.1', '8080');
 
 			expect(getUrlBaseHost()).toBe('http://192.168.1.1:8080');
 		});
 
 		it('should handle localhost', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: 'localhost',
-				port: '5173'
-			} as Location;
+			stubLocation('http:', 'localhost', '5173');
 
 			expect(getUrlBaseHost()).toBe('http://localhost:5173');
 		});
 
 		it('should handle localhost without custom port (HTTP)', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: 'localhost',
-				port: '80'
-			} as Location;
+			stubLocation('http:', 'localhost', '80');
 
 			expect(getUrlBaseHost()).toBe('http://localhost');
 		});
 
 		it('should handle IPv6 addresses', () => {
-			global.window.location = {
-				protocol: 'http:',
-				hostname: '::1',
-				port: '3000'
-			} as Location;
+			stubLocation('http:', '::1', '3000');
 
 			expect(getUrlBaseHost()).toBe('http://::1:3000');
 		});

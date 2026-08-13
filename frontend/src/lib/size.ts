@@ -6,13 +6,13 @@ export function getPrettySize(
 ): string {
 	let result;
 
-	const intValue = parseInt(value, 0.0);
+	const intValue = Number.parseInt(value, 10);
 
 	if (intValue <= 1000) {
 		result = value + ' Б';
-	} else if (intValue < 1000000 && parseInt(value, 0.0) > 999) {
+	} else if (intValue < 1000000 && intValue > 999) {
 		result = (intValue / 1000).toFixed(1) + ' ' + kbLabel;
-	} else if (intValue < 1000000000 && parseInt(value, 0.0) > 999999) {
+	} else if (intValue < 1000000000 && intValue > 999999) {
 		result = (intValue / 1000 / 1000).toFixed(1) + ' ' + mbLabel;
 	} else if (intValue >= 1000000000) {
 		result = (intValue / 1000 / 1000 / 1000).toFixed(1) + ' ' + gbLabel;

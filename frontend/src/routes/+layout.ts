@@ -9,7 +9,7 @@ const LOCALE_STORAGE_KEY = 'pw-preferred-locale';
 const FALLBACK_LOCALE = 'en';
 
 function getInitialLocale(): string {
-	if (typeof window !== 'undefined') {
+	if (typeof globalThis.window !== 'undefined') {
 		const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
 		if (savedLocale) {
 			return savedLocale;

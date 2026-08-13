@@ -4,12 +4,16 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Default title for the SPA shell. Svelte appends <svelte:head> nodes *after* this
+		     one and the browser honours the first <title> in tree order, so pages that need a
+		     different title assign document.title instead (see routes/s/[id]/+page.svelte). -->
+		<title>PW</title>
 		<script>
 			(function () {
 				const mode = localStorage.getItem('mode-watcher-mode') || 'system';
 				const light =
 					mode === 'light' ||
-					(mode === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches);
+					(mode === 'system' && globalThis.matchMedia('(prefers-color-scheme: light)').matches);
 				if (!light) {
 					document.documentElement.classList.add('dark');
 				}

@@ -69,6 +69,7 @@ pw:
     requests:
       cpu: 100m
       memory: 64Mi
+      ephemeral-storage: 64Mi
 
   nodeSelector: {}
   tolerations: []
@@ -106,6 +107,7 @@ redis:
     requests:
       cpu: 50m
       memory: 128Mi
+      ephemeral-storage: 64Mi
 
   nodeSelector: {}
   tolerations: []
@@ -193,13 +195,14 @@ nginx:
   backendPort: 8081
 
   # Resource limits for nginx container
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 64Mi
-    # requests:
-    #   cpu: 50m
-    #   memory: 32Mi
+  resources:
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+      ephemeral-storage: 64Mi
 
   # Nginx configuration (will be mounted as nginx.conf)
   config: |

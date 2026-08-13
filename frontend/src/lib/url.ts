@@ -34,9 +34,9 @@ export function getEncodedUrlSlugParts(input: string): SecretUrlSlugParts {
 }
 
 export function getUrlBaseHost(): string {
-	const protocol = window.location.protocol;
-	const hostname = window.location.hostname;
-	const port = window.location.port;
+	const protocol = globalThis.location.protocol;
+	const hostname = globalThis.location.hostname;
+	const port = globalThis.location.port;
 
 	if (port !== '' && port !== '80' && port !== '443') {
 		return `${protocol}//${hostname}:${port}`;

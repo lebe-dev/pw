@@ -239,7 +239,6 @@
 </script>
 
 <svelte:head>
-	<title>PW</title>
 	<meta name="description" content="Secure share secrets" />
 </svelte:head>
 

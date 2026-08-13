@@ -1,6 +1,6 @@
 use ipnet::IpNet;
 use log::warn;
-use std::net::IpAddr;
+use std::net::{AddrParseError, IpAddr};
 use std::str::FromStr;
 use thiserror::Error;
 
@@ -176,36 +176,47 @@ fn validate_cidr_format(cidr_str: &str) -> Result<(), ValidationError> {
 
 /// Validates single IP address format
 fn validate_single_ip_format(ip_str: &str) -> Result<(), ValidationError> {
-    match IpAddr::from_str(ip_str) {
-        Ok(_) => Ok(()),
-        Err(e) => {
-            let reason = if ip_str.contains(':') {
-                if ip_str.len() < 3 || !ip_str.contains("::") && ip_str.split(':').count() != 8 {
-                    "IPv6 address format is incorrect".to_string()
-                } else {
-                    format!("IPv6 parsing failed: {}", e)
-                }
-            } else if ip_str.contains('.') {
-                if ip_str.split('.').count() != 4 {
-                    "IPv4 address must have exactly 4 octets".to_string()
-                } else if ip_str
-                    .split('.')
-                    .any(|octet| octet.parse::<u32>().map_or(true, |n| n > 255))
-                {
-                    "IPv4 address octets must be between 0 and 255".to_string()
-                } else {
-                    format!("IPv4 parsing failed: {}", e)
-                }
-            } else {
-                format!("Unknown IP format: {}", e)
-            };
+    let Err(e) = IpAddr::from_str(ip_str) else {
+        return Ok(());
+    };
 
-            Err(ValidationError::InvalidIpFormat {
-                ip: ip_str.to_string(),
-                reason,
-            })
-        }
+    let reason = if ip_str.contains(':') {
+        ipv6_failure_reason(ip_str, &e)
+    } else if ip_str.contains('.') {
+        ipv4_failure_reason(ip_str, &e)
+    } else {
+        format!("Unknown IP format: {}", e)
+    };
+
+    Err(ValidationError::InvalidIpFormat {
+        ip: ip_str.to_string(),
+        reason,
+    })
+}
+
+/// Explains why an IPv6-looking string failed to parse
+fn ipv6_failure_reason(ip_str: &str, e: &AddrParseError) -> String {
+    if ip_str.len() < 3 || !ip_str.contains("::") && ip_str.split(':').count() != 8 {
+        return "IPv6 address format is incorrect".to_string();
     }
+
+    format!("IPv6 parsing failed: {}", e)
+}
+
+/// Explains why an IPv4-looking string failed to parse
+fn ipv4_failure_reason(ip_str: &str, e: &AddrParseError) -> String {
+    if ip_str.split('.').count() != 4 {
+        return "IPv4 address must have exactly 4 octets".to_string();
+    }
+
+    if ip_str
+        .split('.')
+        .any(|octet| octet.parse::<u32>().map_or(true, |n| n > 255))
+    {
+        return "IPv4 address octets must be between 0 and 255".to_string();
+    }
+
+    format!("IPv4 parsing failed: {}", e)
 }
 
 /// Validates message length limits

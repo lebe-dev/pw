@@ -2,6 +2,7 @@
 /frontend/build
 /frontend/dist
 /frontend/coverage
+/lcov.info
 /pw.yml
 /pw.log
 /frontend/.svelte-kit
@@ -11,9 +12,9 @@ CONVENTIONS.md
 .DS_Store
 /helm-chart/*.tgz
 /*.tgz
-/.tw
 *.md
 !docs/**/*.md
 !LICENSE.md
 !README.md
 !helm-chart/CHANGELOG.md
+.env
