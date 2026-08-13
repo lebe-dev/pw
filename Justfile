@@ -1,3 +1,6 @@
+# Load variables from .env (gitignored) into recipe environments — e.g. SONAR_TOKEN.
+set dotenv-load
+
 version := `cat Cargo.toml | grep version | head -1 | cut -d " " -f 3 | tr -d "\""`
 chartName := `cat helm-chart/Chart.yaml | yq -r '.name'`
 chartVersion := `cat helm-chart/Chart.yaml | yq -r '.version'`
@@ -35,6 +38,30 @@ lint: format
 test:
     cd frontend && yarn test run
     cargo test
+
+# Backend coverage -> lcov.info, with SF: paths relative to the workspace root.
+test-backend-coverage:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # --remap-path-prefix is required: without it llvm-cov writes absolute host paths,
+    # which the scanner container (repo mounted at /usr/src) cannot resolve.
+    cargo llvm-cov --lcov --remap-path-prefix --output-path lcov.info
+
+# Frontend coverage -> frontend/coverage/lcov.info, with SF: paths repo-root relative.
+test-frontend-coverage:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd frontend && yarn vitest run --coverage
+    # Vitest writes SF: paths relative to frontend/, but the scanner resolves them from
+    # the repo root. Plain sed instead of `sed -i`, whose syntax differs between BSD and
+    # GNU; the redirect (not mktemp) keeps the report world-readable for the scanner
+    # container, which runs as a different uid.
+    report="coverage/lcov.info"
+    sed 's|^SF:|SF:frontend/|' "$report" > "$report.tmp"
+    mv "$report.tmp" "$report"
+
+# Both coverage reports, as consumed by sonar-project.properties.
+test-coverage: test-backend-coverage test-frontend-coverage
 
 build: lint && test
     cargo build
@@ -75,6 +102,29 @@ release-chart: build-chart
         git commit -m "Add helm chart: {{ chartName }}-{{ chartVersion }}" && \
         git push'
     rm -rf helm-repo
+
+# --- SonarQube (static analysis) ---
+# Host URL as seen from *inside* the scanner container. host.docker.internal
+# reaches the host's published port 9000 on Docker Desktop and (via --add-host)
+# on Linux. Override with SONAR_HOST_URL when scanning a remote instance.
+sonarHostUrl := env_var_or_default("SONAR_HOST_URL", "http://host.docker.internal:9000")
+
+sonar-scan: test-backend-coverage test-frontend-coverage
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z "${SONAR_TOKEN:-}" ]; then
+        echo "error: SONAR_TOKEN is not set." >&2
+        echo "  Generate a token at {{ sonarHostUrl }} -> My Account -> Security," >&2
+        echo "  then add it to .env:  SONAR_TOKEN=sqp_xxx" >&2
+        exit 1
+    fi
+    docker run --rm \
+        --add-host=host.docker.internal:host-gateway \
+        -e SONAR_HOST_URL="{{ sonarHostUrl }}" \
+        -e SONAR_TOKEN="$SONAR_TOKEN" \
+        -v "$PWD:/usr/src" \
+        sonarsource/sonar-scanner-cli:latest \
+        -Dsonar.projectVersion="{{ version }}"
 
 # SECURITY
 trivy:
