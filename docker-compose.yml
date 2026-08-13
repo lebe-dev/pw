@@ -19,7 +19,7 @@ services:
 
   redis:
     container_name: pw-redis
-    image: redis:8.6.2-alpine3.23
+    image: redis:8.6.5-alpine
     restart: always
     command: 'redis-server --save "" --appendonly no --maxmemory 128mb'
     # ports:
