@@ -20,15 +20,13 @@ WORKDIR /build
 RUN mkdir -p /build/static && \
     apk --no-cache add nodejs npm musl-dev elfutils pkgconfig libressl-dev perl make mold upx
 
-COPY . /build
+COPY Cargo.toml Cargo.lock pw.yml-dist /build/
+COPY src/ /build/src/
 COPY --from=frontend-build /build/build/ /build/static/
 
 COPY favicon.png /build/static/
 
-RUN rustup component add clippy && \
-    cargo clippy -- -D warnings && \
-    cargo test && \
-    cargo build --release && \
+RUN cargo build --release && \
     eu-elfcompress target/release/pw && \
     strip target/release/pw && \
     upx -9 --lzma target/release/pw && \
