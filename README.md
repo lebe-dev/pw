@@ -46,11 +46,6 @@ Other options: [Kubernetes](docs/install/KUBERNETES.md)
 - [How to build](docs/BUILD.md)
 - [Architecture](docs/ARCHITECTURE.md)
 
-## Roadmap
-
-- Backend: improve return codes
-- Backend: migration to Hexagonal Architecture
-
 ## Thanks
 
 - [Nicco](https://github.com/cupcakearmy), author of [cryptgeon](https://github.com/cupcakearmy/cryptgeon)
