@@ -9,7 +9,7 @@
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import { t } from 'svelte-intl-precompile';
 	import { Button } from '$lib/components/ui/button';
-	import { base64ToBlob } from '$lib/file.js';
+	import { downloadFile } from '$lib/file.js';
 	import { getPrettySize } from '$lib/size.js';
 
 	let { data } = $props();
@@ -109,15 +109,7 @@
 	});
 
 	function onDownloadFile() {
-		const blob = base64ToBlob(message, secret.metadata!.type);
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = secret.metadata!.name;
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-		URL.revokeObjectURL(url);
+		downloadFile(message, secret.metadata!.name);
 	}
 
 	async function onRemoveUrl(secretId: string) {

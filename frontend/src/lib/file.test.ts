@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fileToBase64, base64ToBlob } from './file';
+import { fileToBase64, base64ToBlob, downloadFile } from './file';
 
 describe('fileToBase64', () => {
 	afterEach(() => {
@@ -57,6 +57,38 @@ describe('base64ToBlob', () => {
 	});
 });
 
+describe('downloadFile', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.restoreAllMocks();
+	});
+
+	it('should keep the file name of the source file untouched', () => {
+		const download = stubDownload();
+
+		downloadFile(btoa('client config'), 'profile.ovpn');
+
+		expect(download.anchor()?.download).toBe('profile.ovpn');
+	});
+
+	it('should hand over an opaque blob so browsers do not append a MIME based extension', async () => {
+		const download = stubDownload();
+
+		downloadFile(btoa('client config'), 'profile.ovpn');
+
+		expect(download.blobs[0].type).toBe('application/octet-stream');
+		expect(await download.blobs[0].text()).toBe('client config');
+	});
+
+	it('should release the object URL once the download has started', () => {
+		const download = stubDownload();
+
+		downloadFile(btoa('client config'), 'profile.ovpn');
+
+		expect(download.revokeObjectURL).toHaveBeenCalledWith('blob:pw-test-url');
+	});
+});
+
 // Replaces FileReader with one that always fails, so the rejection path can be exercised.
 function stubFailingFileReader(error: DOMException | null) {
 	vi.stubGlobal(
@@ -72,4 +104,40 @@ function stubFailingFileReader(error: DOMException | null) {
 			}
 		}
 	);
+}
+
+// Captures the anchor and the blob the download goes through, without letting the
+// synthetic click reach the browser navigation.
+function stubDownload() {
+	const blobs: Blob[] = [];
+	const createObjectURL = vi.fn((blob: Blob) => {
+		blobs.push(blob);
+		return 'blob:pw-test-url';
+	});
+	const revokeObjectURL = vi.fn();
+	const OriginalURL = globalThis.URL;
+
+	vi.stubGlobal(
+		'URL',
+		class extends OriginalURL {
+			static createObjectURL = createObjectURL;
+			static revokeObjectURL = revokeObjectURL;
+		}
+	);
+
+	let clicked: HTMLAnchorElement | undefined;
+	const createElement = document.createElement.bind(document);
+	vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+		const element = createElement(tagName);
+
+		if (element instanceof HTMLAnchorElement) {
+			vi.spyOn(element, 'click').mockImplementation(() => {
+				clicked = element;
+			});
+		}
+
+		return element;
+	});
+
+	return { blobs, createObjectURL, revokeObjectURL, anchor: () => clicked };
 }
