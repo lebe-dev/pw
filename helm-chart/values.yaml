@@ -79,7 +79,7 @@ pw:
 redis:
   image:
     repository: redis
-    tag: "8.6.5-alpine"
+    tag: "8.6.6-alpine"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
@@ -185,7 +185,7 @@ nginx:
   # See: docs/security/container-image-security.md
   image:
     repository: nginx
-    tag: 1.31.3-alpine3.24-slim
+    tag: 1.31.4-alpine-slim
     pullPolicy: IfNotPresent
 
   # Nginx container port (internal)
