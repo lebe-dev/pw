@@ -1,7 +1,7 @@
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.15.3
+    image: tinyops/pw:1.15.4
     restart: always
     environment:
       PW_LISTEN: "0.0.0.0:8080"
@@ -19,7 +19,7 @@ services:
 
   redis:
     container_name: pw-redis
-    image: redis:8.6.5-alpine
+    image: redis:8.6.6-alpine
     restart: always
     command: 'redis-server --save "" --appendonly no --maxmemory 128mb'
     # ports:
