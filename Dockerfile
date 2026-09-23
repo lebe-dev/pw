@@ -1,4 +1,4 @@
-FROM node:25.9.0-alpine3.23 AS frontend-build
+FROM node:25-alpine AS frontend-build
 
 ARG FALLBACK_LOCALE_ID=en
 
@@ -13,7 +13,7 @@ RUN APP_VERSION=$(grep version /build/Cargo.toml | head -1 | cut -d ' ' -f 3 | t
     yarn && \
     yarn build
 
-FROM rust:1.97.1-alpine AS app-build
+FROM rust:1.98-alpine AS app-build
 
 WORKDIR /build
 
