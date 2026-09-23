@@ -79,7 +79,7 @@ pw:
 redis:
   image:
     repository: redis
-    tag: "8.6.6-alpine"
+    tag: "8.8.3-alpine"
     pullPolicy: IfNotPresent
 
   replicaCount: 1
