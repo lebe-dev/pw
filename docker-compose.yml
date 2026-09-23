@@ -1,7 +1,7 @@
 services:
   app:
     container_name: pw
-    image: tinyops/pw:1.15.4
+    image: tinyops/pw:1.15.5
     restart: always
     environment:
       PW_LISTEN: "0.0.0.0:8080"
