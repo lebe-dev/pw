@@ -185,7 +185,7 @@ nginx:
   # See: docs/security/container-image-security.md
   image:
     repository: nginx
-    tag: 1.31.4-alpine-slim
+    tag: 1.31-alpine3.24-slim
     pullPolicy: IfNotPresent
 
   # Nginx container port (internal)
