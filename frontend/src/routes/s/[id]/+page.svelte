@@ -37,7 +37,7 @@
 	$effect(() => {
 		document.title = $t('secretUrlPage.title');
 		return () => {
-			document.title = 'PW';
+			document.title = 'PW — secret sharing service';
 		};
 	});
 
