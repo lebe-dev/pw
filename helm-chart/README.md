@@ -90,7 +90,7 @@ helm delete pw
 | `redis.image.pullPolicy`      | Redis image pull policy          | `IfNotPresent`           |
 | `redis.replicaCount`          | Number of Redis replicas         | `1`                      |
 | `redis.auth.enabled`          | Enable Redis authentication      | `true`                   |
-| `redis.auth.password`         | Redis password (auto-generated)  | `""`                     |
+| `redis.auth.password`         | Redis password (generated once, reused on upgrades) | `""`  |
 | `redis.config.maxMemory`      | Redis max memory                 | `128mb`                  |
 | `redis.service.type`          | Redis service type               | `ClusterIP`              |
 | `redis.service.port`          | Redis service port               | `6379`                   |
@@ -246,10 +246,35 @@ These settings enable nginx to:
 - If limits are not specified for an IP, global defaults are used
 - Duplicate IP entries are not allowed and will cause validation errors
 
+## Redis Password and Upgrades
+
+When `redis.auth.password` is empty, the chart generates a password on first install and
+reads it back from the existing `<release>-redis-auth` secret on every following
+`helm upgrade`. The password stays the same, so an application upgrade does not require
+a Redis restart and stored secrets survive it.
+
+Reading the existing secret needs cluster access. Tools that render the chart offline
+(`helm template`, Argo CD) get a new random password on every render, so set
+`redis.auth.password` explicitly there.
+
+### Upgrading from chart 1.6.5 and older
+
+Older versions generated a new password on every upgrade, so the stored password may differ
+from the one the running Redis was started with. Compare them before the first upgrade:
+
+```bash
+kubectl -n pw get secret pw-redis-auth -o jsonpath='{.data.redis-password}' | base64 -d; echo
+kubectl -n pw exec deploy/pw-redis -- printenv REDIS_PASSWORD
+```
+
+If the values differ, restart Redis once after the upgrade
+(`kubectl -n pw rollout restart deploy/pw-redis`). This drops the secrets stored in memory,
+so pick a quiet moment. Later upgrades keep the password unchanged.
+
 ## Security Considerations
 
 1. **TLS Required**: PW requires HTTPS in production due to WebCrypto API requirements
-2. **Redis Authentication**: Enabled by default with auto-generated passwords
+2. **Redis Authentication**: Enabled by default; the password is generated on first install and kept across upgrades
 3. **No Persistent Storage**: All data is stored in Redis memory with TTL
 4. **Client-side Encryption**: All secrets are encrypted in the browser before transmission
 5. **Service Account**: Dedicated service account with minimal permissions

@@ -113,12 +113,21 @@ Redis connection URL
 {{- end }}
 
 {{/*
-Generate Redis password
+Redis password: the value from values, otherwise the one already stored in the
+cluster, otherwise a freshly generated one (first install only).
+Reusing the stored password keeps it stable across upgrades, so PW and Redis
+never end up with different passwords.
 */}}
 {{- define "pw.redisPassword" -}}
 {{- if .Values.redis.auth.password }}
 {{- .Values.redis.auth.password }}
 {{- else }}
+{{- $secret := lookup "v1" "Secret" .Release.Namespace (include "pw.redisSecretName" .) }}
+{{- $stored := dig "data" "redis-password" "" ($secret | default dict) }}
+{{- if $stored }}
+{{- $stored | b64dec }}
+{{- else }}
 {{- randAlphaNum 16 }}
+{{- end }}
 {{- end }}
 {{- end }}

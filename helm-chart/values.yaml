@@ -87,7 +87,9 @@ redis:
   # Redis authentication
   auth:
     enabled: true
-    # If not provided, a random password will be generated
+    # If not provided, a random password is generated on first install and reused on upgrades.
+    # Set it explicitly when the chart is rendered without cluster access
+    # (helm template, Argo CD), otherwise a new password is generated on every render.
     password: ""
 
   config:

@@ -83,6 +83,7 @@ stop-dev-image:
 # HELM CHART
 test-chart:
     helm template helm-chart/
+    helm unittest helm-chart/
 
 build-chart: test-chart
     helm package helm-chart/ --app-version {{ version }}
