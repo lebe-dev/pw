@@ -2,8 +2,8 @@ apiVersion: v2
 name: pw
 description: A Helm chart for PW - A secure secret-sharing service with end-to-end encryption. All data is encrypted directly in the browser.
 type: application
-version: 1.6.6
-appVersion: "1.15.5"
+version: 1.7.0
+appVersion: "1.16.0"
 keywords:
   - secret-sharing
   - security
@@ -16,6 +16,10 @@ maintainers:
     email: duke.tougu@gmail.com
 annotations:
   artifacthub.io/changes: |
+    - kind: added
+      description: New pw.config.availableLocales option to limit the languages offered in the UI
+    - kind: changed
+      description: Updated chart to application version 1.16.0
     - kind: fixed
       description: Redis password is kept across upgrades instead of being regenerated, so application upgrades no longer require a Redis restart
     - kind: security

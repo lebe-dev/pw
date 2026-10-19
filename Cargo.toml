@@ -1,6 +1,6 @@
 [package]
 name = "pw"
-version = "1.15.5"
+version = "1.16.0"
 edition = "2024"
 
 [profile.release]
