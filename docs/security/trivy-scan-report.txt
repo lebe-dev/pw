@@ -1,17 +1,17 @@
-Version: 0.74.0
+Version: 0.76.0
 Vulnerability DB:
   Version: 2
-  UpdatedAt: 2026-09-21 07:13:21.413091201 +0000 UTC
-  NextUpdate: 2026-09-22 07:13:21.41309079 +0000 UTC
-  DownloadedAt: 2026-09-21 09:48:38.282512 +0000 UTC
+  UpdatedAt: 2026-10-19 00:45:30.553047111 +0000 UTC
+  NextUpdate: 2026-10-20 00:45:30.55304681 +0000 UTC
+  DownloadedAt: 2026-10-19 06:29:33.368336 +0000 UTC
 Java DB:
   Version: 1
   UpdatedAt: 2025-11-20 00:57:10.039747638 +0000 UTC
   NextUpdate: 2025-11-23 00:57:10.039747518 +0000 UTC
   DownloadedAt: 2025-11-20 07:42:07.774353 +0000 UTC
 Check Bundle:
-  Digest: sha256:1583562f8b90ed2a071b99f0e5ffff6b57e4ceb6ca3e4796577b4e6a339eb74c
-  DownloadedAt: 2026-08-25 14:18:29.15597 +0000 UTC
+  Digest: sha256:b591e9190cff4aa4e385b1a25bccfd9ecf178d3c77fd194e1410b7ce7e1df058
+  DownloadedAt: 2026-10-19 06:33:56.199487 +0000 UTC
 
 Report Summary
 
@@ -30,7 +30,7 @@ Report Summary
 ┌───────────────────────────────────┬────────┬─────────────────┬─────────┐
 │              Target               │  Type  │ Vulnerabilities │ Secrets │
 ├───────────────────────────────────┼────────┼─────────────────┼─────────┤
-│ tinyops/pw:1.15.5 (alpine 3.24.2) │ alpine │        0        │    -    │
+│ tinyops/pw:1.16.0 (alpine 3.24.2) │ alpine │        0        │    -    │
 └───────────────────────────────────┴────────┴─────────────────┴─────────┘
 Legend:
 - '-': Not scanned
