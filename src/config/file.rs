@@ -4,6 +4,7 @@ use std::env;
 use config::{Config, File};
 use serde_json;
 
+use super::locale::{normalize_available_locales, parse_locales_list};
 use super::model::{AppConfig, IpLimitEntry, IpLimitsConfig};
 use super::validation::{format_validation_errors, validate_ip_limits_config};
 
@@ -37,6 +38,11 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
 
     let ip_limits = get_ip_limits_config(config.ip_limits)?;
 
+    let available_locales = get_env_var("PW_AVAILABLE_LOCALES")
+        .map(|value| parse_locales_list(&value))
+        .unwrap_or(config.available_locales);
+    let available_locales = normalize_available_locales(&available_locales)?;
+
     let config = AppConfig {
         listen: listen.parse()?,
         log_level,
@@ -47,6 +53,7 @@ pub fn load_config_from_file(file_path: &str) -> anyhow::Result<AppConfig> {
         file_max_size: file_max_size.parse()?,
         redis_url,
         ip_limits,
+        available_locales,
     };
 
     info!("config: {}", config);

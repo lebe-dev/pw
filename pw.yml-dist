@@ -19,6 +19,14 @@ file-max-size: 10485760
 
 redis-url: "redis://cache:6379/"
 
+# Languages offered in the UI. Empty or missing means all supported languages.
+# Supported: en, ru, de, es, fr, ge, ch, ja
+# The first one is used when the browser language is not in the list.
+# With exactly two languages the UI shows a toggle instead of a dropdown.
+# Env: PW_AVAILABLE_LOCALES=en,ru
+available-locales: []
+# available-locales: [en, ru]
+
 # IP-based dynamic limits (new feature)
 ip-limits:
   enabled: false # Default: disabled for backward compatibility

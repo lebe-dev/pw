@@ -26,11 +26,15 @@
 	import { Input } from '$lib/components/ui/input';
 	import { getPrettySize } from '$lib/size';
 
-	let inProgress = $state(true);
-	let configLoaded = $state(false);
-	let encryptInProgress = $state(false);
+	let { data } = $props();
 
-	let config = $state(new AppConfig());
+	// Config is loaded by the layout before the first render, so the form is shown
+	// in its final state right away.
+	let configLoaded = $derived(data.config !== null);
+	let config = $derived(data.config ?? new AppConfig());
+
+	let inProgress = $derived(!configLoaded);
+	let encryptInProgress = $state(false);
 
 	let secretStored = $state(false);
 
@@ -90,28 +94,16 @@
 			console.log('user prefers dark mode');
 		}
 
-		await loadConfig();
-	});
-
-	async function loadConfig() {
-		const response = await fetch('/api/config', {
-			method: 'GET'
-		});
-
-		if (response.status === 200) {
-			config = await response.json();
-			inProgress = false;
-			configLoaded = true;
-			console.log('config', config);
-
-			await tick();
-			if (textareaRef && secretContentType === SecretContentType.Text) {
-				textareaRef.focus();
-			}
-		} else {
+		if (!configLoaded) {
 			toast.error('Unable to load config');
+			return;
 		}
-	}
+
+		await tick();
+		if (textareaRef && secretContentType === SecretContentType.Text) {
+			textareaRef.focus();
+		}
+	});
 
 	function onToggleDownloadPolicy() {
 		if (secretDownloadPolicy === SecretDownloadPolicy.OneTime) {

@@ -29,6 +29,7 @@ pub async fn get_config_route(
         message_max_length: limits.message_max_length,
         file_upload_enabled: state.config.file_upload_enabled,
         file_max_size: limits.file_max_size,
+        available_locales: state.config.available_locales.clone(),
     };
 
     (StatusCode::OK, Json(config)).into_response()
@@ -56,9 +57,14 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: ip_limits_config,
         };
 
+        create_test_app_state_from_config(config)
+    }
+
+    fn create_test_app_state_from_config(config: AppConfig) -> Arc<AppState> {
         let limits_service = LimitsService::new(&config);
         let secret_storage = MockSecretStorage::new();
 
@@ -105,6 +111,38 @@ mod tests {
         assert_eq!(config.message_max_length, 1024);
         assert_eq!(config.file_max_size, 10485760);
         assert!(config.file_upload_enabled);
+        assert!(config.available_locales.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_config_route_returns_available_locales() {
+        let config = AppConfig {
+            listen: "0.0.0.0:8080".to_string(),
+            log_level: "info".to_string(),
+            log_target: "stdout".to_string(),
+            message_max_length: 1024,
+            file_upload_enabled: true,
+            file_max_size: 10485760,
+            encrypted_message_max_length: Some(15485760),
+            redis_url: "redis://localhost".to_string(),
+            ip_limits: None,
+            available_locales: vec!["ru".to_string(), "en".to_string()],
+        };
+
+        let state = create_test_app_state_from_config(config);
+        let request = create_request_with_ip("192.168.1.100".parse().unwrap());
+
+        let response = get_config_route(State(state), request).await;
+        let response = response.into_response();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let config: AppConfigDto = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(config.available_locales, vec!["ru", "en"]);
     }
 
     #[tokio::test]
@@ -289,6 +327,7 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: None,
         };
 

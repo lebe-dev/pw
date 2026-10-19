@@ -36,6 +36,7 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: ip_limits_config,
         };
 

@@ -25,6 +25,17 @@
 			name="twitter:description"
 			content="Share passwords and secrets via one-time encrypted links"
 		/>
+		<!-- The SPA shell has no stylesheet until the JS bundle loads, so the page background is
+		     inlined here: otherwise dark mode flashes white on the first load. Keep in sync with
+		     the background colours in app.css. -->
+		<style>
+			html {
+				background-color: #ffffff;
+			}
+			html.dark {
+				background-color: #181818;
+			}
+		</style>
 		<script>
 			(function () {
 				const mode = localStorage.getItem('mode-watcher-mode') || 'system';

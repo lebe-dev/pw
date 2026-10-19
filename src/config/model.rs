@@ -43,6 +43,10 @@ pub struct AppConfig {
     pub redis_url: String,
 
     pub ip_limits: Option<IpLimitsConfig>,
+
+    /// Locales offered to users. Empty means all supported locales.
+    #[serde(default)]
+    pub available_locales: Vec<String>,
 }
 
 impl Display for AppConfig {
@@ -51,7 +55,7 @@ impl Display for AppConfig {
             f,
             "listen: '{}', log-level: {}, log-target: {}, message-max-length: {},\
             file-upload-enabled: {}, file-max-size: {}, encrypted-message-max-length: {:?}, redis-url: '{}', \
-            ip-limits: {:?}",
+            ip-limits: {:?}, available-locales: {:?}",
             self.listen,
             self.log_level,
             self.log_target,
@@ -60,7 +64,8 @@ impl Display for AppConfig {
             self.file_max_size,
             self.encrypted_message_max_length,
             self.redis_url,
-            self.ip_limits
+            self.ip_limits,
+            self.available_locales
         )
     }
 }

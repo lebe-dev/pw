@@ -189,6 +189,7 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: None, // Will be calculated dynamically
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: None,
         }
     }

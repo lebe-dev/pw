@@ -18,6 +18,12 @@ pw:
     fileUploadEnabled: "true"
     fileMaxSize: "1048576"
 
+    # Languages offered in the UI. Empty means all supported languages.
+    # Supported: en, ru, de, es, fr, ge, ch, ja. The first one is used when the
+    # browser language is not in the list. With exactly two the UI shows a toggle.
+    availableLocales: []
+    # availableLocales: ["en", "ru"]
+
     # IP whitelist configuration
     ipLimits:
       enabled: false

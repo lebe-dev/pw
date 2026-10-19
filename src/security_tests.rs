@@ -55,6 +55,7 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: Some(ip_limits),
         };
 
@@ -397,6 +398,7 @@ mod tests {
             file_max_size: 10485760,
             encrypted_message_max_length: Some(15485760),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: Some(IpLimitsConfig {
                 enabled: true,
                 whitelist: vec![IpLimitEntry {
@@ -417,6 +419,7 @@ mod tests {
             file_max_size: 20971520,
             encrypted_message_max_length: Some(31457280),
             redis_url: "redis://localhost".to_string(),
+            available_locales: vec![],
             ip_limits: Some(IpLimitsConfig {
                 enabled: true,
                 whitelist: vec![IpLimitEntry {

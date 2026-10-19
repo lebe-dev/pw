@@ -74,9 +74,12 @@ Response body:
 {
   "messageMaxLength": 0,
   "fileUploadEnabled": true,
-  "fileMaxSize": 0
+  "fileMaxSize": 0,
+  "availableLocales": ["en", "ru"]
 }
 ```
+
+`availableLocales` - locales offered in the UI, in configured order. Empty array means all locales are available.
 
 Response codes:
 - `200 OK` - config returned

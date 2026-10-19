@@ -56,6 +56,7 @@ helm delete pw
 | `pw.config.messageMaxLength`               | Maximum message length                | `3127`               |
 | `pw.config.fileUploadEnabled`              | Enable file upload                    | `true`               |
 | `pw.config.fileMaxSize`                    | Maximum file size in bytes            | `1048576`            |
+| `pw.config.availableLocales`               | UI languages, empty means all         | `[]`                 |
 
 **Note**: The encrypted message max length is calculated dynamically as `max(messageMaxLength, fileMaxSize) * 1.35` to account for encryption overhead. You can optionally override this by setting the `PW_ENCRYPTED_MESSAGE_MAX_LENGTH` environment variable.
 | `pw.config.ipLimits.enabled`               | Enable IP whitelist limits            | `false`              |
